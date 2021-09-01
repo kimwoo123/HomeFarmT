@@ -50,7 +50,7 @@ class IMGParser(Node):
         img_gray = 
 
         '''
-
+        img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
         '''
         로직 4. 이미지 resizing
         cv2를 사용해서 이미지를 원하는 크기로 바꿔보십시오.
@@ -58,11 +58,13 @@ class IMGParser(Node):
         img_resize = 
         '''
 
+        img_resize = cv2.resize(img_gray, (300, 300), interpolation = cv2.INTER_CUBIC)
+
         # 로직 5. 이미지 출력 (cv2.imshow)       
         
         cv2.imshow("img_bgr", img_bgr)
-        # cv2.imshow("img_gray", img_gray)
-        # cv2.imshow("resize and gray", img_resize)       
+        cv2.imshow("img_gray", img_gray)
+        cv2.imshow("resize and gray", img_resize)       
         
         cv2.waitKey(1)
 
