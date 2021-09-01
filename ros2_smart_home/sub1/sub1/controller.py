@@ -68,39 +68,64 @@ class Controller(Node):
         self.app_control_pub.publish(self.app_control_msg)
         
     def app_all_off(self):
+        print("off")
         for i in range(17):
             self.app_control_msg.data[i]=2
         self.app_control_pub.publish(self.app_control_msg)
         
-    def app_on_select(self,num):
+    def app_on_select(self):
         '''
         로직 2. 특정 가전 제품 ON
         '''
+        print('가전 제품 번호 입력 (0 ~ 16)')
+        num=int(input("키자 : "))
+        if 0 <= int(num) <= 16 :
+            for i in range(17):
+                self.app_control_msg.data[i]=2
+            self.app_control_msg.data[num]=1
+            self.app_control_pub.publish(self.app_control_msg)
+        else :
+            print("제대로 입력해봐~")
 
-    def app_off_select(self,num):
+    def app_off_select(self):
         '''
         로직 3. 특정 가전 제품 OFF
         '''
-
+        print('가전 제품 번호 입력 (0 ~ 16)')
+        num=int(input("끄자 : "))
+        if 0 <= num <= 16 :
+            for i in range(17):
+                self.app_control_msg.data[i]=2
+            self.app_control_msg.data[num]=2
+            self.app_control_pub.publish(self.app_control_msg)
+        else :
+            print("제대로 입력해봐~")
+        
     def turtlebot_go(self) :
         self.cmd_msg.linear.x=0.3
         self.cmd_msg.angular.z=0.0
-
+        self.cmd_publisher.publish(self.cmd_msg)
     def turtlebot_stop(self) :
         '''
         로직 4. 터틀봇 정지
         '''
-
+        self.cmd_msg.linear.x=0.0
+        self.cmd_msg.angular.z=0.0
+        self.cmd_publisher.publish(self.cmd_msg)
     def turtlebot_cw_rot(self) :
         '''
         로직 5. 터틀봇 시계방향 회전
         '''
-
+        self.cmd_msg.linear.x= 0.0
+        self.cmd_msg.angular.z= 1.0
+        self.cmd_publisher.publish(self.cmd_msg)
     def turtlebot_cww_rot(self) :
         '''
         로직 6. 터틀봇 반시계방향 회전
         '''
-
+        self.cmd_msg.linear.x= 0.0
+        self.cmd_msg.angular.z= -1.0
+        self.cmd_publisher.publish(self.cmd_msg)
 
     def timer_callback(self):
 
@@ -110,21 +135,47 @@ class Controller(Node):
         환경 정보 : 날짜, 시간, 온도, 날씨 출력
         가전 제품 : 가전상태 출력        
         '''
+        print('터틀봇 상태')
+        print(self.turtlebot_status_msg)
+
+        print('환경 정보')
+        print(self.envir_status_msg)
+
+        print('가전 제품')
+        print(self.app_status_msg)
+
+        print('Select Menu [0 : app_all_on, 1 : app_all_off, 2 : app_on_select, 3 : app_off_select, 4 : turtlebot_go, 5 : turtlebot_stop, 6 : turtlebot_cw_rot, 7 : turtlebot_cww_rot')
+        menu=input(">>")
+        if menu=='0' :               
+            self.app_all_on()
+        if menu=='1' :
+            self.app_all_off()               
+        if menu=='2' :
+            self.app_on_select()   
+        if menu=='3' :
+            self.app_off_select()
+        if menu=='4' :               
+            self.turtlebot_go()
+        if menu=='5' :
+            self.turtlebot_stop()               
+        if menu=='6' :
+            self.turtlebot_cw_rot()   
+        if menu=='7' :
+            self.turtlebot_cww_rot()
 
         ## IOT(가전) 제어 함수
         # self.app_all_on()
         # self.app_all_off()
-        # self.app_select_on(12)
-        # self.app_select_off(12)
-
+        # self.app_select_on()
+        # self.app_select_off()
 
         ## 터틀봇 제어 함수
-        self.turtlebot_go()
+        # self.turtlebot_go()
         # self.turtlebot_stop()
         # self.turtlebot_cw_rot()
         # self.turtlebot_ccw_rot()
 
-        self.cmd_publisher.publish(self.cmd_msg)
+        
 
 
 def main(args=None):
