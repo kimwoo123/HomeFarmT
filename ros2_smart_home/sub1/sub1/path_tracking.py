@@ -76,8 +76,15 @@ class followTheCarrot(Node):
                     self.lfd=self.max_lfd
 
                 '''
+                self.lfd = (self.status_msg.twist.linear.x + lateral_error) * 0.5
+                # 계산한 전방주시거리가 최소, 최대값을 넘어갔으면 최소, 최대값으로 제한
+                if self.lfd < self.min_lfd:
+                    self.lfd = self.min_lfd
+                if self.lfd > self.max_lfd:
+                    self.lfd = self.max_lfd
+                
+                min_dis = float('inf')
 
-                min_dis=float('inf')
                 '''
                 로직 5. 전방 주시 포인트 설정
                 for num,waypoint in enumerate(self.path_msg.poses) :
@@ -89,7 +96,19 @@ class followTheCarrot(Node):
                         self.forward_point=
                         self.is_look_forward_point=
 
-                '''               
+                '''   
+
+                for num, waypoint in enumerate(self.path_msg.poses):
+                    self.current_point = waypoint.pose.position
+
+                    # 로봇과 가장 가까운 경로점과 모든 경로점과의 거리 탐색
+                    dis = sqrt(pow(self.path_msg.poses[0].pose.position.x - self.current_point.x, 2) + pow(self.path_msg.poses[0].pose.position.y - self.current_point.y, 2))
+                    
+                    # 전방주시거리에 가장 가깝게 있는 경로점 선택
+                    if abs(dis - self.lfd) < min_dis:
+                        min_dis = abs(dis - self.lfd)
+                        self.forward_point = self.current_point
+                        self.is_look_forward_point = True
                 
                 if self.is_look_forward_point :
             
@@ -112,17 +131,25 @@ class followTheCarrot(Node):
                     theta=
                     
                     '''
-                    
+                    trans_matrix = np.array([
+                        [cos(self.robot_yaw), -sin(self.robot_yaw), robot_pose_x],
+                        [sin(self.robot_yaw), cos(self.robot_yaw), robot_pose_y],
+                        [0, 0, 1]
+                    ])
+                    det_trans_matrix = np.linalg.inv(trans_matrix)
+                    local_forward_point = det_trans_matrix.dot(global_forward_point)
+                    theta = -atan2(local_forward_point[1], local_forward_point[0])
                     '''
                     로직 7. 선속도, 각속도 정하기
                     out_vel=
                     out_rad_vel=
-
                     '''             
+                    out_vel = 1.0
+                    out_rad_vel = theta * 2
 
                     self.cmd_msg.linear.x=out_vel
                     self.cmd_msg.angular.z=out_rad_vel                    
-           
+
             else :
                 print("no found forward point")
                 self.cmd_msg.linear.x=0.0
@@ -142,6 +169,8 @@ class followTheCarrot(Node):
         _,_,self.robot_yaw=
 
         ''' 
+        q = Quaternion(msg.pose.pose.orientation.w, msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z)
+        _,_,self.robot_yaw = q.to_euler()
 
     
     def path_callback(self, msg):
