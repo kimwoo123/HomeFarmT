@@ -13,7 +13,6 @@ def generate_launch_description():
             node_executable='path_pub',
             node_name='path_pub'
         ),
-
         Node(
             package='sub1',
             node_executable='path_tracking',
