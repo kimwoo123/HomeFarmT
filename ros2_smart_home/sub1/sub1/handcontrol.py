@@ -31,7 +31,7 @@ class Handcontrol(Node):
         
         ## 제어 메시지 변수 생성 
         self.hand_control_msg = HandControl()
-        
+
         self.turtlebot_status_msg = TurtlebotStatus()
         self.is_turtlebot_status = False
         
@@ -71,6 +71,8 @@ class Handcontrol(Node):
         로직 5. Hand Control - Pick up        
         '''
         self.hand_control_msg.control_mode = 2
+        self.hand_control_msg.put_distance = 1.0
+        self.hand_control_msg.put_height = 0.2
         self.hand_control.publish(self.hand_control_msg)
         
         
