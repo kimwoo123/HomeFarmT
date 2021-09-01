@@ -6,7 +6,6 @@ from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 import os
 from math import sqrt
-import sub2
 
 # make_path 노드 설명
 # 로봇의 위치(Odometry)를 받아서 매 0.1m 간격으로 x,y 좌표를 텍스트 파일에 기록하고, Path 메시지를 Publish 합니다.
@@ -39,7 +38,8 @@ class makePath(Node):
         full_path=
         self.f=
         '''
-        
+        full_path = 'C:\\Users\\multicampus\\Desktop\\sub1_ws\\src\\path\\sub1_test.txt'
+        self.f = open(full_path, 'w')
         self.is_odom=True
         #이전 위치를 저장할 변수입니다.
         self.prev_x=0.0
@@ -60,20 +60,22 @@ class makePath(Node):
             self.prev_x = 
             self.prev_y = 
             '''
-
+            self.is_odom = True
+            self.prev_x = msg.pose.pose.position.x
+            self.prev_y = msg.pose.pose.position.y
         else :            
             waypint_pose=PoseStamped()
             #x,y 는 odom 메시지에서 받은 로봇의 현재 위치를 나타내는 변수입니다.
             x=msg.pose.pose.position.x
             y=msg.pose.pose.position.y
-   
+
             '''
             로직 4. 콜백함수에서 이전 위치와 현재 위치의 거리 계산
             (테스트) 유클리디안 거리를 구하는 부분으로 x=2, y=2 이고, self.prev_x=0, self.prev_y=0 이라면 distance=2.82가 나와야합니다.
 
             distance = 
             '''
-            
+            distance = sqrt(pow(x - self.prev_x, 2) + pow(y - self.prev_y, 2))
             
             '''
             if distance > 0.1 :
@@ -84,15 +86,24 @@ class makePath(Node):
                 self.path_msg.poses.append(waypint_pose)
                 self.path_pub.publish(self.path_msg)                
             '''
-                
-            '''
-                로직 6. x,y 를 문자열로 바꾸고 x와 y 사이의 문자열은 /t 로 구분
-                data=
-                self.f
-                self.prev_x=x
-                self.prev_y=y
-            '''
-
+            if distance > 0.1 :
+                waypint_pose.pose.position.x = x
+                waypint_pose.pose.position.y = y
+                waypint_pose.pose.orientation.w = 1.0
+                self.path_msg.poses.append(waypint_pose)
+                self.path_pub.publish(self.path_msg)
+                '''
+                    로직 6. x,y 를 문자열로 바꾸고 x와 y 사이의 문자열은 /t 로 구분
+                    data=
+                    self.f
+                    self.prev_x=x
+                    self.prev_y=y
+                '''
+                data = '{0}\t{1}\n'.format(x, y)
+                print(data)
+                self.f.write(data)
+                self.prev_x = x
+                self.prev_y = y
             
             
         
