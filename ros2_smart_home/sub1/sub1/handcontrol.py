@@ -36,6 +36,8 @@ class Handcontrol(Node):
         self.turtlebot_status_msg = TurtlebotStatus()
         self.is_turtlebot_status = False
         
+        self.hand_control_msg.put_distance = 10.0
+        self.hand_control_msg.put_height = 10.0
 
     def timer_callback(self):
         # while True:
@@ -56,23 +58,34 @@ class Handcontrol(Node):
         '''
         로직 3. Hand Control Status 출력
         '''
+        print('can_use_hand')
+        print(self.turtlebot_status_msg.can_use_hand)
 
+        print('can_put')
+        print(self.turtlebot_status_msg.can_put)
+        
+        print('can_lift : ')
+        print(self.turtlebot_status_msg.can_lift)
     def hand_control_preview(self):
         '''
         로직 4. Hand Control - Preview
         '''
-
+        self.hand_control_msg.control_mode = 1
+        self.hand_control.publish(self.hand_control_msg)
     def hand_control_pick_up(self):
         '''
         로직 5. Hand Control - Pick up        
         '''
-        
-        
+        if self.turtlebot_status_msg.can_lift :
+            self.hand_control_msg.control_mode = 2
+            self.hand_control.publish(self.hand_control_msg)
     def hand_control_put_down(self):        
         '''
         로직 6. Hand Control - Put down
         '''
-
+        if self.turtlebot_status_msg.can_put :
+            self.hand_control_msg.control_mode = 3
+            self.hand_control.publish(self.hand_control_msg)
 
     def turtlebot_status_cb(self,msg):
         self.is_turtlebot_status=True
