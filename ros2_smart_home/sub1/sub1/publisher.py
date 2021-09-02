@@ -22,19 +22,19 @@ class MinimalPublisher(Node):
 
         # 로직 2. 타이머 함수 생성
         ## 메인 루프가 돌아가는 타이머 함수입니다. time_period 값을 지정해서 주기적으로 실행할 수 있습니다. time_period의 단위는 초(second)입니다.
-        time_period=0.1 
+        time_period = 0.1 
         self.timer = self.create_timer(time_period, self.timer_callback)
 
         # 로직 3. 송신할 메시지 변수를 생성
         ## publisher에 String 타입으로 만들었기 때문에 메시지 역시 String 타입으로 생성해줍니다.
-        self.str_msg=String()
-        self.count=0
+        self.str_msg = String()
+        self.count = 0
 
 
     def timer_callback(self):
 
-        self.count+=1
-        self.str_msg.data='Hello world count : {}'.format(self.count)
+        self.count += 1
+        self.str_msg.data = 'Hello world count : {}'.format(self.count)
         print(self.str_msg.data)
         # 로직 4. 메시지 publish
         ## publish 함수가 호출되야 메시지가 송신됩니다. 송신된 메시지는 다른 노드에서 subcriber 또는 rqt와 같은 gui 툴에서 확인할 수 있습니다.
