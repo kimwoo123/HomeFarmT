@@ -79,11 +79,11 @@ class odom(Node):
     def listener_callback(self, msg):
         print('linear_vel : {}  angular_vel : {}'.format(msg.twist.linear.x,-msg.twist.angular.z))        
         if self.is_status == False :
-            self.is_status=True
+            self.is_status = True
             self.prev_time=rclpy.clock.Clock().now()
         else :
             
-            self.current_time=rclpy.clock.Clock().now()
+            self.current_time = rclpy.clock.Clock().now()
             # 계산 주기를 저장한 변수 입니다. 단위는 초(s)
             self.period=(self.current_time-self.prev_time).nanoseconds/1000000000
             # 로봇의 선속도, 각속도를 저장하는 변수, 시뮬레이터에서 주는 각 속도는 방향이 반대이므로 (-)를 붙여줍니다.
