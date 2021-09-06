@@ -85,7 +85,7 @@ class followTheCarrot(Node):
                         min_dis = abs(dis - self.lfd)
                         self.forward_point = self.current_point
                         self.is_look_forward_point = True
-               
+
                 if self.is_look_forward_point :
             
                     global_forward_point=[self.forward_point.x, self.forward_point.y, 1]
@@ -118,7 +118,7 @@ class followTheCarrot(Node):
 
                     self.cmd_msg.linear.x = out_vel
                     self.cmd_msg.angular.z = out_rad_vel                    
-           
+
             else :
                 print("no found forward point")
                 self.cmd_msg.linear.x = 0.0
