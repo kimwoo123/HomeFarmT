@@ -63,7 +63,18 @@ class odom(Node):
         self.laser_transform.transform.translation.z = 
         self.laser_transform.transform.rotation.w = 
         '''
-    
+        self.odom_msg.header.frame_id = 'map'
+        self.odom_msg.child_frame_id = 'base_link'
+
+        self.base_link_transform.header.frame_id = 'map' 
+        self.base_link_transform.child_frame_id = 'base_link'
+
+        self.laser_transform.header.frame_id = 'base_link'
+        self.laser_transform.child_frame_id = 'laser'     
+        self.laser_transform.transform.translation.x = 0.0 
+        self.laser_transform.transform.translation.y = 0.0
+        self.laser_transform.transform.translation.z = 1.0 
+        self.laser_transform.transform.rotation.w = 1.0
 
     def listener_callback(self, msg):
         print('linear_vel : {}  angular_vel : {}'.format(msg.twist.linear.x,-msg.twist.angular.z))        
@@ -76,8 +87,8 @@ class odom(Node):
             # 계산 주기를 저장한 변수 입니다. 단위는 초(s)
             self.period=(self.current_time-self.prev_time).nanoseconds/1000000000
             # 로봇의 선속도, 각속도를 저장하는 변수, 시뮬레이터에서 주는 각 속도는 방향이 반대이므로 (-)를 붙여줍니다.
-            linear_x=msg.twist.linear.x
-            angular_z=-msg.twist.angular.z
+            linear_x = msg.twist.linear.x
+            angular_z = -msg.twist.angular.z
             '''
             로직 3. 로봇 위치 추정
             (테스트) linear_x = 1, self.theta = 1.5707(rad), self.period = 1 일 때
@@ -87,7 +98,11 @@ class odom(Node):
             self.x+=
             self.y+=
             self.theta+=
-            '''              
+            '''            
+            self.x += linear_x * cos(self.theta) * self.period
+            self.y += linear_x * sin(self.theta) * self.period
+            self.theta += angular_z * self.period  
+            
             self.base_link_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             self.laser_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             
@@ -134,9 +149,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
-
-
-
-       
-   
