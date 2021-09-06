@@ -1,12 +1,10 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist,PoseStamped
-from squaternion import Quaternion
+from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry,Path
 
-from math import pi,cos,sin,sqrt
-import tf2_ros
-import os
+from math import sqrt, pow
+
 
 
 # path_pub 노드는 make_path 노드에서 만든 텍스트 파일을 읽어와 전역 경로(/global_path)로 사용하고, 
@@ -31,97 +29,87 @@ class pathPub(Node):
         # 로직 1. publisher, subscriber 만들기
         self.global_path_pub = self.create_publisher(Path, 'global_path', 10)
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
-        self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
-        self.lidar_sub= self.create_subscription(Odometry,'/odom',self.listener_callback,10)
+        self.subscription = self.create_subscription(Odometry,'/odom', self.listener_callback, 10)
+        self.lidar_sub= self.create_subscription(Odometry,'/odom', self.listener_callback, 10)
 
         self.odom_msg=Odometry()
         self.is_odom=False
 
         #전역경로 메시지
-        self.global_path_msg=Path()
-        self.global_path_msg.header.frame_id='map'
+        self.global_path_msg = Path()
+        self.global_path_msg.header.frame_id = 'map'
 
+        # 로직 2. 만들어 놓은 경로 데이터를 읽기 모드로 open
+        full_path = 'C:\\Users\\multicampus\\Desktop\\sub1_ws\\src\\sub1\\path\\first_path.txt'
+        self.path_file = open(full_path, 'r')
 
-        '''
-        로직 2. 만들어 놓은 경로 데이터를 읽기 모드로 open
+        # 로직 3. 경로 데이터를 읽어서 Path 메시지에 데이터를 넣기
+        lines = self.path_file.readlines()
 
-
-        full_path=
-        self.f=
-
-        '''
-
-        '''
-        로직 3. 경로 데이터를 읽어서 Path 메시지에 데이터를 넣기
-
-        lines=
         for line in lines :
-            tmp=
-            read_pose=
-            read_pose.pose.position.x=
-            read_pose.pose.position.y=
-            read_pose.pose.orientation.w=
-            self.global_path_msg.poses.append()
+            tmp = line.split()
+            read_pose = PoseStamped()
+            read_pose.pose.position.x = float(tmp[0])
+            read_pose.pose.position.y = float(tmp[1])
+            read_pose.pose.orientation.w = 1.0
+            self.global_path_msg.poses.append(read_pose)
         
-        self.f.close()
-
-        '''
+        self.path_file.close()
 
         # 로직 4. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
-        time_period=0.02 
+        
+        time_period = 0.02 
         self.timer = self.create_timer(time_period, self.timer_callback)
-        self.local_path_size=20 
+        self.local_path_size = 20 
+        self.count = 0
 
-        self.count=0
-
-    def listener_callback(self,msg):
-        self.is_odom=True
-        self.odom_msg=msg
+    def listener_callback(self, msg):
+        self.is_odom = True
+        self.odom_msg = msg
 
     def timer_callback(self):
-        if self.is_odom ==True:
+        if self.is_odom:
 
-            local_path_msg=Path()
-            local_path_msg.header.frame_id='/map'
+            local_path_msg = Path()
+            local_path_msg.header.frame_id = '/map'
             
-            x=self.odom_msg.pose.pose.position.x
-            y=self.odom_msg.pose.pose.position.y
-            print(x,y)
-            current_waypoint=-1
-            '''
-            로직 5. global_path 중 로봇과 가장 가까운 포인트 계산
+            x = self.odom_msg.pose.pose.position.x
+            y = self.odom_msg.pose.pose.position.y
+            current_waypoint = -1
 
-            min_dis=
-            for i,waypoint in enumerate(self.global_path_msg.poses) :
+            # 로직 5. global_path 중 로봇과 가장 가까운 포인트 계산
 
-                distance=
+            min_dis = float('inf')
+            for i, waypoint in enumerate(self.global_path_msg.poses) :
+                global_x = waypoint.pose.position.x
+                global_y = waypoint.pose.position.y
+                distance = sqrt(pow(x - global_x, 2) + pow(y - global_y, 2))
                 if distance < min_dis :
-                    min_dis=
-                    current_waypoint=
+                    min_dis = distance
+                    current_waypoint = i
             
-            '''
-
-
-            
-            '''
-            로직 6. local_path 예외 처리
-
+            # 로직 6. local_path 예외 처리 20개 이하가 남았을 때
             if current_waypoint != -1 :
                 if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):                 
-                    
-                
-
-                else :
-                   
-                    
-                        
-            '''
+                    for num in range(current_waypoint, current_waypoint + self.local_path_size):
+                        tmp_pose = PoseStamped()
+                        tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
+                        tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
+                        tmp_pose.pose.orientation.w = 1.0
+                        local_path_msg.poses.append(tmp_pose)
+                else:
+                    for num in range(current_waypoint, len(self.global_path_msg.poses)):
+                        tmp_pose = PoseStamped()
+                        tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
+                        tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
+                        tmp_pose.pose.orientation.w = 1.0
+                        local_path_msg.poses.append(tmp_pose)
 
             self.local_path_pub.publish(local_path_msg)
 
-        # 로직 7. global_path 업데이트 주기 재설정
-        if self.count%10==0 :
+        if self.count % 10 == 0:
             self.global_path_pub.publish(self.global_path_msg)
+            
         self.count+=1
 
         

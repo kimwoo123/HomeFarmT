@@ -41,28 +41,27 @@ class IMGParser(Node):
         ## msg.data 는 bytes로 되어 있고 이를 uint8로 바꾼 다음
         ## cv2 내의 이미지 디코딩 함수로 bgr 이미지로 바꾸세요.        
 
-        np_arr = np.frombuffer(msg.data, np.uint8)
+        np_arr = np.frombuffer(msg.data, np.uint8) # 안에 있는 데이터를 numpy array로 변경해줍니다.
         img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
         '''
         로직 3. 이미지 색 채널을 gray scale로 컨버팅
-        cv2. 내의 이미지 색 채널 컨터버로 bgr 색상을 gary scale로 바꾸십시오.
-
-        img_gray = 
-
+            cv2. 내의 이미지 색 채널 컨터버로 bgr 색상을 gary scale로 바꾸십시오.
         '''
+
+        img_gray = cv2.imdecode(np_arr, cv2.IMREAD_GRAYSCALE)
 
         '''
         로직 4. 이미지 resizing
         cv2를 사용해서 이미지를 원하는 크기로 바꿔보십시오.
-
-        img_resize = 
         '''
+
+        img_resize = cv2.resize(img_gray, dsize=(300, 300), interpolation=cv2.INTER_AREA)
 
         # 로직 5. 이미지 출력 (cv2.imshow)       
         
         cv2.imshow("img_bgr", img_bgr)
-        # cv2.imshow("img_gray", img_gray)
-        # cv2.imshow("resize and gray", img_resize)       
+        cv2.imshow("img_gray", img_gray)
+        cv2.imshow("resize and gray", img_resize)       
         
         cv2.waitKey(1)
 
@@ -77,6 +76,10 @@ def main(args=None):
 
     ## 노드 실행 : 노드를 셧다운하기 전까지 종료로부터 막아주는 역할을 합니다
     rclpy.spin(image_parser)
+
+    image_parser.destroy_node()
+    
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':
