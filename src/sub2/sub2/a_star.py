@@ -43,13 +43,13 @@ class a_star(Node):
 
         # 로직 2. 파라미터 설정
         self.goal = [184,224] 
-        self.map_size_x=350
-        self.map_size_y=350
-        self.map_resolution=0.05
-        self.map_offset_x=-8-8.75
-        self.map_offset_y=-4-8.75
+        self.map_size_x = 350
+        self.map_size_y = 350
+        self.map_resolution = 0.05
+        self.map_offset_x = -8 - 8.75
+        self.map_offset_y = -4 - 8.75
     
-        self.GRIDSIZE=350 
+        self.GRIDSIZE = 350 
 
         self.dx = [-1,0,0,1,-1,-1,1,1]
         self.dy = [0,1,-1,0,-1,1,-1,1]
@@ -63,26 +63,28 @@ class a_star(Node):
         map_to_grid=
         self.grid=
         '''
+        map_to_grid = np.array(self.map_msg.data)
+        grid = np.reshape(map_to_grid,(350, 350))
 
 
     def pose_to_grid_cell(self,x,y):
-        map_point_x = 0
-        map_point_y = 0
+        map_point_x = (x - self.map_offset_x) / self.map_resolution
+        map_point_y = (y - self.map_offset_y) / self.map_resolution
         '''
         로직 4. 위치(x,y)를 map의 grid cell로 변환 
-        (테스트) pose가 (-8,-4)라면 맵의 중앙에 위치하게 된다. 따라서 map_point_x,y 는 map size의 절반인 (175,175)가 된다.
-        pose가 (-16.75,12.75) 라면 맵의 시작점에 위치하게 된다. 따라서 map_point_x,y는 (0,0)이 된다.
+        (테스트) pose가 (-8,-4)라면 맵의 중앙에 위치하게 된다. 따라서 map_point_x,y 는 map size의 절반인 (175, 175)가 된다.
+        pose가 (-16.75, -12.75) 라면 맵의 시작점에 위치하게 된다. 따라서 map_point_x,y는 (0, 0)이 된다.
         map_point_x= ?
         map_point_y= ?
         '''
         
-        return map_point_x,map_point_y
+        return map_point_x, map_point_y
 
 
     def grid_cell_to_pose(self,grid_cell):
 
-        x = 0
-        y = 0
+        x = grid_cell[0] * self.map_resolution + self.map_offset_x
+        y = grid_cell[1] * self.map_resolution + self.map_offset_y
         '''
         로직 5. map의 grid cell을 위치(x,y)로 변환
         (테스트) grid cell이 (175,175)라면 맵의 중앙에 위치하게 된다. 따라서 pose로 변환하게 되면 맵의 중앙인 (-8,-4)가 된다.
@@ -115,8 +117,13 @@ class a_star(Node):
             goal_cell=
             self.goal = 
             '''             
-            print(msg)
-            
+            # print(msg)
+            print(msg.pose.position.x)
+            print(msg.pose.position.y)
+            goal_x = msg.pose.position.x
+            goal_y = msg.pose.position.y
+            goal_cell = self.pose_to_grid_cell(goal_x, goal_y)
+            self.goal = goal_cell
 
             if self.is_map ==True and self.is_odom==True  :
                 if self.is_grid_update==False :
@@ -125,9 +132,9 @@ class a_star(Node):
         
                 self.final_path=[]
 
-                x=self.odom_msg.pose.pose.position.x
-                y=self.odom_msg.pose.pose.position.y
-                start_grid_cell=self.pose_to_grid_cell(x,y)
+                x = self.odom_msg.pose.pose.position.x
+                y = self.odom_msg.pose.pose.position.y
+                start_grid_cell = self.pose_to_grid_cell(x, y)
 
                 self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
                 self.cost = np.array([[self.GRIDSIZE*self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
@@ -143,7 +150,7 @@ class a_star(Node):
                 self.global_path_msg.header.frame_id='map'
                 for grid_cell in reversed(self.final_path) :
                     tmp_pose=PoseStamped()
-                    waypoint_x,waypoint_y=self.grid_cell_to_pose(grid_cell)
+                    waypoint_x, waypoint_y=self.grid_cell_to_pose(grid_cell)
                     tmp_pose.pose.position.x=waypoint_x
                     tmp_pose.pose.position.y=waypoint_y
                     tmp_pose.pose.orientation.w=1.0

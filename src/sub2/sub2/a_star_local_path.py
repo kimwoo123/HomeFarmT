@@ -28,7 +28,7 @@ class astarLocalpath(Node):
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
-       
+
         self.global_path_msg=Path()
 
 
