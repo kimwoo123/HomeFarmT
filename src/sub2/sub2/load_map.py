@@ -24,7 +24,7 @@ class loadMap(Node):
         
         time_period = 1  
         self.timer = self.create_timer(time_period, self.timer_callback)
-       
+
         # 로직 1. 맵 파라미터 설정
         # 제공한 맵 데이터의 파라미터입니다. size_x,y는 x,y 방향으로 grid의 개수이고, resolution은 grid 하나당 0.05m라는 것을 의미합니다.
         # offset_x,y 의 -8, -4 는 맵 데이터가 기준 좌표계(map)로 부터 떨어진 거리를 의미합니다. 
@@ -91,7 +91,7 @@ class loadMap(Node):
                                 grid[nx][ny] = 127                                
 
 
-        np_map_data = grid.reshape(1, 350*350) 
+        np_map_data = grid.reshape(1, 350 * 350) 
         list_map_data = np_map_data.tolist()
    
    
@@ -104,7 +104,6 @@ class loadMap(Node):
         self.map_msg.header.stamp = rclpy.clock.Clock().now().to_msg()
         self.map_pub.publish(self.map_msg)
 
-       
 def main(args=None):
     rclpy.init(args=args)
 

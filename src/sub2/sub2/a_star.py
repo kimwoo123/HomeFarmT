@@ -50,11 +50,19 @@ class a_star(Node):
         self.map_offset_y = -4 - 8.75
     
         self.GRIDSIZE=350 
+<<<<<<< HEAD
  
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
        
+=======
+
+        self.dx = [-1,0,0,1,-1,-1,1,1]
+        self.dy = [0,1,-1,0,-1,1,-1,1]
+        self.dCost = [1,1,1,1,1.414,1.414,1.414,1.414]
+
+>>>>>>> 9110b21b6978ac437d16e9991963396adf54cdcd
 
     def grid_update(self):
         self.is_grid_update = True
