@@ -63,7 +63,7 @@ class loadMap(Node):
         '''
         로직 2. 맵 데이터 읽고, 2차원 행렬로 변환
         '''
-        full_path = 'C:\\Users\\multicampus\\Desktop\\project_ws\\src\\sub2\\map\\map.txt'
+        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
         self.file_map = open(full_path, 'r')
         
         line = self.file_map.readlines()

@@ -50,26 +50,18 @@ class a_star(Node):
         self.map_offset_y = -4 - 8.75
     
         self.GRIDSIZE=350 
-<<<<<<< HEAD
- 
-        self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
-        self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
-        self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-       
-=======
 
         self.dx = [-1,0,0,1,-1,-1,1,1]
         self.dy = [0,1,-1,0,-1,1,-1,1]
         self.dCost = [1,1,1,1,1.414,1.414,1.414,1.414]
 
->>>>>>> 9110b21b6978ac437d16e9991963396adf54cdcd
 
     def grid_update(self):
         self.is_grid_update = True
         '''
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
-        map_to_grid = np.array(self.map_msg)
+        map_to_grid = np.array(self.map_msg.data)
         self.grid = np.reshape(map_to_grid, (350, 350))
 
 
@@ -93,8 +85,8 @@ class a_star(Node):
         grid cell이 (350,350)라면 맵의 제일 끝 좌측 상단에 위치하게 된다. 따라서 pose로 변환하게 되면 맵의 좌측 상단인 (0.75,6.25)가 된다.
         '''
 
-        x = (grid_cell[0] * self.map_resolution) + self.map_offest_x
-        y = (grid_cell[1] * self.map_resolution) + self.map_offest_y 
+        x = (grid_cell[0] * self.map_resolution) + self.map_offset_x
+        y = (grid_cell[1] * self.map_resolution) + self.map_offset_y 
 
         return [x,y]
 
@@ -138,7 +130,7 @@ class a_star(Node):
                 
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
                 # 시작지, 목적지가 탐색가능한 영역이고, 시작지와 목적지가 같지 않으면 경로탐색을 합니다.
-                if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
+                if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 55  and self.grid[self.goal[0]][self.goal[1]] <= 55  and start_grid_cell != self.goal :
                     self.dijkstra(start_grid_cell)
 
 
@@ -167,28 +159,25 @@ class a_star(Node):
             if Q[0] == self.goal:
                 found = True
                 break
-
             current = Q.popleft()
 
             for i in range(8):
                 next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE:
-                        if self.grid[next[0]][next[1]] < 50:
-                            if self.cost[current[0]][current[1]] + self.dCost[i] < self.cost[next[0]][next[1]]:
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                        if self.grid[next[0]][next[1]] <= 55 :
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i] :
                                 Q.append(next)
                                 self.path[next[0]][next[1]] = current
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
 
-        node = [self.goal[0], self.goal[1]]
-        while found:
-            self.final_path.append(node)
-            node = [self.path[node[0]], self.path[node[1]]]
-            
-            if node == self.start:
-                self.final_path.append(node)
-                break
-        
-        
+        print('시작', start, '끝', self.goal)
+        node = self.path[self.goal[0]][self.goal[1]]
+        while node != start:
+            nextNode = node
+            self.final_path.append([nextNode[0], nextNode[1]])
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('finalpath',self.final_path)
+
 def main(args=None):
     rclpy.init(args=args)
 
