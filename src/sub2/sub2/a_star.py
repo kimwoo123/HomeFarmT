@@ -5,7 +5,7 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
-from math import pi,cos,sin
+from math import inf, pi,cos,sin
 from collections import deque
 
 # a_star 노드는  OccupancyGrid map을 받아 grid map 기반 최단경로 탐색 알고리즘을 통해 로봇이 목적지까지 가는 경로를 생성하는 노드입니다.
@@ -51,25 +51,25 @@ class a_star(Node):
     
         self.GRIDSIZE = 350 
 
-        self.dx = [-1,0,0,1,-1,-1,1,1]
-        self.dy = [0,1,-1,0,-1,1,-1,1]
-        self.dCost = [1,1,1,1,1.414,1.414,1.414,1.414]
+        self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
+        self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
+        self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
 
-
+        print(self.grid_cell_to_pose((150, 100)))
     def grid_update(self):
-        self.is_grid_update=True
+        self.is_grid_update = True
         '''
         로직 3. 맵 데이터 행렬로 바꾸기
         map_to_grid=
         self.grid=
         '''
         map_to_grid = np.array(self.map_msg.data)
-        grid = np.reshape(map_to_grid,(350, 350))
+        self.grid = np.reshape(map_to_grid,(350, 350))
 
 
-    def pose_to_grid_cell(self,x,y):
-        map_point_x = (x - self.map_offset_x) / self.map_resolution
-        map_point_y = (y - self.map_offset_y) / self.map_resolution
+    def pose_to_grid_cell(self, x, y):
+        map_point_x = int((x - self.map_offset_x) / self.map_resolution)
+        map_point_y = int((y - self.map_offset_y) / self.map_resolution)
         '''
         로직 4. 위치(x,y)를 map의 grid cell로 변환 
         (테스트) pose가 (-8,-4)라면 맵의 중앙에 위치하게 된다. 따라서 map_point_x,y 는 map size의 절반인 (175, 175)가 된다.
@@ -124,9 +124,8 @@ class a_star(Node):
             goal_y = msg.pose.position.y
             goal_cell = self.pose_to_grid_cell(goal_x, goal_y)
             self.goal = goal_cell
-
-            if self.is_map ==True and self.is_odom==True  :
-                if self.is_grid_update==False :
+            if self.is_map == True and self.is_odom == True  :
+                if self.is_grid_update == False :
                     self.grid_update()
 
         
@@ -137,29 +136,34 @@ class a_star(Node):
                 start_grid_cell = self.pose_to_grid_cell(x, y)
 
                 self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
-                self.cost = np.array([[self.GRIDSIZE*self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+                self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
 
                 
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
                 # 시작지, 목적지가 탐색가능한 영역이고, 시작지와 목적지가 같지 않으면 경로탐색을 합니다.
-                # if self.grid[start_grid_cell[0]][start_grid_cell[1]] ==0  and self.grid[self.goal[0]][self.goal[1]] ==0  and start_grid_cell != self.goal :
-                #     self.dijkstra(start_grid_cell)
+                print('self.grid[start_grid_cell[0]][start_grid_cell[1]] : ', self.grid[start_grid_cell[0]][start_grid_cell[1]])
+                print('self.grid[self.goal[0]][self.goal[1]] : ', self.grid[self.goal[0]][self.goal[1]])
+                print('start_grid_cell : ', start_grid_cell)
+                print('self.goal : ', self.goal)
+                if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
+                    print('dijkstra')
+                    self.dijkstra(start_grid_cell)
 
+                self.global_path_msg = Path()
+                self.global_path_msg.header.frame_id = 'map'
 
-                self.global_path_msg=Path()
-                self.global_path_msg.header.frame_id='map'
                 for grid_cell in reversed(self.final_path) :
-                    tmp_pose=PoseStamped()
+                    tmp_pose = PoseStamped()
                     waypoint_x, waypoint_y=self.grid_cell_to_pose(grid_cell)
-                    tmp_pose.pose.position.x=waypoint_x
-                    tmp_pose.pose.position.y=waypoint_y
-                    tmp_pose.pose.orientation.w=1.0
+                    tmp_pose.pose.position.x = waypoint_x
+                    tmp_pose.pose.position.y = waypoint_y
+                    tmp_pose.pose.orientation.w = 1.0
                     self.global_path_msg.poses.append(tmp_pose)
-            
+                
                 if len(self.final_path)!=0 :
                     self.a_star_pub.publish(self.global_path_msg)
 
-    def dijkstra(self,start):
+    def dijkstra(self, start):
         Q = deque()
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
@@ -187,10 +191,35 @@ class a_star(Node):
             nextNode = ??
             self.final_path.??
             node = ??
-        '''       
-        
+        '''
 
+        while Q :
+            current = Q.popleft()
+            if found :
+                break
+            
+            for i in range(8) :
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                    if self.grid[next[0]][next[1]] <= 50 :
+                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                                Q.append(next)
+                                self.path[next[0]][next[1]] = current
+                                self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                                if next == self.goal :
+                                    found = True
         
+        print(found)
+        if(found == False) :
+            return
+        node = self.goal
+        while node != start :
+            nextNode = node
+            self.final_path.append(nextNode)
+            node = self.path[nextNode[0]][nextNode[1]]
+        print(self.final_path)
+
+
 def main(args=None):
     rclpy.init(args=args)
 
