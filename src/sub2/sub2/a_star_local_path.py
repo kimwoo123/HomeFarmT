@@ -89,7 +89,7 @@ class astarLocalpath(Node):
                 else :
 
                     
-                              
+
             '''           
 
             self.local_path_pub.publish(local_path_msg)
