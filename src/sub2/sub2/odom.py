@@ -10,6 +10,8 @@ from math import pi,cos,sin
 import tf2_ros
 import geometry_msgs.msg
 import time
+from math import pi
+from sensor_msgs.msg import Imu
 
 # odom 노드는 로봇의 상태메세지(/turtlebot_status)의 절대위치로 로봇의 위치를 추정하는 노드입니다.
 
@@ -28,25 +30,41 @@ class odom(Node):
         self.subscription = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.listener_callback,10)
         self.odom_publisher = self.create_publisher(Odometry, 'odom', 10)
         self.broadcaster = tf2_ros.StaticTransformBroadcaster(self)
-
+        self.imu_sub = self.create_subscription(Imu,'/imu', self.imu_callback, 10)
 
         # 로봇의 pose를 저장해 publish 할 메시지 변수 입니다.
         self.odom_msg=Odometry()
         # Map -> base_link 좌표계에 대한 정보를 가지고 있는 변수 입니다.
-        self.base_link_transform=geometry_msgs.msg.TransformStamped()
+        self.base_link_transform = geometry_msgs.msg.TransformStamped()
         # base_link -> laser 좌표계에 대한 정보를 가지고 있는 변수 입니다.
-        self.laser_transform=geometry_msgs.msg.TransformStamped()
-        self.is_status=False
-        self.is_calc_theta=False
+        self.laser_transform = geometry_msgs.msg.TransformStamped()
+        self.is_status = False
+        self.is_calc_theta = False
         # x,y,theta는 추정한 로봇의 위치를 저장할 변수 입니다.        
         # 로봇의 초기위치를 맵 상에서 로봇의 위치와 맞춰줘야 합니다. 
-        self.x = 0
-        self.y = 0
-        self.theta = 0.0
+        self.x = -9.25
+        self.y = -7.75
+        self.theta = 0
         # imu_offset은 초기 로봇의 orientation을 저장할 변수 입니다.
         self.imu_offset = 0
         self.prev_time = 0
+        self.is_imu = False
+        
+        '''
+        로직 2. publish, broadcast 할 메시지 설정
+        self.odom_msg.header.frame_id=
+        self.odom_msg.child_frame_id=
 
+        self.base_link_transform.header.frame_id = 
+        self.base_link_transform.child_frame_id = 
+
+        self.laser_transform.header.frame_id = 
+        self.laser_transform.child_frame_id =      
+        self.laser_transform.transform.translation.x = 
+        self.laser_transform.transform.translation.y = 
+        self.laser_transform.transform.translation.z = 
+        self.laser_transform.transform.rotation.w = 
+        '''
         self.odom_msg.header.frame_id = 'map'
         self.odom_msg.child_frame_id = 'base_link'
 
@@ -59,7 +77,19 @@ class odom(Node):
         self.laser_transform.transform.translation.y = 0.0
         self.laser_transform.transform.translation.z = 1.0 
         self.laser_transform.transform.rotation.w = 1.0
+    def imu_callback(self,msg):
+        # 로직 3. IMU 에서 받은 quaternion을 euler angle로 변환해서 사용
+        if self.is_imu == False:
+            self.is_imu = True
+            q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
+            imu_q = q.to_euler()
+            self.imu_offset = -imu_q[2]
+        else :
+            q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
+            imu_q = q.to_euler()
+            self.theta = imu_q[2] + self.imu_offset + pi / 2
 
+    
     def listener_callback(self, msg):
         print('linear_vel : {}  angular_vel : {}'.format(msg.twist.linear.x,-msg.twist.angular.z))        
         if self.is_status == False :
@@ -73,17 +103,17 @@ class odom(Node):
             # 로봇의 선속도, 각속도를 저장하는 변수, 시뮬레이터에서 주는 각 속도는 방향이 반대이므로 (-)를 붙여줍니다.
             linear_x = msg.twist.linear.x
             angular_z = -msg.twist.angular.z
-   
+
             self.x += linear_x * cos(self.theta) * self.period
             self.y += linear_x * sin(self.theta) * self.period
-            self.theta += angular_z * self.period  
+            # self.theta += angular_z * self.period  
             
             self.base_link_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             self.laser_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             
             q = Quaternion.from_euler(0, 0, self.theta)
             
-            self.base_link_transform.transform.translation.x = self.x
+            self.base_link_transform.transform.translation.x = self.x 
             self.base_link_transform.transform.translation.y = self.y
             self.base_link_transform.transform.rotation.x = q.x 
             self.base_link_transform.transform.rotation.y = q.y
