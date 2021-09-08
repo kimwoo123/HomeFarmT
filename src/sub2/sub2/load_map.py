@@ -55,21 +55,6 @@ class loadMap(Node):
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data
         
-        '''
-        로직 2. 맵 데이터 읽고, 2차원 행렬로 변환
-
-        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt' 
-        self.f = open(full_path, 'r')
-        
-        line = self.file_map.readlines()
-        line_data = list(map(int, line[0].split()))
-        
-        for num,data in enumerate(line_data) :
-            self.map_data[num]=
-
-        map_to_grid=
-        grid=
-        '''
         full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
         self.f = open(full_path, 'r')
 
@@ -77,7 +62,7 @@ class loadMap(Node):
         line_data = line[0].split()
 
         for num,data in enumerate(line_data) :
-            self.map_data[num]=int(data)
+            self.map_data[num] = int(data)
 
         map_to_grid = np.array(self.map_data)
         grid = np.reshape(map_to_grid,(350, 350))
@@ -102,7 +87,7 @@ class loadMap(Node):
    
    
         # 로직2를 완성하고 주석을 해제 시켜주세요.
-        self.file_map.close()
+        self.f.close()
         self.map_msg.data = list_map_data[0]
 
 
