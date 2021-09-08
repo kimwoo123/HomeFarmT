@@ -143,8 +143,8 @@ class followTheCarrot(Node):
                     out_rad_vel=
 
                     '''             
-                    out_vel = 1.0
-                    out_rad_vel = theta * 2
+                    out_vel = 0.7
+                    out_rad_vel = theta
 
                     self.cmd_msg.linear.x = out_vel
                     self.cmd_msg.angular.z = out_rad_vel                    
