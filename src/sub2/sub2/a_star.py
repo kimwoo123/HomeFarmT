@@ -46,17 +46,15 @@ class a_star(Node):
         self.map_size_x = 350
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8 - 8.75
-        self.map_offset_y = -4 - 8.75
+        self.map_offset_x = -8.75 + 3.75
+        self.map_offset_y = 8.75 - 1.25
     
-
-        self.GRIDSIZE=350 
-
+        self.GRIDSIZE = 350 
+ 
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-
-
+       
 
         print(self.grid_cell_to_pose((150, 100)))
     def grid_update(self):
@@ -65,7 +63,7 @@ class a_star(Node):
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
         map_to_grid = np.array(self.map_msg.data)
-        self.grid = np.reshape(map_to_grid,(350, 350))
+        self.grid = map_to_grid.reshape(350, 350)
 
 
     def pose_to_grid_cell(self, x, y):
@@ -97,12 +95,12 @@ class a_star(Node):
 
 
     def odom_callback(self,msg):
-        self.is_odom=True
+        self.is_odom = True
         self.odom_msg=msg
 
 
     def map_callback(self,msg):
-        self.is_map=True
+        self.is_map = True
         self.map_msg = msg
         
 
@@ -139,11 +137,7 @@ class a_star(Node):
                 
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
                 # 시작지, 목적지가 탐색가능한 영역이고, 시작지와 목적지가 같지 않으면 경로탐색을 합니다.
-                print('self.grid[start_grid_cell[0]][start_grid_cell[1]] : ', self.grid[start_grid_cell[0]][start_grid_cell[1]])
-                print('self.grid[self.goal[0]][self.goal[1]] : ', self.grid[self.goal[0]][self.goal[1]])
-                print('start_grid_cell : ', start_grid_cell)
-                print('self.goal : ', self.goal)
-                print(start_grid_cell)
+                print(self.grid[start_grid_cell[0]][start_grid_cell[1]], self.grid[self.goal[0]][self.goal[1]])
                 if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
                     print('dijkstra')
                     self.dijkstra(start_grid_cell)
@@ -167,9 +161,11 @@ class a_star(Node):
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
         found = False
-        while Q :
+        while Q:
             current = Q.popleft()
-            if found :
+            
+            if current == self.goal:
+                found = True
                 break
             
             for i in range(8) :
@@ -180,18 +176,16 @@ class a_star(Node):
                                 Q.append(next)
                                 self.path[next[0]][next[1]] = current
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
-                                if next == self.goal :
-                                    found = True
-        
-        print(found)
-        if(found == False) :
-            return
-        node = self.goal
-        while node != start :
-            nextNode = node
-            self.final_path.append(nextNode)
-            node = self.path[nextNode[0]][nextNode[1]]
-        print(self.final_path)
+
+        node = [self.goal[0], self.goal[1]]
+        print(found, node)
+        while found:
+            self.final_path.append(node)
+            node = [self.path[node[0]], self.path[node[1]]]
+            
+            if node == start:
+                self.final_path.append(node)
+                break
 
 
 def main(args=None):

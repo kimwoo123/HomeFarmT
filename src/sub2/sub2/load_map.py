@@ -29,16 +29,12 @@ class loadMap(Node):
         # 제공한 맵 데이터의 파라미터입니다. size_x,y는 x,y 방향으로 grid의 개수이고, resolution은 grid 하나당 0.05m라는 것을 의미합니다.
         # offset_x,y 의 -8, -4 는 맵 데이터가 기준 좌표계(map)로 부터 떨어진 거리를 의미합니다. 
         # 각 항에 -8.75를 뺀이유는 ros에서 occupancygrid의 offset이라는 데이터는 맵의 중앙에서 기준좌표계까지 거리가 아니라 맵의 우측하단에서 부터 기준좌표계까지의 거리를 의미합니다.
-<<<<<<< HEAD
         # 따라서 (350*0.05)/2를 해준 값을 빼줍니다.
-=======
-        # 따라서 (350 * 0.05) / 2를 해준 값을 빼줍니다.
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
         self.map_msg = OccupancyGrid()
         self.map_size_x = 350 
         self.map_size_y = 350
         self.map_resolution = 0.05
-<<<<<<< HEAD
+
         self.map_offset_x = -8 - 8.75 #-8 - 8.75
         self.map_offset_y = -4 - 8.75 # -4 - 8.75
         self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
@@ -48,16 +44,6 @@ class loadMap(Node):
         self.map_msg.header.frame_id="map"
 
 
-=======
-        self.map_offset_x = -8.75 + 3.75
-        self.map_offset_y = 8.75 - 1.25
-        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
-        grid = np.array(self.map_data)
-        grid = np.reshape(grid, (350, 350))
-
-        self.map_msg.header.frame_id = "map"
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
-
         m = MapMetaData()
         m.resolution = self.map_resolution
         m.width = self.map_size_x
@@ -66,32 +52,18 @@ class loadMap(Node):
         m.origin.position.x = self.map_offset_x
         m.origin.position.y = self.map_offset_y
 
-        q = Quaternion.from_euler(0, 0, -pi / 2)
-
-        m.origin.orientation.x = q.x
-        m.origin.orientation.y = q.y
-        m.origin.orientation.z = q.z
-        m.origin.orientation.w = q.w
-
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data
         
         '''
         로직 2. 맵 데이터 읽고, 2차원 행렬로 변환
-<<<<<<< HEAD
 
         full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt' 
         self.f = open(full_path, 'r')
-=======
-        '''
-        full_path = 'C:\\Users\\multicampus\\Desktop\\project_ws\\src\\sub2\\map\\map.txt'
-        self.file_map = open(full_path, 'r')
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
         
         line = self.file_map.readlines()
         line_data = list(map(int, line[0].split()))
         
-<<<<<<< HEAD
         for num,data in enumerate(line_data) :
             self.map_data[num]=
 
@@ -103,13 +75,6 @@ class loadMap(Node):
 
         line = self.f.readlines()
         line_data = line[0].split()
-=======
-        for num, data in enumerate(line_data) :
-            self.map_data[num] = data
-   
-        map_to_grid = np.array(self.map_data)
-        grid = np.reshape(map_to_grid, (350, 350))
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
 
         for num,data in enumerate(line_data) :
             self.map_data[num]=int(data)
@@ -119,30 +84,11 @@ class loadMap(Node):
         for y in range(350):
             for x in range(350):
                 if grid[x][y] == 100 :
-<<<<<<< HEAD
-
-=======
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
                     '''
                         로직 3. 점유영역 근처 필터처리
 
                         채워 넣기
                     '''
-<<<<<<< HEAD
-                    for box_x in range(-5, 6):
-                            for box_y in range(-5, 6):
-                                if  0 <= x + box_x < 350 and 0 <= y + box_y < 350 and grid[x + box_x][y + box_y] < 80 :
-                                    grid[x + box_x][y + box_y] = 127
-        
-        np_map_data = grid.reshape(1, 350 * 350)
-        list_map_data = np_map_data.tolist()
-
-
-        ## 로직2를 완성하고 주석을 해제 시켜주세요.
-        ## self.f.close()
-        self.f.close()
-        print('read_complete')
-=======
                     for dx in range(-5, 6):
                         for dy in range(-5, 6):
                             nx = x + dx
@@ -157,7 +103,6 @@ class loadMap(Node):
    
         # 로직2를 완성하고 주석을 해제 시켜주세요.
         self.file_map.close()
->>>>>>> 5d9f06e1a0f9d9fc9c350eb7fa8225b8c9b7dd48
         self.map_msg.data = list_map_data[0]
 
 
