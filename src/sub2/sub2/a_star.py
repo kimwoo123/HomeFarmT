@@ -5,9 +5,16 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
+<<<<<<< HEAD
 from math import inf, pi, cos, sin, sqrt
 from collections import deque
 from heapq import heappush, heappop
+=======
+from math import inf, pi,cos,sin, sqrt
+from collections import deque
+import heapq
+import time
+>>>>>>> c163df8737790b5c1b062f0356687ba811626378
 
 # a_star 노드는  OccupancyGrid map을 받아 grid map 기반 최단경로 탐색 알고리즘을 통해 로봇이 목적지까지 가는 경로를 생성하는 노드입니다.
 # 로봇의 위치(/pose), 맵(/map), 목표 위치(/goal_pose)를 받아서 전역경로(/global_path)를 만들어 줍니다. 
@@ -127,8 +134,6 @@ class a_star(Node):
 
                 x = self.odom_msg.pose.pose.position.x
                 y = self.odom_msg.pose.pose.position.y
-                print('x : ', x)
-                print('y : ', y)
                 start_grid_cell = self.pose_to_grid_cell(x, y)
                 print('start_grid_cell[0] : ', start_grid_cell[0])
                 print('start_grid_cell[1] : ', start_grid_cell[1])
@@ -159,6 +164,7 @@ class a_star(Node):
                     self.a_star_pub.publish(self.global_path_msg)
 
     def dijkstra(self, start):
+        start_time = time.time()
         Q = deque()
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
@@ -191,7 +197,50 @@ class a_star(Node):
                 break
 
         print('finalpath',self.final_path)
-    
+
+    # 다은
+    def A_star_daeun(self, start):
+        start_time = time.time()
+        def heuristic(a, b=self.goal):
+            x1, y1 = a
+            x2, y2 = b
+            euclidean = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
+            return 2 * int(euclidean)
+
+        found = False
+        openList = []
+        closeList = []
+        heapq.heappush(openList, (1+heuristic(start), start))
+        while openList:
+            current_f, current = heapq.heappop(openList)
+            closeList.append(current)
+
+            if current[0] == self.goal[0] and current[1] == self.goal[1]:
+                found = True
+                break
+
+            for i in range(8):
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if next in closeList:
+                    continue
+
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                    if self.grid[next[0]][next[1]] == 0:
+                        if self.cost[current[0]][current[1]] + heuristic(current) > self.cost[next[0]][next[1]] + heuristic(next):
+                            self.path[next[0]][next[1]] = [current[0], current[1]]
+                            self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                            heapq.heappush(openList, (self.cost[next[0]][next[1]] + heuristic(next, self.goal), next))
+
+        node = [self.goal[0], self.goal[1]]
+        while found:
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
+                break
+        print('finalpath',self.final_path)
+        print("time :", time.time() - start_time) 
+
     def A_star_dong(self, start):
         # [F, G, x, y]
         openlist = []
@@ -207,6 +256,7 @@ class a_star(Node):
             
             if self.cost[current[2]][current[3]] < current[1]:
                 continue
+        print("time :", time.time() - start_time) 
 
             self.cost[current[2]][current[3]] = current[1]
 
