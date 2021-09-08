@@ -26,7 +26,8 @@ from collections import deque
 class a_star(Node):
 
     def __init__(self):
-        super().__init__('a_Star')
+        super().__init__('a_star')
+        print('init_a_star')
         # 로직 1. publisher, subscriber 만들기
         self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
@@ -63,7 +64,7 @@ class a_star(Node):
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
         map_to_grid = np.array(self.map_msg.data)
-        self.grid = map_to_grid.reshape(350, 350)
+        self.grid = map_to_grid.reshape(350, 350, order='F')
 
 
     def pose_to_grid_cell(self, x, y):
@@ -105,8 +106,8 @@ class a_star(Node):
         
 
     def goal_callback(self, msg):
-        
-        if msg.header.frame_id=='map':
+        print(msg)
+        if msg.header.frame_id == 'map':
             '''
             로직 6. goal_pose 메시지 수신하여 목표 위치 설정
             '''             
@@ -117,8 +118,8 @@ class a_star(Node):
             goal_y = msg.pose.position.y
             goal_cell = self.pose_to_grid_cell(goal_x, goal_y)
             self.goal = goal_cell
-            if self.is_map == True and self.is_odom == True  :
-                if self.is_grid_update == False :
+            if self.is_map == True and self.is_odom == True:
+                if self.is_grid_update == False:
                     self.grid_update()
 
         
@@ -168,13 +169,13 @@ class a_star(Node):
                 found = True
                 break
             
-            for i in range(8) :
+            for i in range(8):
                 next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE:
                     if self.grid[next[0]][next[1]] <= 50 :
                         if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
                                 Q.append(next)
-                                self.path[next[0]][next[1]] = current
+                                self.path[next[0]][next[1]] = [current[0], current[1]]
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
 
         node = [self.goal[0], self.goal[1]]
