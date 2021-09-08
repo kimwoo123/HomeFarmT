@@ -5,8 +5,9 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
-from math import inf, pi,cos,sin
+from math import inf, pi, cos, sin, sqrt
 from collections import deque
+from heapq import heappush, heappop
 
 # a_star 노드는  OccupancyGrid map을 받아 grid map 기반 최단경로 탐색 알고리즘을 통해 로봇이 목적지까지 가는 경로를 생성하는 노드입니다.
 # 로봇의 위치(/pose), 맵(/map), 목표 위치(/goal_pose)를 받아서 전역경로(/global_path)를 만들어 줍니다. 
@@ -27,7 +28,6 @@ class a_star(Node):
 
     def __init__(self):
         super().__init__('a_star')
-        print('init_a_star')
         # 로직 1. publisher, subscriber 만들기
         self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
@@ -132,8 +132,6 @@ class a_star(Node):
                 start_grid_cell = self.pose_to_grid_cell(x, y)
                 print('start_grid_cell[0] : ', start_grid_cell[0])
                 print('start_grid_cell[1] : ', start_grid_cell[1])
-                self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
-                self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
 
                 
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
@@ -141,7 +139,10 @@ class a_star(Node):
                 print(self.grid[start_grid_cell[0]][start_grid_cell[1]], self.grid[self.goal[0]][self.goal[1]])
                 if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
                     print('dijkstra')
-                    self.dijkstra(start_grid_cell)
+                    self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+                    self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+                    # self.dijkstra(start_grid_cell)
+                    self.A_star_dong(start_grid_cell)
 
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
@@ -190,7 +191,46 @@ class a_star(Node):
                 break
 
         print('finalpath',self.final_path)
+    
+    def A_star_dong(self, start):
+        # [F, G, x, y]
+        openlist = []
+        found = False
+        heappush(openlist, [0, 0, start[0], start[1]])
 
+        while openlist:
+            current = heappop(openlist)
+            
+            if current[2] == self.goal[0] and current[3] == self.goal[1]:
+                found = True
+                break
+            
+            if self.cost[current[2]][current[3]] < current[1]:
+                continue
+
+            self.cost[current[2]][current[3]] = current[1]
+
+            for i in range(8):
+                nx = current[2] + self.dx[i]
+                ny = current[3] + self.dy[i]
+                if 0 <= nx < self.GRIDSIZE and 0 <= ny < self.GRIDSIZE and self.grid[nx][ny] == 0:
+                    h = sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))
+                    g = current[1] + self.dCost[i]
+                    f = g + h
+                    if f < self.cost[nx][ny]:
+                        heappush(openlist, [f, g, nx, ny])
+                        self.path[nx][ny] = [current[2], current[3]]
+
+        node = [self.goal[0], self.goal[1]]
+        while found:
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
+                break
+
+        print('finalpath',self.final_path)
+ 
 
 def main(args=None):
     rclpy.init(args=args)
