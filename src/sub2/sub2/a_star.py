@@ -46,8 +46,8 @@ class a_star(Node):
         self.map_size_x = 350
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 + 3.75
-        self.map_offset_y = 8.75 - 1.25
+        self.map_offset_x = -8.75 - 8
+        self.map_offset_y = -8.75 - 4
     
         self.GRIDSIZE = 350 
  
@@ -88,10 +88,10 @@ class a_star(Node):
         grid cell이 (350,350)라면 맵의 제일 끝 좌측 상단에 위치하게 된다. 따라서 pose로 변환하게 되면 맵의 좌측 상단인 (0.75,6.25)가 된다.
         '''
 
-        x = (grid_cell[0] * self.map_resolution) + self.map_offest_x
-        y = (grid_cell[1] * self.map_resolution) + self.map_offest_y 
+        x = (grid_cell[0] * self.map_resolution) + self.map_offset_x
+        y = (grid_cell[1] * self.map_resolution) + self.map_offset_y 
 
-        return [x,y]
+        return [x, y]
 
 
     def odom_callback(self,msg):
@@ -153,7 +153,7 @@ class a_star(Node):
                     tmp_pose.pose.orientation.w = 1.0
                     self.global_path_msg.poses.append(tmp_pose)
                 
-                if len(self.final_path)!=0 :
+                if len(self.final_path) !=0 :
                     self.a_star_pub.publish(self.global_path_msg)
 
     def dijkstra(self, start):
@@ -163,7 +163,7 @@ class a_star(Node):
         found = False
         while Q:
             current = Q.popleft()
-            
+
             if current == self.goal:
                 found = True
                 break
