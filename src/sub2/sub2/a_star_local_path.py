@@ -35,8 +35,8 @@ class astarLocalpath(Node):
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period=0.05 
         self.timer = self.create_timer(time_period, self.timer_callback)
-        self.local_path_size=30 
-        self.count=0
+        self.local_path_size = 15
+        self.count = 0
 
 
     def listener_callback(self,msg):

@@ -143,7 +143,7 @@ class followTheCarrot(Node):
                     out_rad_vel=
 
                     '''             
-                    out_vel = 0.7
+                    out_vel = 0.5
                     out_rad_vel = theta
 
                     self.cmd_msg.linear.x = out_vel

@@ -5,13 +5,17 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
-from math import inf, pi,cos,sin, sqrt
+
 from collections import deque
 from queue import PriorityQueue
 from sub2.grid_node import grid_node
 import time
 import heapq
 from heapq import heappush, heappop
+
+from math import inf, pi, cos, sin, sqrt
+
+
 # a_star 노드는  OccupancyGrid map을 받아 grid map 기반 최단경로 탐색 알고리즘을 통해 로봇이 목적지까지 가는 경로를 생성하는 노드입니다.
 # 로봇의 위치(/pose), 맵(/map), 목표 위치(/goal_pose)를 받아서 전역경로(/global_path)를 만들어 줍니다. 
 # goal_pose는 rviz2에서 2D Goal Pose 버튼을 누르고 위치를 찍으면 메시지가 publish 됩니다. 
@@ -30,7 +34,7 @@ from heapq import heappush, heappop
 class a_star(Node):
 
     def __init__(self):
-        super().__init__('a_Star')
+        super().__init__('a_star')
         # 로직 1. publisher, subscriber 만들기
         self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
@@ -109,8 +113,8 @@ class a_star(Node):
         
 
     def goal_callback(self, msg):
-        
-        if msg.header.frame_id=='map':
+        print(msg)
+        if msg.header.frame_id == 'map':
             '''
             로직 6. goal_pose 메시지 수신하여 목표 위치 설정
             '''             
@@ -121,8 +125,8 @@ class a_star(Node):
             goal_y = msg.pose.position.y
             goal_cell = self.pose_to_grid_cell(goal_x, goal_y)
             self.goal = goal_cell
-            if self.is_map == True and self.is_odom == True  :
-                if self.is_grid_update == False :
+            if self.is_map == True and self.is_odom == True:
+                if self.is_grid_update == False:
                     self.grid_update()
 
         
@@ -137,8 +141,6 @@ class a_star(Node):
                 start_grid_cell = self.pose_to_grid_cell(x, y)
                 print('start_grid_cell[0] : ', start_grid_cell[0])
                 print('start_grid_cell[1] : ', start_grid_cell[1])
-                self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
-                self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
 
                 print('start_grid_cell[0] : ', start_grid_cell[0])
                 print('start_grid_cell[1] : ', start_grid_cell[1])
@@ -147,7 +149,10 @@ class a_star(Node):
                 print(self.grid[start_grid_cell[0]][start_grid_cell[1]], self.grid[self.goal[0]][self.goal[1]])
                 if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
                     print('dijkstra')
-                    self.dijkstra(start_grid_cell)
+                    self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+                    self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+                    # self.dijkstra(start_grid_cell)
+                    self.A_star_dong(start_grid_cell)
 
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
@@ -163,6 +168,42 @@ class a_star(Node):
                 if len(self.final_path) !=0 :
                     self.a_star_pub.publish(self.global_path_msg)
 
+    def dijkstra(self, start):
+        start_time = time.time()
+        Q = deque()
+        Q.append(start)
+        self.cost[start[0]][start[1]] = 1
+        found = False
+        '''
+        로직 7. grid 기반 최단경로 탐색
+        '''       
+        while Q:
+            current = Q.popleft()
+
+            if current[0] == self.goal[0] and current[1] == self.goal[1]:
+                found = True
+                break
+
+            for i in range(8):
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                        if self.grid[next[0]][next[1]] == 0:
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i] :
+                                Q.append(next)
+                                self.path[next[0]][next[1]] = [current[0], current[1]]
+                                self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+
+        node = [self.goal[0], self.goal[1]]
+        while found:
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
+                break
+
+        print('finalpath',self.final_path)
+        
+    # 담영
     def A_star_dam(self, start):
 
         # ######################################### 다익스트라 ################################################
@@ -243,10 +284,96 @@ class a_star(Node):
             self.final_path.append(nextNode)
             node = self.path[nextNode[0]][nextNode[1]]
         print('cnt : ', cnt)
+        print('self.final_path : ', self.final_path)
         print("time :", time.time() - start_time)
 
     def heuristic_dam(self, x, y) :
         return int(sqrt(pow(self.goal[0] - x, 2) + pow(self.goal[1] - y, 2)))
+
+    # 다은
+    def A_star_daeun(self, start):
+        start_time = time.time()
+        def heuristic(a, b=self.goal):
+            x1, y1 = a
+            x2, y2 = b
+            euclidean = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2))
+            return 2 * int(euclidean)
+
+        found = False
+        openList = []
+        closeList = []
+        heapq.heappush(openList, (1+heuristic(start), start))
+        while openList:
+            current_f, current = heapq.heappop(openList)
+            closeList.append(current)
+
+            if current[0] == self.goal[0] and current[1] == self.goal[1]:
+                found = True
+                break
+
+            for i in range(8):
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if next in closeList:
+                    continue
+
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                    if self.grid[next[0]][next[1]] == 0:
+                        if self.cost[current[0]][current[1]] + heuristic(current) > self.cost[next[0]][next[1]] + heuristic(next):
+                            self.path[next[0]][next[1]] = [current[0], current[1]]
+                            self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                            heapq.heappush(openList, (self.cost[next[0]][next[1]] + heuristic(next, self.goal), next))
+
+        node = [self.goal[0], self.goal[1]]
+        while found:
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
+                break
+        print('finalpath',self.final_path)
+        print("time :", time.time() - start_time) 
+
+    # 동윤
+    def A_star_dong(self, start):
+        # [F, G, x, y]
+        start_time = time.time()
+        openlist = []
+        found = False
+        heappush(openlist, [0, 0, start[0], start[1]])
+
+        while openlist:
+            current = heappop(openlist)
+            
+            if current[2] == self.goal[0] and current[3] == self.goal[1]:
+                found = True
+                break
+            
+            if self.cost[current[2]][current[3]] < current[1]:
+                continue
+
+            self.cost[current[2]][current[3]] = current[1]
+
+            for i in range(8):
+                nx = current[2] + self.dx[i]
+                ny = current[3] + self.dy[i]
+                if 0 <= nx < self.GRIDSIZE and 0 <= ny < self.GRIDSIZE and self.grid[nx][ny] == 0:
+                    h = sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))
+                    g = current[1] + self.dCost[i]
+                    f = g + h
+                    if f < self.cost[nx][ny]:
+                        heappush(openlist, [f, g, nx, ny])
+                        self.path[nx][ny] = [current[2], current[3]]
+
+        node = [self.goal[0], self.goal[1]]
+        while found:
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
+                break
+
+        print('finalpath',self.final_path)
+        print("time :", time.time() - start_time) 
 
 def main(args=None):
     rclpy.init(args=args)
