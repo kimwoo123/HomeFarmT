@@ -34,8 +34,8 @@ class loadMap(Node):
         self.map_size_x = 350 
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 + 3.75
-        self.map_offset_y = 8.75 - 1.25
+        self.map_offset_x = -8.75 - 8
+        self.map_offset_y = -8.75 - 4
         self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
         grid = np.array(self.map_data)
         grid = np.reshape(grid, (350, 350))
@@ -49,13 +49,6 @@ class loadMap(Node):
         m.origin = Pose()
         m.origin.position.x = self.map_offset_x
         m.origin.position.y = self.map_offset_y
-
-        q = Quaternion.from_euler(0, 0, -pi / 2)
-
-        m.origin.orientation.x = q.x
-        m.origin.orientation.y = q.y
-        m.origin.orientation.z = q.z
-        m.origin.orientation.w = q.w
 
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data

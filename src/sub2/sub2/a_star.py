@@ -46,31 +46,23 @@ class a_star(Node):
         self.map_size_x = 350
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8 - 8.75
-        self.map_offset_y = -4 - 8.75
+        self.map_offset_x = -8.75 + 3.75
+        self.map_offset_y = 8.75 - 1.25
     
-        self.GRIDSIZE=350 
-<<<<<<< HEAD
+        self.GRIDSIZE = 350 
  
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
        
-=======
-
-        self.dx = [-1,0,0,1,-1,-1,1,1]
-        self.dy = [0,1,-1,0,-1,1,-1,1]
-        self.dCost = [1,1,1,1,1.414,1.414,1.414,1.414]
-
->>>>>>> 9110b21b6978ac437d16e9991963396adf54cdcd
 
     def grid_update(self):
         self.is_grid_update = True
         '''
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
-        map_to_grid = np.array(self.map_msg)
-        self.grid = np.reshape(map_to_grid, (350, 350))
+        map_to_grid = np.array(self.map_msg.data)
+        self.grid = map_to_grid.reshape(350, 350)
 
 
     def pose_to_grid_cell(self, x, y):
@@ -79,8 +71,10 @@ class a_star(Node):
         (테스트) pose가 (-8,-4)라면 맵의 중앙에 위치하게 된다. 따라서 map_point_x,y 는 map size의 절반인 (175,175)가 된다.
         pose가 (-16.75, -12.75) 라면 맵의 시작점에 위치하게 된다. 따라서 map_point_x,y는 (0,0)이 된다.
         '''
+        print(x, y)
         map_point_x = int((x - self.map_offset_x) / self.map_resolution)
-        map_point_y = int((y - self.map_offset_y) / self.map_resolution)
+        map_point_y = int((y + self.map_offset_y) / self.map_resolution)
+        print(map_point_x, map_point_y)
 
         return map_point_x, map_point_y
 
@@ -100,12 +94,12 @@ class a_star(Node):
 
 
     def odom_callback(self,msg):
-        self.is_odom=True
+        self.is_odom = True
         self.odom_msg=msg
 
 
     def map_callback(self,msg):
-        self.is_map=True
+        self.is_map = True
         self.map_msg = msg
         
 
@@ -119,7 +113,6 @@ class a_star(Node):
             goal_y = msg.pose.position.y
             goal_cell = self.pose_to_grid_cell(goal_x, goal_y)
             self.goal = goal_cell
-            print(msg)
 
             if self.is_map == True and self.is_odom == True:
                 if self.is_grid_update == False:
@@ -138,6 +131,7 @@ class a_star(Node):
                 
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
                 # 시작지, 목적지가 탐색가능한 영역이고, 시작지와 목적지가 같지 않으면 경로탐색을 합니다.
+                print(self.grid[start_grid_cell[0]][start_grid_cell[1]], self.grid[self.goal[0]][self.goal[1]])
                 if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
                     self.dijkstra(start_grid_cell)
 
@@ -180,6 +174,7 @@ class a_star(Node):
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
 
         node = [self.goal[0], self.goal[1]]
+        print(found, node)
         while found:
             self.final_path.append(node)
             node = [self.path[node[0]], self.path[node[1]]]
