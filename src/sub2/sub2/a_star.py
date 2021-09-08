@@ -133,8 +133,11 @@ class a_star(Node):
 
                 x = self.odom_msg.pose.pose.position.x
                 y = self.odom_msg.pose.pose.position.y
+                print('x : ', x)
+                print('y : ', y)
                 start_grid_cell = self.pose_to_grid_cell(x, y)
-
+                print('start_grid_cell[0] : ', start_grid_cell[0])
+                print('start_grid_cell[1] : ', start_grid_cell[1])
                 self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
                 self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
 
@@ -145,6 +148,7 @@ class a_star(Node):
                 print('self.grid[self.goal[0]][self.goal[1]] : ', self.grid[self.goal[0]][self.goal[1]])
                 print('start_grid_cell : ', start_grid_cell)
                 print('self.goal : ', self.goal)
+                print(start_grid_cell)
                 if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
                     print('dijkstra')
                     self.dijkstra(start_grid_cell)

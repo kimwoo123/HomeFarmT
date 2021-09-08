@@ -36,7 +36,7 @@ class loadMap(Node):
         self.map_resolution = 0.05
         self.map_offset_x = -8 - 8.75 #-8 - 8.75
         self.map_offset_y = -4 - 8.75 # -4 - 8.75
-        self.map_data = [0 for i in range(self.map_size_x*self.map_size_y)]
+        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
         grid=np.array(self.map_data)
         grid=np.reshape(grid,(350, 350))
 
@@ -96,8 +96,9 @@ class loadMap(Node):
                                 if  0 <= x + box_x < 350 and 0 <= y + box_y < 350 and grid[x + box_x][y + box_y] < 80 :
                                     grid[x + box_x][y + box_y] = 127
         
-        np_map_data = grid.reshape(1,350 * 350) 
+        np_map_data = grid.reshape(1, 350 * 350)
         list_map_data = np_map_data.tolist()
+
 
         ## 로직2를 완성하고 주석을 해제 시켜주세요.
         ## self.f.close()

@@ -74,7 +74,6 @@ class astarLocalpath(Node):
                 if distance < min_dis :
                     min_dis=
                     current_waypoint=
-
             '''           
             
             
