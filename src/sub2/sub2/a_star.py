@@ -31,7 +31,7 @@ class a_star(Node):
         self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
         self.goal_sub = self.create_subscription(PoseStamped, 'goal_pose', self.goal_callback, 1)
-        self.a_star_pub= self.create_publisher(Path, 'global_path', 1)
+        self.a_star_pub = self.create_publisher(Path, 'global_path', 1)
         
         self.map_msg=OccupancyGrid()
         self.odom_msg=Odometry()
@@ -63,7 +63,7 @@ class a_star(Node):
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
         map_to_grid = np.array(self.map_msg.data)
-        self.grid = map_to_grid.reshape(350, 350)
+        self.grid = map_to_grid.reshape(350, 350, order = 'F')
 
 
     def pose_to_grid_cell(self, x, y):
@@ -161,31 +161,34 @@ class a_star(Node):
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
         found = False
+        '''
+        로직 7. grid 기반 최단경로 탐색
+        '''       
         while Q:
-            current = Q.popleft()
-
-            if current == self.goal:
+            if Q[0] == self.goal:
                 found = True
                 break
-            
-            for i in range(8) :
+            current = Q.popleft()
+
+            for i in range(8):
                 next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                    if self.grid[next[0]][next[1]] <= 50 :
-                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                        if self.grid[next[0]][next[1]] <= 55 :
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i] :
                                 Q.append(next)
                                 self.path[next[0]][next[1]] = current
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
 
-        node = [self.goal[0], self.goal[1]]
-        print(found, node)
-        while found:
-            self.final_path.append(node)
-            node = [self.path[node[0]], self.path[node[1]]]
-            
-            if node == start:
-                self.final_path.append(node)
-                break
+        print('시작', start, '끝', self.goal)
+        node = self.path[self.goal[0]][self.goal[1]]
+        while node != start:
+            nextNode = node
+            self.final_path.append([nextNode[0], nextNode[1]])
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('finalpath',self.final_path)
+
+        
+
 
 
 def main(args=None):
