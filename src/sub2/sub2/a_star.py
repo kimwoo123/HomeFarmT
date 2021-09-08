@@ -28,9 +28,9 @@ class a_star(Node):
     def __init__(self):
         super().__init__('a_Star')
         # 로직 1. publisher, subscriber 만들기
-        self.map_sub = self.create_subscription(OccupancyGrid,'map',self.map_callback,1)
-        self.odom_sub = self.create_subscription(Odometry,'odom',self.odom_callback,1)
-        self.goal_sub = self.create_subscription(PoseStamped,'goal_pose',self.goal_callback,1)
+        self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
+        self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
+        self.goal_sub = self.create_subscription(PoseStamped, 'goal_pose', self.goal_callback, 1)
         self.a_star_pub= self.create_publisher(Path, 'global_path', 1)
         
         self.map_msg=OccupancyGrid()
@@ -49,19 +49,20 @@ class a_star(Node):
         self.map_offset_x = -8 - 8.75
         self.map_offset_y = -4 - 8.75
     
-        self.GRIDSIZE = 350 
+
+        self.GRIDSIZE=350 
 
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
 
+
+
         print(self.grid_cell_to_pose((150, 100)))
     def grid_update(self):
         self.is_grid_update = True
         '''
-        로직 3. 맵 데이터 행렬로 바꾸기
-        map_to_grid=
-        self.grid=
+            로직 3. 맵 데이터 행렬로 바꾸기
         '''
         map_to_grid = np.array(self.map_msg.data)
         self.grid = np.reshape(map_to_grid,(350, 350))
@@ -82,18 +83,16 @@ class a_star(Node):
 
 
     def grid_cell_to_pose(self,grid_cell):
-
-        x = grid_cell[0] * self.map_resolution + self.map_offset_x
-        y = grid_cell[1] * self.map_resolution + self.map_offset_y
+        
         '''
         로직 5. map의 grid cell을 위치(x,y)로 변환
         (테스트) grid cell이 (175,175)라면 맵의 중앙에 위치하게 된다. 따라서 pose로 변환하게 되면 맵의 중앙인 (-8,-4)가 된다.
         grid cell이 (350,350)라면 맵의 제일 끝 좌측 상단에 위치하게 된다. 따라서 pose로 변환하게 되면 맵의 좌측 상단인 (0.75,6.25)가 된다.
-
-        x=?
-        y=?
-
         '''
+
+        x = (grid_cell[0] * self.map_resolution) + self.map_offest_x
+        y = (grid_cell[1] * self.map_resolution) + self.map_offest_y 
+
         return [x,y]
 
 
@@ -104,18 +103,14 @@ class a_star(Node):
 
     def map_callback(self,msg):
         self.is_map=True
-        self.map_msg=msg
+        self.map_msg = msg
         
 
-    def goal_callback(self,msg):
+    def goal_callback(self, msg):
         
         if msg.header.frame_id=='map':
             '''
             로직 6. goal_pose 메시지 수신하여 목표 위치 설정
-            goal_x=
-            goal_y=
-            goal_cell=
-            self.goal = 
             '''             
             # print(msg)
             print(msg.pose.position.x)
@@ -172,31 +167,6 @@ class a_star(Node):
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
         found = False
-        '''
-        로직 7. grid 기반 최단경로 탐색
-        
-        while ??:
-            if ??:
-                ??
-
-            current =??
-
-            for i in range(8):
-                next = ??
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE:
-                        if self.grid[next[0]][next[1]] < 50:
-                            if ??:
-                                Q.??
-                                self.path[next[0]][next[1]] = ???
-                                self.cost[next[0]][next[1]] = ???
-
-        node = ??
-        while ?? 
-            nextNode = ??
-            self.final_path.??
-            node = ??
-        '''
-
         while Q :
             current = Q.popleft()
             if found :

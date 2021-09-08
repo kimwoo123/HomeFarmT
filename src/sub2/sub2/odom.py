@@ -103,16 +103,7 @@ class odom(Node):
             # 로봇의 선속도, 각속도를 저장하는 변수, 시뮬레이터에서 주는 각 속도는 방향이 반대이므로 (-)를 붙여줍니다.
             linear_x = msg.twist.linear.x
             angular_z = -msg.twist.angular.z
-            '''
-            로직 3. 로봇 위치 추정
-            (테스트) linear_x = 1, self.theta = 1.5707(rad), self.period = 1 일 때
-            self.x=0, self.y=1 이 나와야 합니다. 로봇의 헤딩이 90도 돌아가 있는
-            상태에서 선속도를 가진다는 것은 x축방향이 아니라 y축방향으로 이동한다는 뜻입니다. 
-            #절대위치 사용
-            self.x+=
-            self.y+=
-            self.theta+=
-            '''            
+
             self.x += linear_x * cos(self.theta) * self.period
             self.y += linear_x * sin(self.theta) * self.period
             # self.theta += angular_z * self.period  
@@ -120,14 +111,11 @@ class odom(Node):
             self.base_link_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             self.laser_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
             
-            '''
-            로직 4. 추정한 로봇 위치를 메시지에 담아 publish, broadcast
-            '''
             q = Quaternion.from_euler(0, 0, self.theta)
             
             self.base_link_transform.transform.translation.x = self.x 
             self.base_link_transform.transform.translation.y = self.y
-            self.base_link_transform.transform.rotation.x = q.x
+            self.base_link_transform.transform.rotation.x = q.x 
             self.base_link_transform.transform.rotation.y = q.y
             self.base_link_transform.transform.rotation.z = q.z
             self.base_link_transform.transform.rotation.w = q.w
