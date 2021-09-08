@@ -55,8 +55,8 @@ class loadMap(Node):
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data
         
-        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
-        self.f = open(full_path, 'r')
+        f = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
+        self.f = open(f, 'r')
 
         line = self.f.readlines()
         line_data = line[0].split()
