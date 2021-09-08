@@ -163,7 +163,8 @@ class a_star(Node):
         found = False
         while Q:
             current = Q.popleft()
-            if found:
+            
+            if current == self.goal:
                 found = True
                 break
             
