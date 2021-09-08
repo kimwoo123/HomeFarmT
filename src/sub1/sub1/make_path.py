@@ -57,7 +57,7 @@ class makePath(Node):
             #x,y 는 odom 메시지에서 받은 로봇의 현재 위치를 나타내는 변수입니다.
             x=msg.pose.pose.position.x
             y=msg.pose.pose.position.y
-   
+
             # 로직 4. 콜백함수에서 이전 위치와 현재 위치의 거리 계산
             distance = sqrt(pow(x - self.prev_x, 2) + pow(y - self.prev_y, 2))
             

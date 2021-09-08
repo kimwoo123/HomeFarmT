@@ -29,18 +29,20 @@ class loadMap(Node):
         # 제공한 맵 데이터의 파라미터입니다. size_x,y는 x,y 방향으로 grid의 개수이고, resolution은 grid 하나당 0.05m라는 것을 의미합니다.
         # offset_x,y 의 -8, -4 는 맵 데이터가 기준 좌표계(map)로 부터 떨어진 거리를 의미합니다. 
         # 각 항에 -8.75를 뺀이유는 ros에서 occupancygrid의 offset이라는 데이터는 맵의 중앙에서 기준좌표계까지 거리가 아니라 맵의 우측하단에서 부터 기준좌표계까지의 거리를 의미합니다.
-        # 따라서 (350 * 0.05) / 2를 해준 값을 빼줍니다.
+        # 따라서 (350*0.05)/2를 해준 값을 빼줍니다.
         self.map_msg = OccupancyGrid()
         self.map_size_x = 350 
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 - 8
-        self.map_offset_y = -8.75 - 4
-        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
-        grid = np.array(self.map_data)
-        grid = np.reshape(grid, (350, 350))
 
-        self.map_msg.header.frame_id = "map"
+        self.map_offset_x = -8 - 8.75 #-8 - 8.75
+        self.map_offset_y = -4 - 8.75 # -4 - 8.75
+        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
+        grid=np.array(self.map_data)
+        grid=np.reshape(grid,(350, 350))
+
+        self.map_msg.header.frame_id="map"
+
 
         m = MapMetaData()
         m.resolution = self.map_resolution
@@ -55,19 +57,30 @@ class loadMap(Node):
         
         '''
         로직 2. 맵 데이터 읽고, 2차원 행렬로 변환
-        '''
-        full_path = 'C:\\Users\\multicampus\\Desktop\\project_ws\\src\\sub2\\map\\map.txt'
-        self.file_map = open(full_path, 'r')
+
+        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt' 
+        self.f = open(full_path, 'r')
         
         line = self.file_map.readlines()
         line_data = list(map(int, line[0].split()))
         
-        for num, data in enumerate(line_data) :
-            self.map_data[num] = data
-   
-        map_to_grid = np.array(self.map_data)
-        grid = np.reshape(map_to_grid, (350, 350))
+        for num,data in enumerate(line_data) :
+            self.map_data[num]=
 
+        map_to_grid=
+        grid=
+        '''
+        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
+        self.f = open(full_path, 'r')
+
+        line = self.f.readlines()
+        line_data = line[0].split()
+
+        for num,data in enumerate(line_data) :
+            self.map_data[num]=int(data)
+
+        map_to_grid = np.array(self.map_data)
+        grid = np.reshape(map_to_grid,(350, 350))
         for y in range(350):
             for x in range(350):
                 if grid[x][y] == 100 :

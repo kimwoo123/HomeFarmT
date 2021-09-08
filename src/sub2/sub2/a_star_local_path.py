@@ -28,7 +28,7 @@ class astarLocalpath(Node):
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
-       
+
         self.global_path_msg=Path()
 
 
@@ -74,7 +74,6 @@ class astarLocalpath(Node):
                 if distance < min_dis :
                     min_dis=
                     current_waypoint=
-
             '''           
             
             
@@ -89,7 +88,7 @@ class astarLocalpath(Node):
                 else :
 
                     
-                              
+
             '''           
 
             self.local_path_pub.publish(local_path_msg)
