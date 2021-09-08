@@ -32,7 +32,7 @@ class a_star(Node):
         self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
         self.goal_sub = self.create_subscription(PoseStamped, 'goal_pose', self.goal_callback, 1)
-        self.a_star_pub= self.create_publisher(Path, 'global_path', 1)
+        self.a_star_pub = self.create_publisher(Path, 'global_path', 1)
         
         self.map_msg=OccupancyGrid()
         self.odom_msg=Odometry()
@@ -51,11 +51,11 @@ class a_star(Node):
         self.map_offset_y = -8.75 - 4
     
         self.GRIDSIZE = 350 
- 
+
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-       
+
 
         print(self.grid_cell_to_pose((150, 100)))
     def grid_update(self):
@@ -64,7 +64,7 @@ class a_star(Node):
             로직 3. 맵 데이터 행렬로 바꾸기
         '''
         map_to_grid = np.array(self.map_msg.data)
-        self.grid = map_to_grid.reshape(350, 350, order='F')
+        self.grid = map_to_grid.reshape(350, 350, order = 'F')
 
 
     def pose_to_grid_cell(self, x, y):
@@ -162,31 +162,34 @@ class a_star(Node):
         Q.append(start)
         self.cost[start[0]][start[1]] = 1
         found = False
+        '''
+        로직 7. grid 기반 최단경로 탐색
+        '''       
         while Q:
             current = Q.popleft()
 
-            if current == self.goal:
+            if current[0] == self.goal[0] and current[1] == self.goal[1]:
                 found = True
                 break
-            
+
             for i in range(8):
                 next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE:
-                    if self.grid[next[0]][next[1]] <= 50 :
-                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                if 0 <= next[0] < self.GRIDSIZE and 0 <= next[1] < self.GRIDSIZE:
+                        if self.grid[next[0]][next[1]] <= 75 :
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i] :
                                 Q.append(next)
                                 self.path[next[0]][next[1]] = [current[0], current[1]]
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
 
         node = [self.goal[0], self.goal[1]]
-        print(found, node)
         while found:
-            self.final_path.append(node)
-            node = [self.path[node[0]], self.path[node[1]]]
-            
-            if node == start:
-                self.final_path.append(node)
+            self.final_path.append([node[0], node[1]])
+            node = self.path[node[0]][node[1]]
+
+            if node[0] == start[0] and node[1] == start[1]:
                 break
+
+        print('finalpath',self.final_path)
 
 
 def main(args=None):
