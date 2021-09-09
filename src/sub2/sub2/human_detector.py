@@ -34,7 +34,7 @@ def non_maximum_supression(bboxes, threshold=0.5):
     
     # 로직 2 : new_bboxes 리스트 정의 후 첫 bbox save
     new_bboxes.append(bboxes[0])
-    
+
     # 로직 3 : 기존 bbox 리스트에 첫 bbox delete
     bboxes.pop(0)
 
@@ -51,14 +51,14 @@ def non_maximum_supression(bboxes, threshold=0.5):
             y1_br = bbox[1] + bbox[3]
             y2_br = new_bbox[1] + new_bbox[3]
             
-            """
+            
             # 로직 4 : 두 bbox의 겹치는 영역을 구해서, 영역이 안 겹칠때 new_bbox로 save
-            x_overlap = 
-            y_overlap = 
+            x_overlap = abs(min(x1_br, x2_br) - max(x1_tl, x2_tl))
+            y_overlap = abs(min(y1_br, y2_br) - max(y1_tl, y2_tl))
             overlap_area = x_overlap * y_overlap
             
-            area_1 = 
-            area_2 = 
+            area_1 = bbox[2] * bbox[3]
+            area_2 = new_bbox[2] * new_bbox[3]
             
             total_area = area_1 + area_2 - overlap_area
             overlap_area = overlap_area / float(total_area)
@@ -66,8 +66,6 @@ def non_maximum_supression(bboxes, threshold=0.5):
             if overlap_area < threshold:
 
                 new_bboxes.append(bbox)
-
-            """
 
     return new_bboxes
 
@@ -121,12 +119,11 @@ class HumanDetector(Node):
             rects = non_maximum_supression(rects_temp)
 
             """
-    
             # 로직 5 : bbox를 ros msg 파일에 write
 
             ## 각 bbox의 center, width, height의 꼭지점들을 리스트에 넣어 놓고
             ## 메세지 내 x,y,w,h에 채워넣는 방식으로 하시면 됩니다.
-           
+            """
             for (x,y,w,h) in rects:
     
                 xl.append(x)
@@ -136,19 +133,20 @@ class HumanDetector(Node):
 
             if self.able_to_pub:
 
-                self.bbox_msg.num_bbox = 
+                self.bbox_msg.num_bbox = len(rects)
 
-                obj_list = 
+                obj_list = [0] * len(rects)
 
-                self.bbox_msg.idx_bbox = 
+                self.bbox_msg.idx_bbox = obj_list
 
-                self.bbox_msg.x = 
-                self.bbox_msg.y = 
-                self.bbox_msg.w = 
-                self.bbox_msg.h = 
+                self.bbox_msg.x = np.around(np.array(xl) + np.array(wl) / 2.).astype(np.int32).tolist()
+                self.bbox_msg.y = np.around(np.array(wl) + np.array(hl) / 2.).astype(np.int32).tolist()
 
-            """
+                self.bbox_msg.w = np.array(wl, dtype=np.int32).tolist()
+                self.bbox_msg.h = np.array(hl, dtype=np.int32).tolist()
 
+            
+            # 로직 6
             for (x,y,w,h) in rects:
 
                 cv2.rectangle(img_bgr, (x,y),(x+w,y+h),(0,255,255), 2)
