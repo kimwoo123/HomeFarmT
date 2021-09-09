@@ -109,8 +109,6 @@ class IMGParser(Node):
         for cnt in contours:
             xy_min = np.min(cnt, axis=0)
             xy_length = np.max(cnt, axis=0) - xy_min
-            print('x_min, y_min, w, h:\t', xy_min[0][0], xy_min[0][1], xy_length[0][0], xy_length[0][1])
-            # print('test:\t', xy_max-xy_min)
             x, y, w, h = xy_min[0][0], xy_min[0][1], xy_length[0][0], xy_length[0][1]
 
             cv2.rectangle(self.img_bgr, (x,y),(x+w,y+h),(0,255,255), 2)
