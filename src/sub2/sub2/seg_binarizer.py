@@ -55,8 +55,8 @@ class IMGParser(Node):
         upper_wal = (27, 256, 251) # (25, 22, 19)
         lower_bp = (99, 211, 241) # (98, 90, 77) (104, 216, 246)
         upper_bp = (109, 221, 251) # (98, 90, 77)
-        lower_rc = (99, 101, 98) # (39, 35, 25) (104, 106, 103)
-        upper_rc = (109, 111, 108) # (39, 35, 25)
+        lower_rc = (99, 211, 208) # (39, 35, 25) (104, 216, 213)
+        upper_rc = (109, 221, 218) # (39, 35, 25)
         lower_key = (16, 13, 11) # (21, 18, 16)
         upper_key = (26, 23, 21) # (21, 18, 16)
 
@@ -108,10 +108,10 @@ class IMGParser(Node):
         """
         for cnt in contours:
             xy_min = np.min(cnt, axis=0)
-            xy_max = np.max(cnt, axis=0)-np.min(cnt, axis=0)
-            print('x_min, y_min:\t', xy_min[0][0], xy_min[0][1])
-            print('x_max, y_max:\t', xy_max[0][0], xy_max[0][1])
-            x, y, w, h = xy_min[0][0], xy_min[0][1], (xy_max-xy_min)[0][0], (xy_max-xy_min)[0][1]
+            xy_length = np.max(cnt, axis=0) - xy_min
+            print('x_min, y_min, w, h:\t', xy_min[0][0], xy_min[0][1], xy_length[0][0], xy_length[0][1])
+            # print('test:\t', xy_max-xy_min)
+            x, y, w, h = xy_min[0][0], xy_min[0][1], xy_length[0][0], xy_length[0][1]
 
             cv2.rectangle(self.img_bgr, (x,y),(x+w,y+h),(0,255,255), 2)
 
