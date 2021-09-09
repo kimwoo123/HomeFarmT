@@ -42,8 +42,8 @@ class odom(Node):
         self.is_calc_theta = False
         # x,y,theta는 추정한 로봇의 위치를 저장할 변수 입니다.        
         # 로봇의 초기위치를 맵 상에서 로봇의 위치와 맞춰줘야 합니다. 
-        self.x = -9.25
-        self.y = -7.75
+        self.x = -9.5 #9.3
+        self.y = -7.65  #9.75
         self.theta = 0
         # imu_offset은 초기 로봇의 orientation을 저장할 변수 입니다.
         self.imu_offset = 0
@@ -90,7 +90,8 @@ class odom(Node):
             self.theta = imu_q[2] + self.imu_offset + pi / 2
 
     
-    def listener_callback(self, msg): 
+    def listener_callback(self, msg):
+        print('linear_vel : {}  angular_vel : {}'.format(msg.twist.linear.x,-msg.twist.angular.z))        
         if self.is_status == False :
             self.is_status = True
             self.prev_time=rclpy.clock.Clock().now()
