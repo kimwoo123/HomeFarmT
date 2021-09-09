@@ -30,6 +30,7 @@ def non_maximum_supression(bboxes, threshold=0.5):
     # 로직 1 : bounding box 크기 역순으로 sort   
     bboxes = sorted(bboxes, key=lambda detections: detections[3],
             reverse=True)
+    print(bboxes)
     new_bboxes=[]
     
     # 로직 2 : new_bboxes 리스트 정의 후 첫 bbox save
@@ -79,6 +80,7 @@ class HumanDetector(Node):
         super().__init__(node_name='human_detector')
 
         # 로직 1 : 노드에 필요한 publisher, subscriber, descriptor, detector, timer 정의
+        # 카메라 이미지 수신
         self.subs_img = self.create_subscription(
             CompressedImage,
             '/image_jpeg/compressed',
@@ -89,11 +91,16 @@ class HumanDetector(Node):
         
         self.timer_period = 0.03
 
+        # 로직의 순환
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
+        # bounding box를 송신
         self.bbox_pub_ = self.create_publisher(BBox, '/bbox', 1)
 
-        self.pedes_detector = cv2.HOGDescriptor()                              
+        # Histogram Of Gradient
+        self.pedes_detector = cv2.HOGDescriptor()      
+        print(self.pedes_detector)                        
+        # Support Vector Machine
         self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
         self.able_to_pub = True
@@ -118,6 +125,7 @@ class HumanDetector(Node):
 
             # 로직 4 : non maximum supression으로 bounding box 정리
             xl, yl, wl, hl = [], [], [], []
+            # non_maximum_supression 구현하기
             rects = non_maximum_supression(rects_temp)
 
             """
@@ -126,6 +134,10 @@ class HumanDetector(Node):
 
             ## 각 bbox의 center, width, height의 꼭지점들을 리스트에 넣어 놓고
             ## 메세지 내 x,y,w,h에 채워넣는 방식으로 하시면 됩니다.
+            Non Maximum Supression를 거쳐서 나온 최종 bbox 들을 bbox .ros 메세지
+            내 데이터에 채워넣는 작업을 해야한다. bbox의 개수, 식별한 객체의
+            종류 인덱스(사람만 인지하므로 클래스 인덱스는 0만 넣으면 된다)
+            bbox의 중심과 좌우 길이를 채운다
            
             for (x,y,w,h) in rects:
     
@@ -160,6 +172,9 @@ class HumanDetector(Node):
 
         """
         로직 7 : bbox 결과 show
+        인식 결과를 창으로 띄워서 시각화
+
+         
         cv2.
         cv2.waitKey(1)
         """           
