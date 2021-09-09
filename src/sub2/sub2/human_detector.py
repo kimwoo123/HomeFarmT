@@ -53,8 +53,8 @@ def non_maximum_supression(bboxes, threshold=0.5):
             
             
             # 로직 4 : 두 bbox의 겹치는 영역을 구해서, 영역이 안 겹칠때 new_bbox로 save
-            x_overlap = abs(min(x1_br, x2_br) - max(x1_tl, x2_tl))
-            y_overlap = abs(min(y1_br, y2_br) - max(y1_tl, y2_tl))
+            x_overlap = max(min(x1_br, x2_br) - max(x1_tl, x2_tl), 0)
+            y_overlap = max(min(y1_br, y2_br) - max(y1_tl, y2_tl), 0)
             overlap_area = x_overlap * y_overlap
             
             area_1 = bbox[2] * bbox[3]
