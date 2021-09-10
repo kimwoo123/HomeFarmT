@@ -5,7 +5,7 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
-
+from sub2.grid_node import grid_node
 from collections import deque
 from queue import PriorityQueue
 import time
@@ -211,6 +211,8 @@ class a_star(Node):
         self.cost[start[0]][start[1]] = 1
         found = False
         cnt = 0
+        visited = dict()
+        visited[(start[0], start[1])] = True
         while Q : # while Q:
             current = Q.popleft()
             cnt += 1
@@ -218,12 +220,15 @@ class a_star(Node):
                 break
             for i in range(8) :
                 next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if visited.get((next[0], next[1]), False) : 
+                    continue
                 if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                    if self.grid[next[0]][next[1]] == 0 :
+                    if self.grid[next[0]][next[1]] <= 50 :
                         if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
                                 Q.append(next)
                                 self.path[next[0]][next[1]] = current
                                 self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                                visited[(next[0], next[1])] = True
                                 if next[0] == self.goal[0] and next[1] == self.goal[1]:
                                     found = True
         
@@ -235,8 +240,139 @@ class a_star(Node):
             nextNode = node
             self.final_path.append(nextNode)
             node = self.path[nextNode[0]][nextNode[1]]
-        print('cnt : ', cnt)
+        print('다익스트라 cnt : ', cnt)
+        print("time :", time.time() - start_time)
+
+        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        ####################################### A* ########################################################
+        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        start_time = time.time()
+        Q = PriorityQueue()
+        cnt = 0
+        self.cost[start[0]][start[1]] = 0
+        visited = dict()
+
+        start_node = grid_node()
+        start_node.x = start[0]
+        start_node.y = start[1]
+        start_node.cost = self.cost[start[0]][start[1]] + self.heuristic_dam(start[0], start[1])
+        Q.put(start_node)
+        found = False
+        visited[(start[0], start[1])] = True
+        while Q : # while Q:
+            current = Q.popleft()
+            cnt += 1
+            if found :
+                break
+            for i in range(8) :
+                next = grid_node()
+                next.x = current.x + self.dx[i]
+                next.y = current.y + self.dy[i]
+                if visited.get((next.x, next.y), False) :
+                    continue
+                if next.x >= 0 and next.y >= 0 and next.x < self.GRIDSIZE and next.y < self.GRIDSIZE :
+                    if self.grid[next.x][next.y] <= 50 :
+                        h = self.heuristic_dam(next.x, next.y)
+                        if self.cost[next.x][next.y] > self.cost[current.x][current.y] + self.dCost[i] :
+                            next.cost = self.cost[current.x][current.y] + self.dCost[i] + h
+                            Q.put(next)
+                            visited[(next.x, next.y)] = True
+                            self.path[next.x][next.y] = (current.x, current.y)
+                            self.cost[next.x][next.y] = self.cost[current.x][current.y] + self.dCost[i]
+                            if next.x == self.goal[0] and next.y == self.goal[1]:
+                                found = True
+        print(found)
+        if(found == False) :
+            return
+        node = self.goal
+        while node != start :
+            nextNode = node
+            self.final_path.append(nextNode)
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('우선 순위 큐 cnt : ', cnt)
+        # print('self.final_path : ', self.final_path)
+        print("time :", time.time() - start_time)
+
+
+        ################################################
+        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        start_time = time.time()
+        Q = []
+        cnt = 0
+        self.cost[start[0]][start[1]] = 0
+        heapq.heappush(Q, (self.heuristic_dam(start[0], start[1]), start[0], start[1]))
+        found = False
+
+        while Q : # while Q:
+            current = heapq.heappop(Q)
+            cnt += 1
+            if found :
+                break
+            for i in range(8) :
+                next = [current[1] + self.dx[i], current[2] + self.dy[i]]
+                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                    if self.grid[next[0]][next[1]] <= 50 :
+                        h = self.heuristic_dam(next[0], next[1])
+                        if self.cost[next[0]][next[1]] > self.cost[current[1]][current[2]] + self.dCost[i] :
+                            heapq.heappush(Q, (self.cost[current[1]][current[2]] + self.dCost[i] + h, next[0], next[1]))
+                            self.path[next[0]][next[1]] = (current[1], current[2])
+                            self.cost[next[0]][next[1]] =self.cost[current[1]][current[2]] + self.dCost[i]
+                            if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                found = True
+        print(found)
+        if(found == False) :
+            return
+        node = self.goal
+
+        while node != start :
+            nextNode = node
+            self.final_path.append(nextNode)
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('힙큐 cnt : ', cnt)
+        # print('self.final_path : ', self.final_path)
+        print("time :", time.time() - start_time)
+
+        ############################################################################################################################
+        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        start_time = time.time()
+        Q = []
+        cnt = 0
+        self.cost[start[0]][start[1]] = 0
+        heapq.heappush(Q, (self.heuristic_dam(start[0], start[1]), start[0], start[1]))
+        found = False
+        visited = dict()
+        visited[(start[0], start[1])] = True
+        while Q : # while Q:
+            current = heapq.heappop(Q)
+            cnt += 1
+            if found :
+                break
+            for i in range(8) :
+                next = (current[1] + self.dx[i], current[2] + self.dy[i])
+                if visited.get(next, False) : 
+                    continue
+                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                    if self.grid[next[0]][next[1]] <= 50 :
+                        h = self.heuristic_dam(next[0], next[1])
+                        if self.cost[next[0]][next[1]] > self.cost[current[1]][current[2]] + self.dCost[i] : 
+                            visited[(next[0], next[1])] = True
+                            self.path[next[0]][next[1]] = (current[1], current[2])
+                            self.cost[next[0]][next[1]] =self.cost[current[1]][current[2]] + self.dCost[i]
+                            heapq.heappush(Q, (self.cost[next[0]][next[1]] + h, next[0], next[1]))
+                            if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                found = True
         
+        print(cnt)
+        print(found)
+        if(found == False) :
+            return
+        node = self.goal
+        while node != start :
+            nextNode = node
+            self.final_path.append(nextNode)
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('방문체크 cnt : ', cnt)
+        # print('self.final_path : ', self.final_path)
         print("time :", time.time() - start_time)
 
         self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
@@ -330,6 +466,7 @@ class a_star(Node):
                 break
         print('finalpath',self.final_path)
         print("time :", time.time() - start_time) 
+
 
     # 동윤
     def A_star_dong(self, start):
