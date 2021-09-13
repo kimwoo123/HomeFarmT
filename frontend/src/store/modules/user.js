@@ -24,6 +24,11 @@ const actions = {
         const url = '/api/v1/user'
         const body = payload
         return axios.post(url, body)
+    },
+    requestUserInfo({ commit }, userId) {
+        commit
+        const url = `api/v1/user/${userId}`
+        return axios.get(url)
     }
 }
 
