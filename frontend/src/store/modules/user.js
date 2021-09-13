@@ -18,6 +18,12 @@ const actions = {
         const url = 'api/v1/login'
         const body = credentials
         return axios.post(url, body)
+    },
+    requestSignup({ state }, payload) {
+        state
+        const url = '/api/v1/user'
+        const body = payload
+        return axios.post(url, body)
     }
 }
 

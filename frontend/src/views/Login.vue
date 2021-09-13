@@ -1,9 +1,18 @@
 <template>
-  <div class="login-wrapper">
+  <div class="login-container">
     <h1>로그인</h1>
-    <input type="email" :value="email" class="login-email-input">
-    <input type="password" :value="password" class="login-password-input">
-    <button class="login-button">Login</button>
+    
+    <div class="email-form">
+      <p style="width: 80px;">email</p>
+      <input type="email" :value="email" class="login-input">
+    </div>
+    
+    <div class="password-form">
+      <p style="width: 80px;">password</p>
+      <input type="password" :value="password" @keyup.enter="requestLogin" class="login-input">
+    </div>
+    
+    <button class="login-button" @click="requestLogin">Login</button>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -20,7 +29,11 @@ export default {
   },
   methods: {
     requestLogin() {
-      
+      const loginInfo = {
+        email: this.email,
+        passwrod: this.password,
+      }
+      this.store.dispatch('user/requestLogin', loginInfo)
     }
   }
 }
