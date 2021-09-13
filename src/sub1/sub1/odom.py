@@ -67,7 +67,7 @@ class odom(Node):
         self.laser_transform.transform.translation.y = 0.0
         self.laser_transform.transform.translation.z = 1.0 
         self.laser_transform.transform.rotation.w = 1.0
-                      
+
     def imu_callback(self,msg):
         # 로직 3. IMU 에서 받은 quaternion을 euler angle로 변환해서 사용
         if self.is_imu == False:
