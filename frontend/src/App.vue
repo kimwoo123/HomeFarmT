@@ -11,6 +11,7 @@
 
 <style>
   @import url('./assets/css/normalize.scss');
+  @import url('./assets/css/common.scss');
   #app {
     width: 360px;
     height: 670px;
