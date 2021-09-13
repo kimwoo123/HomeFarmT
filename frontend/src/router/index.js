@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Signup from '../views/Signup.vue'
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
+import IoT from '../views/IoT.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/iot',
+    name: 'IoT',
+    component: IoT
   }
 ]
 
