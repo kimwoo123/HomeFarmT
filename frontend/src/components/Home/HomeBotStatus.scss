@@ -1,3 +1,37 @@
 .bot-status-container {
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  margin: 0px auto;
+  background-color: #FFEFDA;
+  height: 250px;
+}
+
+.turtlebot-name-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.turtlebot-img {
+  width: 150px;
+  height: 150px;
+}
+
+.turtlebot-name-input {
+  width: 200px;
+  padding: 10px;
+  font-size: calc(12px + 1vw);
+  text-align: center;
+  border-radius: 15px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.7);
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.turtlebot-img-wrapper {
+  display: flex;
+  justify-content: space-between;
 }
