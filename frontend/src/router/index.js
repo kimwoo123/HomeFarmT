@@ -7,10 +7,24 @@ import IoT from '../views/IoT.vue'
 import Schedule from '../views/Schedule.vue'
 import Patrol from '../views/Patrol.vue'
 import NavbarLayout from '../views/NavbarLayout.vue'
+import PageNotFound from '../views/PageNotFound.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '*',
+    redirect: '/404'
+  },
+  {
+    path: '/404',
+    name: 'PageNotFound',
+    component: PageNotFound
+  },
+  {
+    path: '/',
+    redirect: Home,
+  },
   {
     path: '/signup',
     name: 'Signup',
