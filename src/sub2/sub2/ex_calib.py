@@ -196,18 +196,18 @@ def project2img_mtx(params_cam):
     
     """
     로직 1. params에서 카메라의 width, height, fov를 가져와서 focal length를 계산.
-    초점거리 (focal length)
-    렌즈 중심과 이미지센서와의 거리
     """
+    # 초점거리 (focal length)
+    # 렌즈 중심과 이미지센서와의 거리
     fc_x = params_cam['HEIGHT'] / (2 * math.tan((math.pi / 180) * (params_cam['FOV'] / 2)))  # 207.84609690826528
     fc_y = fc_x # 시뮬레이션 속 FOV 가 vertical 고정이어서 fc_x == fc_y 여야 함!
     
 
     """
     로직 2. 카메라의 파라메터로 이미지 프레임 센터를 계산.
-    주점 (principal point)
-    카메라 렌즈의 중심 즉, 핀홀에서 이미지 센서에 내린 수선의 발의 영상좌표
     """
+    # 주점 (principal point)
+    # 카메라 렌즈의 중심 즉, 핀홀에서 이미지 센서에 내린 수선의 발의 영상좌표
     cx = params_cam['WIDTH'] / 2 # 160
     cy = params_cam['HEIGHT'] / 2 # 120
     
@@ -215,34 +215,14 @@ def project2img_mtx(params_cam):
     """
     로직 3. Projection 행렬을 계산.
     """
+    # 이미지 평면에 투사
     R_f = np.array([[fc_x, 0, cx], [0, fc_y, cy]])
     
-
-    """
-    테스트
-
-    params_cam = {
-        "WIDTH": 320, # image width
-        "HEIGHT": 240, # image height
-        "FOV": 60, # Field of view
-        "X": 0., # meter
-        "Y": 0,
-        "Z":  1.0,
-        "YAW": 0, # deg
-        "PITCH": 0.0,
-        "ROLL": 0
-    }
-
-    이면
-
-    R_f = 
-    [[207.84609691   0.         160.        ]
-    [  0.         207.84609691 120.        ]]
-    """
 
     return R_f
 
 
+# 이미지에 라이다센서의 포인트를 나타내는 함수
 def draw_pts_img(img, xi, yi):
 
     point_np = img
@@ -250,6 +230,7 @@ def draw_pts_img(img, xi, yi):
     #Left Lane
     for ctr in zip(xi, yi):
         ctr = (int(ctr[0]), int(ctr[1]))
+        # 실수가 아니라 정수여야 작동한다
         point_np = cv2.circle(point_np, ctr, 2, (255,0,0),-1)
 
     return point_np
@@ -286,11 +267,11 @@ class LIDAR2CAMTransform:
         """
         로직 2. 클래스 내 self.RT로 라이다 포인트들을 카메라 좌표계로 변환시킨다.
         """
-        # 이 부분 수정 필요 -> 하나의 점이 아닐 것임!
+
         np_ones = np.ones((xyz_p.shape[0], 1))                # 차원을 맞추기 위해 (179, 1) 형태로 1로 이루어진 행렬 생성
         np_concat = np.concatenate((xyz_p, np_ones), axis=1)  # 기존 xyz 행렬과 1로 이루어진 행렬 합치기 -> (179, 4)
-        np_transpose = np.transpose(np_concat)                # self.RT 과 계산할 수 있게 transpose -> (4, 179) / reshape 을 하면 원래의 위치를 못지킨다.
-        xyz_c = np.matmul(self.RT, np_transpose)
+        xyz_c = np.matmul(self.RT, np_concat.T)
+
         
         return xyz_c
 
@@ -301,8 +282,10 @@ class LIDAR2CAMTransform:
         """
         로직 3. RT로 좌표 변환된 포인트들의 normalizing plane 상의 위치를 계산.
         """
-        x, y, z, _ = np.hsplit(xyz_c, 4)
-        xn, yn = np.divide(x, z), np.divide(y, z) # z로 나눠줘야 한다
+        xyz_c[:, 2] += 1e-7
+        xyz_c[:, 0] /= xyz_c[:, 2]
+        xyz_c[:, 1] /= xyz_c[:, 2]
+        xn, yn = xyz_c[:, 0].reshape(-1, 1), xyz_c[:, 1].reshape(-1, 1) # z로 나눠줘야 한다
         
 
         # 로직 4. normalizing plane 상의 라이다 포인트들에 proj_mtx를 곱해 픽셀 좌표값 계산.
@@ -365,7 +348,6 @@ class SensorCalib(Node):
         로직 3. 카메라 콜백함수에서 이미지를 클래스 내 변수로 저장.
         """
         np_arr = np.frombuffer(msg.data, np.uint8)
-
         self.img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
 
@@ -375,9 +357,9 @@ class SensorCalib(Node):
         로직 4. 라이다 2d scan data(거리와 각도)를 가지고 x,y 좌표계로 변환
         """
         self.R = np.array(msg.ranges)
-        # msg.ranges => array('f', [1, 2, 3, ..., 360]) 360개가 들어있음
-        x = np.array([self.R[i] * math.cos(math.pi / 180 * i) for i in range(360)])
-        y = np.array([self.R[i] * math.sin(math.pi / 180 * i) for i in range(360)])
+        degree = np.arange(360.0)
+        x = self.R * np.cos(degree / 180. * np.pi)
+        y = self.R * np.sin(degree / 180. * np.pi)
         z = np.zeros(360)
         self.xyz = np.concatenate([
             x.reshape([-1, 1]),
@@ -387,16 +369,13 @@ class SensorCalib(Node):
         
 
     def timer_callback(self):
-
+        # x
         if self.xyz is not None and self.img is not None :
 
             """
             로직 5. 라이다 x,y 좌표 데이터 중 정면 부분만 crop
             """
-            # print('self.xyz: \t', self.xyz)
-            # xyz_p = self.xyz[np.logical_or(self.xyz[:, 2]<90, self.xyz[:, 2]>270), :]
-            xyz_p = np.concatenate([self.xyz[:90], self.xyz[270:]])
-            # print('xyz_p: \t', xyz_p)
+            xyz_p = np.concatenate([self.xyz[:90, :], self.xyz[270:, :]], axis=0)
             
 
             """

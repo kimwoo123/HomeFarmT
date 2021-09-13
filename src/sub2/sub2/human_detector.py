@@ -30,12 +30,11 @@ def non_maximum_supression(bboxes, threshold=0.5):
     # 로직 1 : bounding box 크기 역순으로 sort   
     bboxes = sorted(bboxes, key=lambda detections: detections[3],
             reverse=True)
-    print(bboxes)
     new_bboxes=[]
     
     # 로직 2 : new_bboxes 리스트 정의 후 첫 bbox save
     new_bboxes.append(bboxes[0])
-    
+
     # 로직 3 : 기존 bbox 리스트에 첫 bbox delete
     bboxes.pop(0)
 
@@ -52,14 +51,14 @@ def non_maximum_supression(bboxes, threshold=0.5):
             y1_br = bbox[1] + bbox[3]
             y2_br = new_bbox[1] + new_bbox[3]
             
-            """
+            
             # 로직 4 : 두 bbox의 겹치는 영역을 구해서, 영역이 안 겹칠때 new_bbox로 save
-            x_overlap = 
-            y_overlap = 
+            x_overlap = max(min(x1_br, x2_br) - max(x1_tl, x2_tl), 0)
+            y_overlap = max(min(y1_br, y2_br) - max(y1_tl, y2_tl), 0)
             overlap_area = x_overlap * y_overlap
             
-            area_1 = 
-            area_2 = 
+            area_1 = bbox[2] * bbox[3]
+            area_2 = new_bbox[2] * new_bbox[3]
             
             total_area = area_1 + area_2 - overlap_area
             overlap_area = overlap_area / float(total_area)
@@ -67,8 +66,6 @@ def non_maximum_supression(bboxes, threshold=0.5):
             if overlap_area < threshold:
 
                 new_bboxes.append(bbox)
-
-            """
 
     return new_bboxes
 
@@ -80,7 +77,6 @@ class HumanDetector(Node):
         super().__init__(node_name='human_detector')
 
         # 로직 1 : 노드에 필요한 publisher, subscriber, descriptor, detector, timer 정의
-        # 카메라 이미지 수신
         self.subs_img = self.create_subscription(
             CompressedImage,
             '/image_jpeg/compressed',
@@ -91,16 +87,11 @@ class HumanDetector(Node):
         
         self.timer_period = 0.03
 
-        # 로직의 순환
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
-        # bounding box를 송신
         self.bbox_pub_ = self.create_publisher(BBox, '/bbox', 1)
 
-        # Histogram Of Gradient
-        self.pedes_detector = cv2.HOGDescriptor()      
-        print(self.pedes_detector)                        
-        # Support Vector Machine
+        self.pedes_detector = cv2.HOGDescriptor()                              
         self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
         self.able_to_pub = True
@@ -125,20 +116,14 @@ class HumanDetector(Node):
 
             # 로직 4 : non maximum supression으로 bounding box 정리
             xl, yl, wl, hl = [], [], [], []
-            # non_maximum_supression 구현하기
             rects = non_maximum_supression(rects_temp)
 
             """
-    
             # 로직 5 : bbox를 ros msg 파일에 write
 
             ## 각 bbox의 center, width, height의 꼭지점들을 리스트에 넣어 놓고
             ## 메세지 내 x,y,w,h에 채워넣는 방식으로 하시면 됩니다.
-            Non Maximum Supression를 거쳐서 나온 최종 bbox 들을 bbox .ros 메세지
-            내 데이터에 채워넣는 작업을 해야한다. bbox의 개수, 식별한 객체의
-            종류 인덱스(사람만 인지하므로 클래스 인덱스는 0만 넣으면 된다)
-            bbox의 중심과 좌우 길이를 채운다
-           
+            """
             for (x,y,w,h) in rects:
     
                 xl.append(x)
@@ -148,19 +133,20 @@ class HumanDetector(Node):
 
             if self.able_to_pub:
 
-                self.bbox_msg.num_bbox = 
+                self.bbox_msg.num_bbox = len(rects)
 
-                obj_list = 
+                obj_list = [0] * len(rects)
 
-                self.bbox_msg.idx_bbox = 
+                self.bbox_msg.idx_bbox = obj_list
 
-                self.bbox_msg.x = 
-                self.bbox_msg.y = 
-                self.bbox_msg.w = 
-                self.bbox_msg.h = 
+                self.bbox_msg.x = np.around(np.array(xl) + np.array(wl) / 2.).astype(np.int32).tolist()
+                self.bbox_msg.y = np.around(np.array(wl) + np.array(hl) / 2.).astype(np.int32).tolist()
 
-            """
+                self.bbox_msg.w = np.array(wl, dtype=np.int32).tolist()
+                self.bbox_msg.h = np.array(hl, dtype=np.int32).tolist()
 
+            
+            # 로직 6
             for (x,y,w,h) in rects:
 
                 cv2.rectangle(img_bgr, (x,y),(x+w,y+h),(0,255,255), 2)
@@ -172,9 +158,6 @@ class HumanDetector(Node):
 
         """
         로직 7 : bbox 결과 show
-        인식 결과를 창으로 띄워서 시각화
-
-         
         cv2.
         cv2.waitKey(1)
         """           
@@ -204,4 +187,3 @@ def main(args=None):
 if __name__ == '__main__':
 
     main()
-
