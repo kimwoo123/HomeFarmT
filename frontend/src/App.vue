@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <!-- <div id="nav">
       <router-link :to="{ name: 'Login' }">로그인</router-link> |
       <router-link :to="{ name: 'Singup' }">회원가입</router-link> |
       <router-link :to="{ name: 'Home' }">홈</router-link>
-    </div>
+    </div> -->
     <router-view/>
   </div>
 </template>
