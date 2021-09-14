@@ -1,0 +1,35 @@
+
+.calendar {
+  height: 120px;
+  margin: 15px 16px;
+
+  .year {
+
+  }
+
+  .month {
+
+  }
+
+}
+.day {
+  width: 55px;
+  height: 55px;
+  background-color: $primary-blue;
+  .day-active {
+    background-color: $primary-blue;
+  }
+}
+
+.schedule {
+  height: 350px;
+  background-color: red;
+  overflow: auto;
+  margin: 15px 16px;
+}
+.time-box {
+  border-width: 0px;
+  border-bottom-width: 1px;
+  border-style: dashed;
+  padding: 7px;
+}
