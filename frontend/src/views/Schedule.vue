@@ -2,15 +2,31 @@
   <div>
 
     <div class="calendar">
-      <div class="day">
-        9dad
+      
+      <div class="year-container">
+        2021
+      </div>
+      <div class="month-container">
+        <div v-for="month_cal in 5" :key=month_cal>
+          <div class="month" :class="{'month-active' : month_cal == 1}">
+            9월
+          </div>
+        </div>
+      </div>
+      <div class="day-container">
+        <div v-for="day_cal in 5" :key=day_cal>
+          <div class="day" :class="{'day-active' : day_cal == 1}">
+            9
+          </div>
+        </div>
       </div>
     </div>
 
 
-    schedule
+    <span class="schedule-text">Schedule</span>
+
     <div class="schedule">
-      <div v-for="time in 25" :key=time.id>
+      <div v-for="time in 25" :key=time>
 
         <div v-if="time <= 10" class="time-box">
           0{{ time-1 }}:00
@@ -54,5 +70,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import url('./Schedule.scss');
+  @import '@/views/Schedule.scss';
 </style>
