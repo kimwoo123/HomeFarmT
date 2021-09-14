@@ -1,36 +1,63 @@
+@import '@/assets/css/common.scss';
 
 .calendar {
+  display: flex;
+  flex-direction: column;
+
   height: 120px;
   margin: 15px 16px;
-
   .year {
 
   }
-
-  .month {
-
+  .month-container {
+    display: flex;
+    overflow: auto;
+    font-size: 12px;
+    color: gray;
+    .month {
+      width: 65px;
+      text-align: center;
+    }
+    .month-active {
+      color: black;
+      font-weight: bold;
+    }
   }
-
+  .day-container {
+    display: flex;
+    overflow: auto;
+  
+    .day {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      width: 55px;
+      height: 55px;
+      margin: 5px;
+      background-color: $graylight;
+      border-radius: 10px;
+    }
+    .day-active {
+      background-color: $primary-blue;
+      color: white;
+    } 
+  }
 }
 
-.day {
-  width: 55px;
-  height: 55px;
-  background-color: $primary-blue;
-  .day-active {
-    background-color: $primary-blue;
-  }
+.schedule-text {
+  margin: 16px;
+  font-size: 24px;
 }
 
 .schedule {
   height: 350px;
-  background-color: red;
   overflow: auto;
-  margin: 15px 16px;
-}
-.time-box {
-  border-width: 0px;
-  border-bottom-width: 1px;
-  border-style: dashed;
-  padding: 7px;
+  margin: 5px 16px;
+  .time-box {
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-style: dashed;
+    padding: 7px;
+  }
 }
