@@ -6,7 +6,7 @@
         <span>Make</span><span class="point-color">Your Farm</span>
       </div>
     </div>
-    <font-awesome-icon icon="user" />
+    <font-awesome-icon icon="user" class="icon"/>
   </div>
 </template>
 

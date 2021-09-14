@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="nav-container">
-      <font-awesome-icon icon="arrow-left" />
+      <font-awesome-icon icon="arrow-left" @click="$router.push({ name: 'Home' })" class="icon"/>
       <div>
         <span>Turtlebot</span><span class="router-name">{{ currentRouteName }}</span>
       </div>
-      <font-awesome-icon icon="user" />
+      <font-awesome-icon icon="user" class="icon"/>
     </div>
     <router-view></router-view>
   </div>
