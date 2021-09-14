@@ -1,3 +1,10 @@
 .home-container {
-  width: 100%;
+  padding: 8px;
+  background-color: white;
+}
+
+.home-mid-side {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }

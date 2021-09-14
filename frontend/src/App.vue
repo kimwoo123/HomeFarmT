@@ -16,6 +16,7 @@
     width: 360px;
     height: 670px;
     margin: 0px auto;
+    padding: 8px;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -24,6 +25,19 @@
   body {
     background-color: grey;
   }
+  #nav {
+    padding: 15px;
+  }
+
+  #nav a {
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  #nav a.router-link-exact-active {
+    color: #42b983;
+  }
+
   ::-webkit-scrollbar { 
     display: none;
   }

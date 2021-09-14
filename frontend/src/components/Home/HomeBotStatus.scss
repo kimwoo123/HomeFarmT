@@ -1,13 +1,15 @@
 .bot-status-container {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
   margin: 0px auto;
   background-color: #FFEFDA;
-  height: 250px;
+  height: 200px;
+  border-radius: 15px;
 }
 
-.turtlebot-name-wrapper {
+.turtlebot-left-side {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -15,23 +17,44 @@
 }
 
 .turtlebot-img {
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
+  margin-bottom: 15px;
 }
 
-.turtlebot-name-input {
-  width: 200px;
-  padding: 10px;
-  font-size: calc(12px + 1vw);
+.turtlebot-name-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 140px;
+  padding: 7px;
+  font-size: calc(14px + 0.5vw);
   text-align: center;
   border-radius: 15px;
   border: none;
   background-color: rgba(255, 255, 255, 0.7);
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  height: 30px;
+}
+
+.turtlebot-input {
+  width: 80%;
+  text-align: center;
+  border: none;
+  margin: auto 0px;
+  padding: 4px;
 }
 
 .turtlebot-img-wrapper {
   display: flex;
   justify-content: space-between;
+}
+
+.turtle-name-input-layer {
+  position: absolute;
+  height: 100px;
+  width: 100px;
+  top: 0%;
+
 }

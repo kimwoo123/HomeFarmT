@@ -1,0 +1,40 @@
+.current-task-container {
+  margin-top: 30px;
+  width: 100%;
+  height: 50px
+}
+
+.current-task-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  background-color: #FFEFDA;
+  border-radius: 10px;
+  width: 100%;
+  height: 150px;
+}
+
+.current-task-header {
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.current-task-time {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid black;
+}
+
+.current-task-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.task-slide-button {
+  margin: 20px 0px;
+  border-radius: 10px;
+  background-color: white;
+}
