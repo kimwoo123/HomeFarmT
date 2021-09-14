@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
   @import url('./assets/css/normalize.scss');
   @import url('./assets/css/common.scss');
   #app {
@@ -23,5 +23,8 @@
   }
   body {
     background-color: grey;
+  }
+  ::-webkit-scrollbar { 
+    display: none;
   }
 </style>
