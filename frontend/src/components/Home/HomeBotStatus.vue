@@ -1,35 +1,38 @@
 <template>
   <div class="bot-status-container">
+
     <div class="turtlebot-left-side">
-        <div class="turtlebot-name-wrapper">
-          <input
-            v-if="!editMode"
-            @keypress.enter="enterInput"
-            class="turtlebot-input"
-            type="text"
-            v-model="turtlebotName">
-          <span v-else @click="clickName">{{ turtlebotName }}</span>
-        </div>
-        <img 
-          :src="require('../../assets/turtlebot.png')" 
-          class="turtlebot-img">
+      <div class="turtlebot-name-wrapper">
+        <input
+          v-if="!editMode"
+          @keypress.enter="enterInput"
+          class="turtlebot-input"
+          type="text"
+          v-model="turtlebotName">
+        <span v-else @click="clickName">{{ turtlebotName }}</span>
+      </div>
+      <img 
+        :src="require('../../assets/images/turtlebot.png')" 
+        class="turtlebot-img">
     </div>
 
     <div class="turtlebot-img-wrapper">
-      
-      <div>배터리 상태</div>
+      <HomeBotBattery/>
     </div>
 
   </div>
 </template>
+
 <style lang="scss" scoped>
   @import url('./HomeBotStatus.scss');
 </style>
+
 <script>
+import HomeBotBattery from './HomeBotBattery.vue'
 export default {
   name: 'HomeBotStatus',
   components: {
-
+    HomeBotBattery,
   },
   data() {
     return {

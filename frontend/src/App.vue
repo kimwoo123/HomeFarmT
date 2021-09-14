@@ -12,10 +12,12 @@
 <style lang="scss">
   @import url('./assets/css/normalize.scss');
   @import url('./assets/css/common.scss');
+  
   #app {
     width: 360px;
     height: 670px;
     margin: 0px auto;
+    padding: 8px;
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -36,7 +38,7 @@
   #nav a.router-link-exact-active {
     color: #42b983;
   }
-  
+
   ::-webkit-scrollbar { 
     display: none;
   }
