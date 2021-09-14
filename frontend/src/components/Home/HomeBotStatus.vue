@@ -22,7 +22,7 @@
 
   </div>
 </template>
-<style>
+<style lang="scss" scoped>
   @import url('./HomeBotStatus.scss');
 </style>
 <script>

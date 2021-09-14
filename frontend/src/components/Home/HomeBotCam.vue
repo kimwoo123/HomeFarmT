@@ -3,7 +3,7 @@
 
   </div>
 </template>
-<style>
+<style lang="scss" scoped>
   @import url('./HomeBotCam.scss');
 </style>
 <script>

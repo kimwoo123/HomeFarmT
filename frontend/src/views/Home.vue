@@ -3,7 +3,7 @@
     <HomeBotStatus/>
   </div>
 </template>
-<style>
+<style lang="scss" scoped>
   @import url('./Home.scss');
 </style>
 <script>

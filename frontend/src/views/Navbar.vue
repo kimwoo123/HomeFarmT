@@ -7,7 +7,7 @@
     <div>♟</div>
   </div>
 </template>
-<style>
+<style lang="scss" scoped>
   @import url('./Navbar.scss');
 </style>
 <script>
