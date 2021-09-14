@@ -1,0 +1,25 @@
+@import '@/assets/css/common.scss';
+
+.nav-container {
+  width: 320px;
+  height: 55px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  font-size: 20px;
+}
+
+.nav-text-container {
+  display: flex;
+  flex-direction: column;
+  small {
+    font-size: 12px;
+  }
+  span {
+    font-size: 24px;
+  }
+  .point-color {
+    color: $primary-yellow;
+  }
+}
