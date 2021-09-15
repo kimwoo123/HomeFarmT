@@ -28,15 +28,15 @@ export default {
     switch (this.currentRouteName) {
       case 'IoT':
         console.log('IoT')
-        currentRouteName.style.color = "#FBD07A"
+        currentRouteName.style.color = "#EBBBA6"
         break;
       case 'Patrol':
         console.log('Patrol')
-        currentRouteName.style.color = "#82A2FF"
+        currentRouteName.style.color = "#95BFC2"
         break;
       case 'Schedule':
         console.log('Schedule')
-        currentRouteName.style.color = "#FFBAB7"
+        currentRouteName.style.color = "#EBBBA6"
         break;
     }
   }
