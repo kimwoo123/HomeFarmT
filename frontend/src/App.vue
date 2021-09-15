@@ -6,21 +6,23 @@
 
 <script>
 import gql from 'graphql-tag'
+import { watch } from '@vue/composition-api'
 import { useQuery } from '@vue/apollo-composable'
 
 export default {
   name: 'App',
-  setup() {
-    const { result } = useQuery(gql`
-    query user {
-      allUser {
-        email
+  setup () {
+   const { result } = useQuery(gql`
+      query getUsers {
+        allUser {
+          email
+        }
       }
-    }`)
-    console.log(result.value.allUser)
-  return {
-    result
-  }
+    `)
+
+    watch(result, value => {
+      console.log(value.allUser[0])
+    })
  },
 }
 </script>

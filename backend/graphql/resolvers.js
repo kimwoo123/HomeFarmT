@@ -6,14 +6,18 @@ module.exports = {
       const getUsers = await User.findAll();
       return getUsers;
   },
+    findUser: async (_, { email }) => {
+      const oneUser = await User.findOne({ where: {email: email}});
+      return oneUser
+    }
 },
   Mutation: {
-    signUp: async (_, { userid, email }) => {
+    signUp: async (_, { email, password }) => {
       const newUser = await User.create({ 
-        userid,
+        password,
         email
       })
-      const user = await User.findOne( {where: { userid: userid }})
+      const user = await User.findOne( {where: { email: email }})
       return user
     },
     deleteUser: async (_, { email }) => {
