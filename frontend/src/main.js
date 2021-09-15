@@ -4,9 +4,9 @@ import router from './router'
 import store from './store'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faUser, faArrowLeft)
+library.add(faUser, faArrowLeft, faPlus)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false

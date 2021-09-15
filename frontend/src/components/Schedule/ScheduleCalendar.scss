@@ -3,9 +3,18 @@
   flex-direction: column;
 
   height: 120px;
-  margin: 15px 16px;
-  .year {
-
+  margin: 30px 16px;
+  .year-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 19px;
+    .year {
+      color: $gray;
+    }
+    .year-active {
+      color: $dark;
+      font-weight: bold;
+    }
   }
   .month-container {
     display: flex;
@@ -29,16 +38,17 @@
       display: flex;
       justify-content: center;
       align-items: center;
-  
       width: 55px;
       height: 55px;
       margin: 5px;
-      background-color: $graylight;
+      background-color: $primary;
+      color: $white;
       border-radius: 10px;
     }
     .day-active {
-      background-color: $primary;
-      color: white;
+      background-color: $secondary;
+      color: $primary-dark;
+      font-weight: bold;
     } 
   }
 }

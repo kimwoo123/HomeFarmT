@@ -1,7 +1,8 @@
 <template>
   <div class="calendar">
       <div class="year-container">
-        2021
+        <small class="year year-active">2021</small>
+        <small class="year">2022</small>
       </div>
       <div class="month-container">
         <div v-for="month_cal in 5" :key=month_cal>
@@ -19,6 +20,10 @@
       </div>
     </div>
 </template>
+
+<style lang="scss" scoped>
+  @import './ScheduleCalendar.scss';
+</style>
 
 <script>
 export default {
@@ -42,7 +47,3 @@ export default {
 
 }
 </script>
-
-<style lang="scss" scoped>
-  @import './ScheduleCalendar.scss';
-</style>
