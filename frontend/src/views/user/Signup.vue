@@ -26,6 +26,8 @@
 </style>
 
 <script>
+import gql from 'graphql-tag'
+
 export default {
   name: 'Signup',
   data() {
@@ -41,19 +43,27 @@ export default {
     }
   },
   methods:{
-    requestSignup() {
-      const credentials = {
-        'email': this.email,
-        'password': this.password,
-      }
-      this.$store.dispatch('requestSignup', credentials)
-        .then(() => {
-          this.$store.dispatch('requestSignup', credentials)
-          console.log('완료메시지')
+    async requestSignup() {
+      await this.$apollo.mutate({
+        mutation: gql`mutation ($email: String!, $password: String) {
+          signUp(email: $email , password: $password) {
+            email
+            password
+          }
+        }`,
+        variables: {
+          email: this.email,
+          password: this.password
+        }
         })
-        .catch(err => {
-          console.error(err)
-        })
+      // this.$store.dispatch('requestSignup', credentials)
+      //   .then(() => {
+      //     this.$store.dispatch('requestSignup', credentials)
+      //     console.log('완료메시지')
+      //   })
+      //   .catch(err => {
+      //     console.error(err)
+      //   })
     },
   },
 }

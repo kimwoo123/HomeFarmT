@@ -26,6 +26,8 @@
 </style>
 
 <script>
+import gql from 'graphql-tag'
+
 export default {
   name: 'Login',
   data() {
@@ -35,12 +37,20 @@ export default {
     }
   },
   methods: {
-    requestLogin() {
-      const loginInfo = {
-        email: this.email,
-        passwrod: this.password,
-      }
-      this.store.dispatch('user/requestLogin', loginInfo)
+    async requestLogin() {
+      await this.$apollo.mutate({
+        mutation: gql`mutation ($email: String!, $password: String) {
+          login(email: $email , password: $password) {
+            email
+            password
+          }
+        }`,
+        variables: {
+          email: this.email,
+          password: this.password
+        }
+        })
+      // this.store.dispatch('user/requestLogin', loginInfo)
     }
   }
 }
