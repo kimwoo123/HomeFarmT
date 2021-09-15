@@ -1,0 +1,16 @@
+.schedule-text {
+  margin: 16px;
+  font-size: 24px;
+}
+
+.schedule {
+  height: 350px;
+  overflow: auto;
+  margin: 5px 16px;
+  .time-box {
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-style: dashed;
+    padding: 7px;
+  }
+}
