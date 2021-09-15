@@ -10,8 +10,8 @@
 </template>
 
 <style lang="scss">
-  @import '@/assets/css/normalize.scss';
-  @import '@/assets/css/common.scss';
+  @import '@/assets/scss/normalize.scss';
+  @import '@/assets/scss/common.scss';
   #app {
     width: 360px;
     height: 670px;
