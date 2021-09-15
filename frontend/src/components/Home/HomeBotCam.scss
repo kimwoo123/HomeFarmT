@@ -1,0 +1,18 @@
+.cam-conatiner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.cam {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  width: 90%;
+  aspect-ratio: 1;
+  border-radius: 20px;
+}
+
+.menu-name {
+  margin-left: 5px;
+}
