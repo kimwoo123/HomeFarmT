@@ -2,9 +2,11 @@ const { User } = require("../models/index");
 
 module.exports = {
   Query: {
-    me: async (_, __, { dataSources }) =>
-      dataSources.userAPI.findOrCreateUser(),
+    allUser: async () =>{
+      const getUsers = await User.findAll();
+      return getUsers;
   },
+},
   Mutation: {
     signUp: async (_, { userid, email }) => {
       const newUser = await User.create({ 
@@ -19,5 +21,5 @@ module.exports = {
       const user = await User.findOne({ where: { email: email }})
       return user
     }
-  },
+  }
 };
