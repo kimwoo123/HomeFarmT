@@ -1,7 +1,7 @@
 <template>
   <div class="current-task-container">
     <div class="current-task-header">Next Task</div>
-    <div class="current-task-wrapper">
+    <div class="current-task-wrapper normal-shadow">
       <div class="current-task-time">
         <div>3:00</div>
         <div>|</div>
