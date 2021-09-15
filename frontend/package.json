@@ -16,7 +16,17 @@
     "node-sass": "^6.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "@apollo/client": "^3.4.11",
+    "@vue/apollo-composable": "^4.0.0-alpha.14",
+    "@vue/composition-api": "^1.1.5",
+    "apollo-cache-inmemory": "^1.6.6",
+    "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "apollo-link-http": "^1.5.17",
+    "graphql": "^15.5.3",
+    "graphql-tag": "^2.12.5",
+    "vue-apollo": "^3.0.7"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

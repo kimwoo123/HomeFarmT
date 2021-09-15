@@ -4,9 +4,32 @@
   </div>
 </template>
 
+<script>
+import gql from 'graphql-tag'
+import { useQuery } from '@vue/apollo-composable'
+
+export default {
+  name: 'App',
+  setup() {
+    const { result } = useQuery(gql`
+    query user {
+      allUser {
+        email
+      }
+    }`)
+    console.log(result.value.allUser)
+  return {
+    result
+  }
+ },
+}
+</script>
+
+
 <style lang="scss">
   @import '@/assets/scss/normalize.scss';
   @import '@/assets/scss/common.scss';
+  
   #app {
     width: 360px;
     height: 683px;
