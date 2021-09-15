@@ -1,5 +1,3 @@
-@import '@/assets/css/common.scss';
-
 .nav-container {
   width: 320px;
   height: 55px;
@@ -20,7 +18,7 @@
     font-size: 24px;
   }
   .point-color {
-    color: $primary-yellow;
+    color: $primary;
   }
 }
 

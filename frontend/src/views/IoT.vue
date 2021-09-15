@@ -12,7 +12,6 @@
 </template>
 
 <style lang="scss" scoped>
-  @import '@/assets/css/common.scss';
   @import '@/views/IoT.scss';
 </style>
 

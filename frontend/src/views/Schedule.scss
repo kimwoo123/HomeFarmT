@@ -1,5 +1,3 @@
-@import '@/assets/css/common.scss';
-
 .calendar {
   display: flex;
   flex-direction: column;
@@ -39,7 +37,7 @@
       border-radius: 10px;
     }
     .day-active {
-      background-color: $primary-blue;
+      background-color: $primary;
       color: white;
     } 
   }
