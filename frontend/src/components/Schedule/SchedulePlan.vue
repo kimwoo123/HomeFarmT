@@ -1,6 +1,11 @@
 <template>
   <div>
-    <span class="schedule-text">Schedule</span>
+    <div class="schedule-header">
+      <span class="schedule-text">Schedule</span>
+      <div>
+        <font-awesome-icon icon="plus" class="icon"/><span> 추가</span>
+      </div>
+    </div>
 
     <div class="schedule">
       <div v-for="time in 25" :key=time>
@@ -11,9 +16,16 @@
           {{ time-1 }}:00
         </div>
       </div>
+      <div class="item">
+        
+      </div>
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+  @import './SchedulePlan.scss';
+</style>
 
 <script>
 export default {
@@ -30,7 +42,3 @@ export default {
 
 }
 </script>
-
-<style lang="scss" scoped>
-  @import './SchedulePlan.scss';
-</style>
