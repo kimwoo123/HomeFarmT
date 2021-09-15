@@ -1,12 +1,14 @@
 <template>
-  <div class="home-conatiner">
+  <div>
     <Navbar/>
-    <HomeBotStatus/>
-    <div class="home-mid-side">
-      <HomeBotCam/>
-      <HomeMenus/>
+    <div class="home-container">
+      <HomeBotStatus/>
+      <div class="home-mid-side">
+        <HomeBotCam/>
+        <HomeMenus/>
+      </div>
+      <HomeBotCurrentTask/>
     </div>
-    <HomeBotCurrentTask/>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -28,7 +30,6 @@ export default {
     HomeMenus,
     HomeBotCurrentTask,
   }
-
 }
 </script>
 
