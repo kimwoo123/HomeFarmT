@@ -16,7 +16,7 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  @import url('./HomeBotCurrentTask.scss');
+  @import './HomeBotCurrentTask.scss';
 </style>
 <script>
 export default {

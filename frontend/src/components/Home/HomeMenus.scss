@@ -13,6 +13,7 @@
 }
 
 .menu {
+  color: white;
   -webkit-user-select: none;
   margin: auto;
   width: 100%;
@@ -21,8 +22,9 @@
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 5px 10px;
 }
+
 
 .menu:active {
   transition: box-shadow 0.3s;
@@ -32,4 +34,12 @@
 .menu-name {
   margin-left: 5px;
   margin-bottom: 5px;
+}
+
+.two {
+  background-color: $primary;
+}
+
+.one {
+  background-color: $secondary;
 }

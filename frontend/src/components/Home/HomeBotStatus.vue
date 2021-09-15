@@ -9,6 +9,7 @@
         <input
           v-if="!editMode"
           @keypress.enter="enterInput"
+          @focusout="enterInput"
           class="turtlebot-input"
           type="text"
           v-model="turtlebotName">
@@ -17,12 +18,12 @@
     </div>
 
     <HomeBotBattery/>
-    
+
   </div>
 </template>
 
 <style lang="scss" scoped>
-  @import url('./HomeBotStatus.scss');
+  @import './HomeBotStatus.scss';
 </style>
 
 <script>

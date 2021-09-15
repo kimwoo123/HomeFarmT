@@ -6,6 +6,7 @@
   margin: 0px auto;
   height: 200px;
   border-radius: 15px;
+  background-color: $primary;
 }
 
 .turtlebot-left-side {
@@ -19,7 +20,7 @@
 .turtlebot-img {
   width: 100px;
   height: 100px;
-  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 .turtlebot-name-wrapper {
@@ -30,20 +31,23 @@
   padding: 7px;
   font-size: calc(14px + 0.5vw);
   text-align: center;
+  color: white;
   border-radius: 15px;
   border: none;
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: $secondary;
   margin-top: 5px;
   margin-bottom: 30px;
-  height: 25px;
+  height: 15px;
 }
 
 .turtlebot-input {
+  background-color: $graylight;
+  height: auto;
   width: 80%;
   text-align: center;
   border: none;
-  margin: auto 0px;
   padding: 4px;
+  border-radius: 10px;
 }
 
 .turtle-name-input-layer {
@@ -51,5 +55,4 @@
   height: 100px;
   width: 100px;
   top: 0%;
-
 }
