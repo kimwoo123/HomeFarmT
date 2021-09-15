@@ -1,0 +1,51 @@
+.patrol-menu-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 330px;
+  height: 100px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 1px 10px 1px $primary;
+  margin-top: 10px;
+}
+
+.box-filled {
+  background-color: $primary;
+}
+
+.abnormal-video-list {
+  justify-content: flex-start;
+}
+
+.abnormal-video-figure {
+  margin: 0px;
+  height: 95%;
+  aspect-ratio: 1;
+  margin-left: 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+
+.abnormal-video-figure:hover::before {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  content: "재생하기";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  top: 0%;
+  left: 0%;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+.abnormal-video-img {
+  height: 100%;
+  aspect-ratio: 1;
+  border-radius: 10px;
+}
