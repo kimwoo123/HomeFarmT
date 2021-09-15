@@ -1,30 +1,29 @@
 <template>
-  <div class="bot-status-container">
+  <div class="bot-status-container normal-shadow">
 
     <div class="turtlebot-left-side">
+      <img 
+        :src="require('../../assets/images/turtlebot.png')" 
+        class="turtlebot-img">
       <div class="turtlebot-name-wrapper">
         <input
           v-if="!editMode"
           @keypress.enter="enterInput"
+          @focusout="enterInput"
           class="turtlebot-input"
           type="text"
           v-model="turtlebotName">
         <span v-else @click="clickName">{{ turtlebotName }}</span>
       </div>
-      <img 
-        :src="require('../../assets/images/turtlebot.png')" 
-        class="turtlebot-img">
     </div>
 
-    <div class="turtlebot-img-wrapper">
-      <HomeBotBattery/>
-    </div>
+    <HomeBotBattery/>
 
   </div>
 </template>
 
 <style lang="scss" scoped>
-  @import url('./HomeBotStatus.scss');
+  @import './HomeBotStatus.scss';
 </style>
 
 <script>
@@ -37,7 +36,7 @@ export default {
   data() {
     return {
       editMode: true,
-      turtlebotName: 'turtlebot',
+      turtlebotName: '터트리',
     }
   },
   methods: {

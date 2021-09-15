@@ -14,7 +14,7 @@
     </div>
   </div>
 </template>
-<style>
+<style lang="scss" scoped>
   @import './HomeBotBattery.scss';
 </style>
 <script>

@@ -1,16 +1,17 @@
 .current-task-container {
   margin-top: 30px;
   width: 100%;
-  height: 50px
+  height: 50px;
 }
 
 .current-task-wrapper {
   display: grid;
   grid-template-columns: 1fr 3fr;
-  background-color: #FFEFDA;
   border-radius: 10px;
   width: 100%;
   height: 150px;
+  color: white;
+  background-color: $primary;
 }
 
 .current-task-header {
