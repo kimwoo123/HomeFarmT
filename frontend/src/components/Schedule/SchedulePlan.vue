@@ -2,9 +2,7 @@
   <div>
     <div class="schedule-header">
       <span class="schedule-text">Schedule</span>
-      <div>
-        <font-awesome-icon icon="plus" class="icon"/><span> 추가</span>
-      </div>
+      <button><font-awesome-icon icon="plus" /><span> 추가</span></button>
     </div>
 
     <div class="schedule">
@@ -17,7 +15,7 @@
         </div>
       </div>
       <div class="item">
-        
+
       </div>
     </div>
   </div>
