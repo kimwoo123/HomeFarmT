@@ -1,13 +1,29 @@
 <template>
-  <div>
-    <input type="email" v-model="email" placeholder="email">
+  <div class="signup-container">
+    <div class="nav-container">
+      <font-awesome-icon icon="arrow-left" @click="$router.push({ name: 'Login' })" class="icon"/>
+      <span>Signup</span>
+      <font-awesome-icon icon="user" class="icon-display"/>
+    </div>
 
-    <input type="password" id="password" v-model="password" placeholder="password">
-    <input type="passwordConfirmation" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="passwordConfirmation">
+    <div class="logo"></div>
 
-    <button @click="requestSignup()">버튼</button>
+    <div class="input-container">
+      <font-awesome-icon icon="user" class="icon"/>
+      <input type="email" v-model="email" placeholder="email">
+      <font-awesome-icon icon="lock" class="icon"/>
+      <input type="password" id="password" v-model="password" placeholder="password">
+      <font-awesome-icon icon="lock" class="icon"/>
+      <input type="passwordConfirmation" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="passwordConfirmation">
+    </div>
+
+    <button @click="requestSignup()">Signup</button>
   </div>
 </template>
+
+<style lang="scss" scoped>
+@import './Signup.scss';
+</style>
 
 <script>
 export default {
@@ -42,7 +58,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-@import url('./Signup.scss');
-</style>
