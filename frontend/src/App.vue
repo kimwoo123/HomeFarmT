@@ -12,6 +12,7 @@
 <style lang="scss">
   @import '@/assets/scss/normalize.scss';
   @import '@/assets/scss/common.scss';
+  @import url('https://cdn.rawgit.com/moonspam/NanumSquare/master/nanumsquare.css');
   #app {
     width: 360px;
     height: 683px;
@@ -25,6 +26,11 @@
   body {
     background-color: grey;
   }
+
+  * {
+    font-family: 'NanumSquare';
+  }
+
   #nav {
     padding: 15px;
   }

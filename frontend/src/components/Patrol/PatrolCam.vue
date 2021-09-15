@@ -1,6 +1,6 @@
 <template>
   <div class="patrol-cam-container">
-    <img src="@/assets/images/patrol.png">
+    <img :src="require('@/assets/images/patrol.png')">
   </div>
 </template>
 <style lang="scss" scoped>

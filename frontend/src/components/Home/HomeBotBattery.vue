@@ -22,7 +22,7 @@ export default {
   name: 'HomeBotBattery',
   data() {
     return {
-      batteryPercentage: 90,
+      batteryPercentage: 70,
       degreeLeft: 0,
       degreeRight: 0,
     }
