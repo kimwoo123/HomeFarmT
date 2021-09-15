@@ -1,23 +1,30 @@
 <template>
   <div class="login-container">
-    <h1>로그인</h1>
-    
-    <div class="email-form">
-      <p style="width: 80px;">email</p>
-      <input type="email" :value="email" class="login-input">
+    <div class="nav-container">
+      <span>Login</span>
     </div>
-    
-    <div class="password-form">
-      <p style="width: 80px;">password</p>
-      <input type="password" :value="password" @keyup.enter="requestLogin" class="login-input">
+
+    <div class="logo"></div>
+
+    <div class="input-container">
+      <font-awesome-icon icon="user" class="icon"/>
+      <input type="email" :value="email" placeholder="email">
+      <font-awesome-icon icon="lock" class="icon"/>
+      <input type="password" :value="password" @keyup.enter="requestLogin" placeholder="password">
+      <div class="option">
+        <small>Forgot Password?</small>
+        <small @click="$router.push({ name: 'Signup' })">Sign Up</small>
+      </div>
     </div>
-    
-    <button class="login-button" @click="requestLogin">Login</button>
+
+    <button @click="requestLogin">Login</button>
   </div>
 </template>
+
 <style lang="scss" scoped>
-  @import url('./Login.scss');
+  @import './Login.scss';
 </style>
+
 <script>
 export default {
   name: 'Login',

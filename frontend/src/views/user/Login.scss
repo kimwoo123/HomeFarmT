@@ -1,30 +1,59 @@
 .login-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  min-width: 360px;
 }
 
-.login-input {
-  width: 30%;
-  height: 50px;
-  margin: 10px;
-  outline: none;
-  border-radius: 10px;
-}
-
-.login-button {
-  width: 70px; 
-}
-
-.email-form {
-  width: 100%;
+.nav-container {
+  width: 320px;
+  height: 55px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 0px 20px;
+  span {
+    font-size: 24px;
+  }
 }
 
-.password-form {
-  width: 100%;
+.logo {
+  width: 150px;
+  height: 150px;
+  background-color: $primary;
+  margin-top: 50px;
+}
+
+.input-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  margin-bottom: 45px;
+  margin-top: 80px;
+  input {
+    width: 260px;
+    border: 0px;
+    border-bottom: 1px solid black;
+    margin-bottom: 25px;
+    padding: 5px 5px 5px 30px;
+  }
+  .icon {
+    width: 25px;
+    margin-bottom: -21px;
+    z-index: 1000;
+  }
+  .option {
+    display: flex;
+    justify-content: space-between;
+    margin-top: -18px;
+  }
+}
+
+button {
+  border-radius: 15px 0 15px 0;
+  border: 0px;
+  background-color: $secondary;
+  width: 295px;
+  height: 35px;
+  color: $white;
 }
