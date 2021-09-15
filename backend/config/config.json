@@ -1,9 +1,9 @@
 {
   "development": {
     "username": "root",
-    "password": "rladn485",
+    "password": "ssafy",
     "database": "iot",
-    "host": "127.0.0.1",
+    "host": "52.79.134.74",
     "dialect": "mysql"
   },
   "test": {
