@@ -12,7 +12,7 @@ pipeline {
 				dir ('frontend') {
 					sh 'rm -f package-lock.json'
 					sh 'npm install --legacy-peer-deps'
-					sh 'npm rebuild node-sass'
+					sh 'npm run build'
 				}
 			}
 		}
