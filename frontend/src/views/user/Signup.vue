@@ -49,7 +49,6 @@ export default {
       this.$store.dispatch('requestSignup', credentials)
         .then(() => {
           this.$store.dispatch('requestSignup', credentials)
-          console.log('완료메시지')
         })
         .catch(err => {
           console.error(err)

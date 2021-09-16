@@ -46,11 +46,9 @@ export default {
   },
   methods: {
     turnOn(item) {
-      console.log('켜기')
       item.status = true
     },
     turnOff(item) {
-      console.log('끄기')
       item.status = false
     },
   }

@@ -41,7 +41,6 @@ export default {
   },
   methods: {
     clickName() {
-      console.log('변함')
       this.editMode = false
     },
     enterInput() {

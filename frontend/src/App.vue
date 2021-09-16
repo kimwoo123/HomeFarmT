@@ -5,23 +5,10 @@
 </template>
 
 <script>
-import gql from 'graphql-tag'
-import { useQuery } from '@vue/apollo-composable'
+// import { useLazyQuery } from '@vue/apollo-composable'
 
 export default {
   name: 'App',
-  setup() {
-    const { result } = useQuery(gql`
-    query user {
-      allUser {
-        email
-      }
-    }`)
-    console.log(result.value.allUser)
-  return {
-    result
-  }
- },
 }
 </script>
 
