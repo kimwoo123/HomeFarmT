@@ -20,25 +20,25 @@ module.exports = {
         console.log('signup done')
         return userInfo
       } else {
+        
         console.log('user already exist')
-        return userInfo
+        throw new Error('user already exist')
       }
-      return userInfo
     },
     login: async (_, { email, password }) => {
       // const hashed = crypto.createHmac('sha256', email).update(password).digest('hex');
-      const userCheck = await User.findOne({ where: { email: email, password: password}})
+      const userCheck = await User.findOne({ where: { email: email }})
       if (userCheck.email === '') {
-        console.log('none')
+        console.log(email, password)
         throw new Error('user not exist')
       } else {
+        console.log(email, password)
         const savedUser = await User.findOne({ where: { email }});
         return savedUser;
       }
     },
     deleteUser: async (_, { email }) => {
-      const oldUser = await 
-      delete({ where: { email: email }})
+      const oldUser = await User.delete({ where: { email: email }})
       const user = await User.findOne({ where: { email: email }})
       return user
     }
