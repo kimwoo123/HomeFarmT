@@ -51,7 +51,7 @@ params_lidar = {
     "Block_SIZE": int(1206),
     "X": 0, # meter
     "Y": 0,
-    "Z": 0.6,
+    "Z": 0.2+0.1,
     "YAW": 0, # deg
     "PITCH": 0,
     "ROLL": 0
@@ -67,9 +67,9 @@ params_cam = {
     "Block_SIZE": int(65000),
     "X": 0, # meter
     "Y": 0,
-    "Z": 1,
+    "Z": 0.23,
     "YAW": 0, # deg
-    "PITCH": 5,
+    "PITCH": 0,
     "ROLL": 0
 }
 
@@ -189,8 +189,10 @@ def main(args=None):
         MODEL_NAME, 'frozen_inference_graph.pb')
 
     print(PATH_TO_WEIGHT)
-    PATH_TO_LABELS = os.path.join(CWD_PATH, 'model_weights', \
-        'data', 'mscoco_label_map.pbtxt')
+    # PATH_TO_LABELS = os.path.join(CWD_PATH, 'model_weights', \
+    #     'data', 'mscoco_label_map.pbtxt')
+    PATH_TO_LABELS = 'C:\\LDH\\Study\\SSAFY\\2nd\\Specialization\\SUB2\\src\\sub3\\sub3\\model_weights\\data\\mscoco_label_map.pbtxt'
+    PATH_TO_WEIGHT = 'C:\\LDH\\Study\\SSAFY\\2nd\\Specialization\\SUB2\\src\\sub3\\sub3\\model_weights\\ssd_mobilenet_v1_coco_2018_01_28\\frozen_inference_graph.pb'
 
     NUM_CLASSES = 90
 
@@ -283,27 +285,27 @@ def main(args=None):
 
         xy_i = l2c_trans.project_pts2img(xyz_c, False)
 
-        xyii = np.concatenate([xy_i, xyz_p], axis=1)
-
+        # xyii = np.concatenate([xy_i, xyz_p], axis=1)
+        print(xyz.shape)
+        print(xyz)
         """
-
         # 로직 12. bounding box 결과 좌표 뽑기
         ## boxes_detect 안에 들어가 있는 bounding box 결과들을
         ## 좌상단 x,y와 너비 높이인 w,h 구하고, 
         ## 본래 이미지 비율에 맞춰서 integer로 만들어
         ## numpy array로 변환
-
+        """
         if len(boxes_detect) != 0:
 
             ih = img_bgr.shape[0]
             iw = img_bgr.shape[1]
 
-            boxes_np = 
+            # boxes_np = 
 
-            x = 
-            y = 
-            w = 
-            h = 
+            x = boxes_detect[:, 0] * iw
+            y = boxes_detect[:, 1] * ih
+            w = boxes_detect[:, 2] * iw
+            h = boxes_detect[:, 3] * ih
 
             bbox = np.vstack([
                 x.astype(np.int32).tolist(),
@@ -312,15 +314,12 @@ def main(args=None):
                 h.astype(np.int32).tolist()
             ]).T
 
-        """
-
             
-        """
-
+            """
             # 로직 13. 인식된 물체의 위치 추정
             ## bbox가 구해졌으면, bbox 안에 들어가는 라이다 포인트 들을 구하고
             ## 그걸로 물체의 거리를 추정할 수 있습니다.
-            
+            """
             ostate_list = []
 
             for i in range(bbox.shape[0]):
@@ -329,13 +328,13 @@ def main(args=None):
                 w = int(bbox[i, 2])
                 h = int(bbox[i, 3])
 
-                cx = 
-                cy = 
+                cx = x + w / 2
+                cy = y + h / 2
                 
-                xyv = 
+                # xyv = 
 
                 ## bbox 안에 들어가는 라이다 포인트들의 대표값(예:평균)을 뽑는다
-                ostate = 
+                ostate = [[]]
 
                 ## 대표값이 존재하면 
                 if not np.isnan(ostate[0]):
@@ -345,7 +344,7 @@ def main(args=None):
                                             xy_i[:, 1].astype(np.int32))
 
             print(ostate_list)
-        """
+        
         visualize_images(image_process, infer_time)
 
     g_node.destroy_node()
