@@ -3,7 +3,11 @@ pipeline {
 	tools {nodejs 'nodejs'}
 	stages {
 		stage('Build') {
-			agent any
+			agent {
+				docker {
+					image 'node:16-alpine
+				}
+			}
 			steps {
 				dir ('frontend') {
 					sh 'rm -f package-lock.json'
