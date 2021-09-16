@@ -11,8 +11,6 @@ export default {
   name: 'App',
 }
 </script>
-
-
 <style lang="scss">
   @import '@/assets/scss/normalize.scss';
   @import '@/assets/scss/common.scss';
