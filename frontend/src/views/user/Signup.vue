@@ -27,6 +27,7 @@
 
 <script>
 import gql from 'graphql-tag'
+// import { useMutation } from '@vue/apollo-composable'
 
 export default {
   name: 'Signup',
@@ -50,12 +51,13 @@ export default {
             email
             password
           }
-        }`,
+        }`, 
         variables: {
           email: this.email,
           password: this.password
         }
         })
+        this.$router.push({name: 'Home'})
       // this.$store.dispatch('requestSignup', credentials)
       //   .then(() => {
       //     this.$store.dispatch('requestSignup', credentials)
