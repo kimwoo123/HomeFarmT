@@ -1,4 +1,4 @@
 FROM nginx:latest
 
 
-COPY ./dist /var/jenkins_home/front_deploy
+COPY ./dist /usr/share/nginx/html
