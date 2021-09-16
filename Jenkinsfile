@@ -3,16 +3,12 @@ pipeline {
 	tools {nodejs 'nodejs'}
 	stages {
 		stage('Build') {
-			agent {
-				docker {
-					image 'node:16-alpine'
-				}
-			}
+			agent any
 			steps {
 				dir ('frontend') {
 					sh 'rm -f package-lock.json'
-					sh 'yarn install'
-					sh 'yarn build'
+					sh 'npm install'
+					sh 'npm run build'
 				}
 			}
 		}
