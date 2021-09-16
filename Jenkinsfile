@@ -12,7 +12,7 @@ pipeline {
 				dir ('frontend') {
 					sh 'rm -f package-lock.json'
 					sh 'npm install --legacy-peer-deps'
-					sh 'npm run build'
+					sh 'npm rebuild node-sass'
 				}
 			}
 		}
@@ -20,7 +20,7 @@ pipeline {
 			agent any
 			steps {
 				dir ('frontend') {
-					sh 'docker build -t licipe:front .'
+					sh 'docker build -t iot_front:front .'
 				}
 			}
 		}
@@ -28,9 +28,9 @@ pipeline {
 			agent any
 			steps {
 				dir ('frontend') {
-					sh 'docker ps -f name=licipe -q | xargs --no-run-if-empty docker container stop'
-					sh 'docker container ls -a -fname=licipe -q | xargs -r docker container rm'
-					sh 'docker run -d --name licipe -p 8000:80 licipe:front'
+					sh 'docker ps -f name=iot_front -q | xargs --no-run-if-empty docker container stop'
+					sh 'docker container ls -a -fname=iot_front -q | xargs -r docker container rm'
+					sh 'docker run -d --name iot_front -p 8000:80 iot_front:front'
 				}
 			}
 		}
