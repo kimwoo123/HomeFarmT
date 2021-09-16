@@ -5,8 +5,8 @@ module.exports = {
     allUser: async () =>{
       const getUsers = await User.findAll();
       return getUsers;
+    },
   },
-},
   Mutation: {
     signUp: async (_, { userid, email }) => {
       const newUser = await User.create({ 

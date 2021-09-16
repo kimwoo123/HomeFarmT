@@ -1,21 +1,21 @@
 {
   "development": {
     "username": "root",
-    "password": "rladn485",
-    "database": "iot",
+    "password": "flwkahd12",
+    "database": "iot_db",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
-    "password": "rladn485",
+    "password": "flwkahd12",
     "database": "database_test",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
-    "password": "rladn485",
+    "password": "flwkahd12",
     "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql"
