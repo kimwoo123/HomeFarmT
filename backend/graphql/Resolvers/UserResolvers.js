@@ -1,4 +1,4 @@
-const { User } = require("../models/index")
+const { User } = require("../../models/index")
 const crypto = require('crypto')
 
 module.exports = {
@@ -17,11 +17,8 @@ module.exports = {
       // const hashed = crypto.createHmac('sha256', email).update(password).digest('hex');
       const [userInfo, created] = await User.findOrCreate({ where: { email: email, password: password }})
       if (created) {
-        console.log('signup done')
         return userInfo
       } else {
-        
-        console.log('user already exist')
         throw new Error('user already exist')
       }
     },
