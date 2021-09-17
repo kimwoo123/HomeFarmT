@@ -1,6 +1,6 @@
 const { gql } = require('apollo-server');
 
-const typeDefs = gql`
+const UserSchema = gql`
   type Query {
     allUser: [User]
     findUser(password: String): User
@@ -19,4 +19,4 @@ const typeDefs = gql`
 
 `;
 
-module.exports = typeDefs;
+module.exports = UserSchema;
