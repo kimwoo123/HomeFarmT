@@ -2,19 +2,21 @@ const { gql } = require('apollo-server');
 
 const ScheduleSchema = gql`
   type Query {
-    allUser: [User]
-    findUser(password: String): User
+    allSchedule: [Schedule]
+    findSchedule(schedule_title: String): Schedule
   }
 
   type Mutation {
-    signUp(email: String, password: String): User
-    login(email: String, password: String): User
-    deleteUser(email: String, password: String): User
+    createSchedule(schedule_title: String, schedule_dec: String): Schedule
+    updateSchedule(schedule_title: String, schedule_dec: String): Schedule
+    deleteSchedule(schedule_title: String, schedule_dec: String): Schedule
   }
 
-  type User {
-    email: String!
-    password: String!
+  type Schedule {
+    scheduleid: Int!
+    schedule_time: String!
+    schedule_title: String
+    schedule_des: String
   }
 
 `;

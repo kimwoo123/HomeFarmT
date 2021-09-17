@@ -6,7 +6,7 @@ module.exports = {
     allUser: async () =>{
       const getUsers = await User.findAll();
       return getUsers;
-  },
+    },
     findUser: async (_, { email }) => {
       const oneUser = await User.findOne({ where: {email: email}});
       return oneUser
