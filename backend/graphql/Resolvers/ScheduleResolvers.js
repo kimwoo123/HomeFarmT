@@ -1,15 +1,29 @@
 const { Schedule } = require("../../models/index")
-const crypto = require('crypto')
 
 module.exports = {
   Query: {
-    allUser: async () =>{
-      const getUsers = await User.findAll();
-      return getUsers;
+    allSchedule: async () =>{
+      const getSchedules = await Schedule.findAll();
+      return getSchedules;
+    },
+    findSchedule: async (_, { schedule_title }) => {
+      const oneSchedule = await Schedule.findOne({ where: {schedule_title: schedule_title}});
+      return oneSchedule
+    }
   },
-    findUser: async (_, { email }) => {
-      const oneUser = await User.findOne({ where: {email: email}});
-      return oneUser
+  Mutation: {
+    createSchedule: async (_, { schedule_title, schedule_dec }) => {
+      const newSchedule = await Schedule.create({ schedule_title, schedule_dec })
+    },
+    updateSchedule: async (_, { scheduleid, schedule_title, schedule_dec }) => {
+      await Schedule.update({ schedule_title: schedule_title, schedule_dec: schedule_dec }, {
+        where: {
+          scheduleid: scheduleid
+        }
+      })
+    },
+    deleteSchedule: async (_, { scheduleid }) => {
+      await Schedule.destroy({ where: { scheduleid }})
     }
   }
 };
