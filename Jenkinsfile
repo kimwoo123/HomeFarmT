@@ -30,7 +30,7 @@ pipeline {
 				dir ('frontend') {
 					sh 'docker ps -f name=iot_front -q | xargs --no-run-if-empty docker container stop'
 					sh 'docker container ls -a -fname=iot_front -q | xargs -r docker container rm'
-					sh 'docker run -d --name iot_front -p 8000:80 iot_front:front'
+					sh 'docker run -d --name iot_front -p 80:80 iot_front:front'
 				}
 			}
 		}
