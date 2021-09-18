@@ -3,11 +3,7 @@ pipeline {
 	tools {nodejs 'nodejs'}
 	stages {
 		stage('Build') {
-			agent {
-				docker {
-					image 'node:16-alpine'
-				}
-			}
+			agent any
 			steps {
 				sh 'docker-compose down --rmi all'
 				sh 'docker-compose up -d'
