@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  express:
+    build:
+      context: ./backend
+    container_name: iot_express
+    command: npm start
+    ports:
+      - "4000:4000"
+      - "3000:3000"
+    restart: always
+  vue:
+    build:
+      context: ./frontend
+    container_name: iot_vue
+    ports:
+      - "8000:80"
+
