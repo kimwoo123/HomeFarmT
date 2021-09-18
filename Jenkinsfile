@@ -2,13 +2,6 @@ pipeline {
 	agent none
 	tools {nodejs 'nodejs'}
 	stages {
-		stage('Backend Build') {
-			agent any
-			steps {
-				sh 'docker-compose down --rmi all'
-				sh 'docker-compose up -d'
-			}
-		}
 		stage('Frontend Build') {
 			agent any
 			steps {
@@ -16,6 +9,13 @@ pipeline {
 					sh 'npm install --legacy-peer-deps .'
 					sh 'npm run build'
 				}
+			}
+		}
+		stage('Backend Build') {
+			agent any
+			steps {
+				sh 'docker-compose down --rmi all'
+				sh 'docker-compose up -d'
 			}
 		}
 	}
