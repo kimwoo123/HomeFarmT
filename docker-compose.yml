@@ -7,7 +7,7 @@ services:
     command: npm start
     ports:
       - "4000:4000"
-      - "3000:3000"
+      - "3090:3000"
     restart: always
   vue:
     build:
