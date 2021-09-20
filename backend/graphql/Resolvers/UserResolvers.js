@@ -1,4 +1,5 @@
 const { User } = require("../../models/index")
+const jwt = require("jsonwebtoken");
 const crypto = require('crypto')
 
 module.exports = {
@@ -14,25 +15,44 @@ module.exports = {
 },
   Mutation: {
     signUp: async (_, { email, password }) => {
-      // const hashed = crypto.createHmac('sha256', email).update(password).digest('hex');
-      const [userInfo, created] = await User.findOrCreate({ where: { email: email, password: password }})
-      if (created) {
-        return userInfo
-      } else {
-        throw new Error('user already exist')
+      const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
+      const userCheck = await User.findOne({ where: { email: hashedEmail }})
+      if (userCheck && userCheck.email === hashedEmail) {
+        throw new Error('email already exist')
       }
+
+    const salt = crypto.randomBytes(26).toString('base64');
+    const scryptPassword = crypto.scryptSync(password, salt, 26)
+    const hashedPassword = scryptPassword.toString('hex')
+    const result = await User.create({ 
+      email: hashedEmail,
+      password: hashedPassword,
+      hashid: salt
+    })
+      console.log(hashedPassword)
+      return result
     },
     login: async (_, { email, password }) => {
-      // const hashed = crypto.createHmac('sha256', email).update(password).digest('hex');
-      const userCheck = await User.findOne({ where: { email: email }})
-      if (userCheck.email === '') {
-        console.log(email, password)
+      const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
+      const userCheck = await User.findOne({ where: { email: hashedEmail }})
+      if (!userCheck) {
         throw new Error('user not exist')
-      } else {
-        console.log(email, password)
-        const savedUser = await User.findOne({ where: { email }});
-        return savedUser;
       }
+      const salt = await userCheck.hashid.toString('base64')
+      const scryptPassword = crypto.scryptSync(password, salt, 26)
+      const hashedPassword = scryptPassword.toString('hex')
+
+      if (userCheck.password !== hashedPassword) {
+        throw new Error('Password Error')
+      }
+      let token = jwt.sign({ email, password }, salt, { expiresIn: '5m'})
+      const result = ({ 
+        email: hashedEmail,
+        password: hashedPassword,
+        message: 'token!',
+        token: token
+      })
+      return result;
     },
     deleteUser: async (_, { email }) => {
       const oldUser = await User.delete({ where: { email: email }})
