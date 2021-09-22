@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const cors = require('cors')
 const helmet = require('helmet')
+const jwt = require('jsonwebtoken')
 const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
 const http = require('http')
@@ -18,16 +19,15 @@ const _ = require('lodash');
 
 const typeDefs = [UsertypeDefs, ScheduletypeDefs]
 const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
+require('dotenv').config()
 
 const store = createStore();
 
 const context = ({ req }) => {
-  const token = req.headers.authorization || ''
-  const email = Buffer.from(token, 'base64').toString('ascii')
-  if (email) {
-    const user = store.users.findByPk({ where: { email }})
-  }
-  return { email }
+  if (!req.headers.authorization) return { user: null }
+  const token = req.headers.authorization.split(' ')[1] || ''
+  const user = jwt.verify(token, process.env.SECRET_KEY)
+  return { user: user }
 }
 
 async function startApolloServer(typeDefs, resolvers) {

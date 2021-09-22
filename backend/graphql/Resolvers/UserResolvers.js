@@ -32,7 +32,9 @@ module.exports = {
       console.log(hashedPassword)
       return result
     },
-    login: async (_, { email, password }) => {
+    login: async (_, { email, password }, context) => {
+      console.log(_, 'parents')
+      console.log(context, 'contetx')
       const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
       const userCheck = await User.findOne({ where: { email: hashedEmail }})
       if (!userCheck) {
@@ -45,7 +47,7 @@ module.exports = {
       if (userCheck.password !== hashedPassword) {
         throw new Error('Password Error')
       }
-      let token = jwt.sign({ email, password }, salt, { expiresIn: '5m'})
+      let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '5m'})
       const result = ({ 
         email: hashedEmail,
         password: hashedPassword,

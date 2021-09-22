@@ -41,6 +41,7 @@ export default {
       this.$apollo.mutate({
         mutation: gql`mutation ($email: String!, $password: String!) {
           login(email: $email , password: $password) {
+            email
             token
           }
         }`,
@@ -50,7 +51,7 @@ export default {
         }
         })
         .then((res) => {
-          console.log('token저장 유효기간 5분')
+          console.log(res.data)
           localStorage.setItem('token', res.data.login.token)
         })
         .catch((err) => {
