@@ -72,8 +72,8 @@ def createLineIterator(P1, P2, img):
     """
     dX = P2X - P1X
     dY = P2Y - P1Y
-    dXa = np.abs(P2X - P1X)
-    dYa = np.abs(P2Y - P1Y)
+    dXa = np.abs(dX)
+    dYa = np.abs(dY)
     """
     # 로직 2 : 직선을 그릴 grid map의 픽셀 좌표를 넣을 numpy array 를 predifine
 
@@ -100,7 +100,7 @@ def createLineIterator(P1, P2, img):
             itbuffer[:,1] = 
         else:
             itbuffer[:,1] = 
-     
+
     """
 
     """
@@ -111,19 +111,9 @@ def createLineIterator(P1, P2, img):
         if negX:
             
         else:
-     
+
     """
-    if P1X == P2X:        
-        itbuffer[:,0] = P1X
-        if negY:
-            itbuffer[:,1] = 
-        else:
-            itbuffer[:,1] = 
-    elif P1Y == P2Y:        
-        itbuffer[:,1] = 
-        if negX:
-            
-        else:
+
     """ 
     # 로직 6 : 대각선의 픽셀 좌표 계산  
 
@@ -145,8 +135,34 @@ def createLineIterator(P1, P2, img):
             itbuffer[:,1] = 
 
     """
-
-    
+    if P1X == P2X:        
+        itbuffer[:, 0] = P1X
+        if negY:
+            itbuffer[:, 1] = np.arange(P1Y, P2Y, -1)
+        else:
+            itbuffer[:, 1] = np.arange(P1Y, P2Y, 1)
+    elif P1Y == P2Y:        
+        itbuffer[:,1] = P1Y
+        if negX:
+            itbuffer[:, 0] = np.arange(P1X, P2X, -1)
+        else:
+            itbuffer[:, 0] = np.arange(P1X, P2X, 1)
+    else:        
+        steepSlope = dYa > dXa 
+        if steepSlope:
+            slope = dX / dY
+            if negY:
+                itbuffer[:, 1] = np.arange(P1Y, P2Y, -1)
+            else:
+                itbuffer[:, 1] = np.arange(P1Y, P2Y, 1)
+            itbuffer[:, 0] = slope * (itbuffer[:, 1] - P1Y) + P1X
+        else:
+            slope = dY / dX
+            if negX:
+                itbuffer[:, 0] = np.arange(P1X, P2X, -1)
+            else:
+                itbuffer[:, 0] = np.arange(P1X, P2X, 1)
+            itbuffer[:, 1] = slope * (itbuffer[:, 0] - P1X) + P1Y
     """
     로직 7 : 맵 바깥 픽셀 좌표 삭제.
     colX = 
@@ -154,8 +170,11 @@ def createLineIterator(P1, P2, img):
     itbuffer = 
     
     """
-    itbuffer = []
-    # itbuffer[:,2] = img[itbuffer[:,1].astype(np.uint),itbuffer[:,0].astype(np.uint)]
+    colX = itbuffer[:, 0]
+    colY = itbuffer[:, 1]
+    itbuffer = itbuffer[np.logical_and(colX >= 0, colY >= 0, colX < imageW, colY < imageH)]
+    # itbuffer = []
+    itbuffer[:, 2] = img[itbuffer[:, 1].astype(np.uint),itbuffer[:, 0].astype(np.uint)]
 
     return itbuffer
 
@@ -207,8 +226,8 @@ class Mapping:
         """
         pose_x = (pose[0] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
         pose_y = (pose[1] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
-        laser_global_x = (laser[0] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
-        laser_global_y = (laser[1] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
+        laser_global_x = (laser[0, :] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
+        laser_global_y = (laser[1, :] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
         """
         # 로직 10. laser scan 공간을 맵에 표시
         for i in range(laser_global.shape[1]):
@@ -233,13 +252,13 @@ class Mapping:
             p1 = np.array([pose_x, pose_y]).reshape(-1).astype(np.int)
             p2 = np.array([laser_global_x[i], laser_global_y[i]]).astype(np.int)
         
-            line_iter = utils.createLineIterator(p1, p2, self.map)
+            line_iter = createLineIterator(p1, p2, self.map)
         
             if (line_iter.shape[0] is 0):
                 continue
         
-            avail_x = line_iter[0]
-            avail_y = line_iter[1]
+            avail_x = line_iter[:, 0]
+            avail_y = line_iter[:, 1]
         
             ## Empty
             self.map[avail_y[:-1], avail_x[:-1]] = 255
@@ -337,8 +356,8 @@ class Mapper(Node):
         """
 
         Distance = np.array(msg.ranges);
-        x = Distance * cos(heading * pi / 180) + pose_x;
-        y = Distance * sin(heading * pi / 180) + pose_y;
+        x = Distance * np.cos(np.linspace(0, 2 * np.pi, 360))
+        y = Distance * np.sin(np.linspace(0, 2 * np.pi, 360))
         laser = np.array([x, y])
 
         # 로직 6 : map 업데이트 실행(4,5번이 완성되면 바로 주석처리된 것을 해제하고 쓰시면 됩니다.)
@@ -365,7 +384,7 @@ class Mapper(Node):
 
         """
         self.map_msg.header.stamp =rclpy.clock.Clock().now().to_msg()
-        self.map_msg.data =list_map_data
+        self.map_msg.data = list_map_data[0]
         self.map_pub.publish(self.map_msg)
 
 def save_map(node,file_path):
