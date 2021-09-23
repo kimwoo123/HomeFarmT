@@ -138,23 +138,23 @@ def createLineIterator(P1, P2, img):
     if P1X == P2X:        
         itbuffer[:, 0] = P1X
         if negY:
-            itbuffer[:, 1] = np.arange(P1Y, P2Y, -1)
+            itbuffer[:, 1] = np.arange(P1Y - 1, P2Y, -1)
         else:
-            itbuffer[:, 1] = np.arange(P1Y, P2Y, 1)
+            itbuffer[:, 1] = np.arange(P1Y + 1, P2Y + 1, 1)
     elif P1Y == P2Y:        
         itbuffer[:,1] = P1Y
         if negX:
-            itbuffer[:, 0] = np.arange(P1X, P2X, -1)
+            itbuffer[:, 0] = np.arange(P1X - 1, P2X - 1, -1)
         else:
-            itbuffer[:, 0] = np.arange(P1X, P2X, 1)
+            itbuffer[:, 0] = np.arange(P1X + 1, P2X + 1, 1)
     else:        
         steepSlope = dYa > dXa 
         if steepSlope:
             slope = dX / dY
             if negY:
-                itbuffer[:, 1] = np.arange(P1Y, P2Y, -1)
+                itbuffer[:, 1] = np.arange(P1Y - 1, P2Y - 1, -1)
             else:
-                itbuffer[:, 1] = np.arange(P1Y, P2Y, 1)
+                itbuffer[:, 1] = np.arange(P1Y + 1, P2Y + 1, 1)
             itbuffer[:, 0] = slope * (itbuffer[:, 1] - P1Y) + P1X
         else:
             slope = dY / dX
@@ -174,7 +174,7 @@ def createLineIterator(P1, P2, img):
     colY = itbuffer[:, 1]
     itbuffer = itbuffer[np.logical_and(colX >= 0, colY >= 0, colX < imageW, colY < imageH)]
     # itbuffer = []
-    itbuffer[:, 2] = img[itbuffer[:, 1].astype(np.uint),itbuffer[:, 0].astype(np.uint)]
+    # itbuffer[:, 2] = img[itbuffer[:, 1].astype(np.uint),itbuffer[:, 0].astype(np.uint)]
 
     return itbuffer
 
