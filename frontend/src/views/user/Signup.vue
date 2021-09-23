@@ -27,6 +27,7 @@
 
 <script>
 import gql from 'graphql-tag'
+// import { useMutation } from '@vue/apollo-composable'
 
 export default {
   name: 'Signup',
@@ -43,28 +44,26 @@ export default {
     }
   },
   methods:{
-    async requestSignup() {
-      await this.$apollo.mutate({
+    requestSignup() {
+      this.$apollo.mutate({
         mutation: gql`mutation ($email: String!, $password: String) {
           signUp(email: $email , password: $password) {
             email
             password
           }
-        }`,
+        }`, 
         variables: {
           email: this.email,
           password: this.password
         }
         })
-      // this.$store.dispatch('requestSignup', credentials)
-      //   .then(() => {
-      //     this.$store.dispatch('requestSignup', credentials)
-      //     console.log('완료메시지')
-      //   })
-      //   .catch(err => {
-      //     console.error(err)
-      //   })
+        .then((res) => {
+          console.log(res, 'done')
+        })
+        .catch((err) => {
+          console.log(err, 'no')
+        })
+      },
     },
-  },
-}
+  }
 </script>

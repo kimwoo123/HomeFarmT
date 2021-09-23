@@ -8,9 +8,9 @@
 
     <div class="input-container">
       <font-awesome-icon icon="user" class="icon"/>
-      <input type="email" :value="email" placeholder="email">
+      <input type="email" v-model="email" placeholder="email">
       <font-awesome-icon icon="lock" class="icon"/>
-      <input type="password" :value="password" @keyup.enter="requestLogin" placeholder="password">
+      <input type="password" v-model="password" @keyup.enter="requestLogin" placeholder="password">
       <div class="option">
         <small>Forgot Password?</small>
         <small @click="$router.push({ name: 'Signup' })">Sign Up</small>
@@ -37,12 +37,12 @@ export default {
     }
   },
   methods: {
-    async requestLogin() {
-      await this.$apollo.mutate({
-        mutation: gql`mutation ($email: String!, $password: String) {
+    requestLogin() {
+      this.$apollo.mutate({
+        mutation: gql`mutation ($email: String!, $password: String!) {
           login(email: $email , password: $password) {
             email
-            password
+            token
           }
         }`,
         variables: {
@@ -50,10 +50,16 @@ export default {
           password: this.password
         }
         })
-      // this.store.dispatch('user/requestLogin', loginInfo)
-    }
+        .then((res) => {
+          console.log(res.data)
+          localStorage.setItem('token', res.data.login.token)
+        })
+        .catch((err) => {
+          console.log(err, 'no')
+        })
+      },
+    },
   }
-}
 </script>
 
 

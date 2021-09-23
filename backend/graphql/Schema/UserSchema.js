@@ -1,6 +1,6 @@
 const { gql } = require('apollo-server');
 
-const typeDefs = gql`
+const UserSchema = gql`
   type Query {
     allUser: [User]
     findUser(password: String): User
@@ -8,7 +8,7 @@ const typeDefs = gql`
 
   type Mutation {
     signUp(email: String, password: String): User
-    login(email: String, password: String): User
+    login(email: String, password: String): Token
     deleteUser(email: String, password: String): User
   }
 
@@ -17,6 +17,13 @@ const typeDefs = gql`
     password: String!
   }
 
+  type Token {
+    email: String!
+    password: String!
+    token: String
+    message: String
+  }
+
 `;
 
-module.exports = typeDefs;
+module.exports = UserSchema;
