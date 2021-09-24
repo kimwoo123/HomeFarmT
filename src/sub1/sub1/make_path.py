@@ -34,7 +34,7 @@ class makePath(Node):
 
 
         # 로직 2. 저장할 경로 및 텍스트파일 이름을 정하고, 쓰기 모드로 열기
-        full_path = 'C:\\Users\\multicampus\\Desktop\\sub1_ws\\src\\sub1\\path\\first_path.txt'
+        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub1\\path\\first_path.txt'
         self.path_file = open(full_path, 'w')
         
         self.is_odom = True
