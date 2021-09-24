@@ -8,6 +8,7 @@ import Schedule from '../views/Schedule.vue'
 import Patrol from '../views/Patrol.vue'
 import NavbarLayout from '../views/NavbarLayout.vue'
 import PageNotFound from '../views/PageNotFound.vue'
+import Test from '../views/Test.vue'
 
 Vue.use(VueRouter)
 
@@ -60,7 +61,12 @@ const routes = [
         component: Patrol
       },
     ]
-  }
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: Test
+  },
 ]
 
 const router = new VueRouter({
