@@ -81,7 +81,7 @@ def createLineIterator(P1, P2, img):
     itbuffer.fill(np.nan)
 
     """
-    itbuffer = np.empty(max(dYa, dXa), 3)
+    itbuffer = np.empty(shape=(max(dYa, dXa), 3), dtype=np.int32)
     itbuffer.fill(np.nan)
     """
     # 로직 3 : 직선 방향 체크
@@ -138,7 +138,7 @@ def createLineIterator(P1, P2, img):
     if P1X == P2X:        
         itbuffer[:, 0] = P1X
         if negY:
-            itbuffer[:, 1] = np.arange(P1Y - 1, P2Y, -1)
+            itbuffer[:, 1] = np.arange(P1Y - 1, P2Y - 1, -1)
         else:
             itbuffer[:, 1] = np.arange(P1Y + 1, P2Y + 1, 1)
     elif P1Y == P2Y:        
@@ -155,14 +155,14 @@ def createLineIterator(P1, P2, img):
                 itbuffer[:, 1] = np.arange(P1Y - 1, P2Y - 1, -1)
             else:
                 itbuffer[:, 1] = np.arange(P1Y + 1, P2Y + 1, 1)
-            itbuffer[:, 0] = slope * (itbuffer[:, 1] - P1Y) + P1X
+            itbuffer[:, 0] = (slope * (itbuffer[:, 1] - P1Y)).astype(np.int) + P1X
         else:
             slope = dY / dX
             if negX:
-                itbuffer[:, 0] = np.arange(P1X, P2X, -1)
+                itbuffer[:, 0] = np.arange(P1X - 1, P2X - 1, -1)
             else:
-                itbuffer[:, 0] = np.arange(P1X, P2X, 1)
-            itbuffer[:, 1] = slope * (itbuffer[:, 0] - P1X) + P1Y
+                itbuffer[:, 0] = np.arange(P1X + 1, P2X + 1, 1)
+            itbuffer[:, 1] = (slope * (itbuffer[:, 0] - P1X)).astype(np.int) + P1Y
     """
     로직 7 : 맵 바깥 픽셀 좌표 삭제.
     colX = 
@@ -172,7 +172,8 @@ def createLineIterator(P1, P2, img):
     """
     colX = itbuffer[:, 0]
     colY = itbuffer[:, 1]
-    itbuffer = itbuffer[np.logical_and(colX >= 0, colY >= 0, colX < imageW, colY < imageH)]
+    itbuffer = itbuffer[(colX >= 0) & (colY >=0) & (colX<imageW) & (colY<imageH)]
+    
     # itbuffer = []
     # itbuffer[:, 2] = img[itbuffer[:, 1].astype(np.uint),itbuffer[:, 0].astype(np.uint)]
 
@@ -262,10 +263,10 @@ class Mapping:
         
             ## Empty
             self.map[avail_y[:-1], avail_x[:-1]] = 255
-        
+
             ## Occupied
             self.map[avail_y[-1], avail_x[-1]] = 0
-        # self.show_pose_and_points(pose, laser_global)        
+        self.show_pose_and_points(pose, laser_global)        
 
     def __del__(self):
         # 로직 12. 종료 시 map 저장
@@ -384,6 +385,7 @@ class Mapper(Node):
 
         """
         self.map_msg.header.stamp =rclpy.clock.Clock().now().to_msg()
+
         self.map_msg.data = list_map_data[0]
         self.map_pub.publish(self.map_msg)
 
@@ -391,7 +393,7 @@ def save_map(node,file_path):
 
     # 로직 12 : 맵 저장
     pkg_path =os.getcwd()
-    back_folder='..'
+    back_folder='C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3'
     folder_name='map'
     file_name=file_path
     full_path=os.path.join(pkg_path,back_folder,folder_name,file_name)
@@ -409,13 +411,20 @@ def main(args=None):
     rclpy.init(args=args)
     
     try :    
+        print('try')
         run_mapping = Mapper()
         rclpy.spin(run_mapping)
         run_mapping.destroy_node()
         rclpy.shutdown()
 
     except :
+        print('except')
         save_map(run_mapping,'map.txt')
+
+    # run_mapping = Mapper()
+    # rclpy.spin(run_mapping)
+    # run_mapping.destroy_node()
+    # rclpy.shutdown()
 
 
 if __name__ == '__main__':
