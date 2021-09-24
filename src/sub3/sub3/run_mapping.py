@@ -53,7 +53,7 @@ def createLineIterator(P1, P2, img):
     # 6. 대각선의 픽셀 좌표 계산
     # 7. 맵 바깥 픽셀 좌표 삭제
 
-   
+
     imageH = img.shape[0] #height
     imageW = img.shape[1] #width
     P1Y = P1[1] #시작점 y 픽셀 좌표
@@ -227,8 +227,9 @@ class Mapping:
         """
         pose_x = (pose[0] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
         pose_y = (pose[1] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
-        laser_global_x = (laser[0, :] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
-        laser_global_y = (laser[1, :] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
+        laser_global_x = (laser_global[0, :] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
+        laser_global_y = (laser_global[1, :] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
+        
         """
         # 로직 10. laser scan 공간을 맵에 표시
         for i in range(laser_global.shape[1]):
@@ -266,7 +267,7 @@ class Mapping:
 
             ## Occupied
             self.map[avail_y[-1], avail_x[-1]] = 0
-        self.show_pose_and_points(pose, laser_global)        
+        # self.show_pose_and_points(pose, laser_global)        
 
     def __del__(self):
         # 로직 12. 종료 시 map 저장
