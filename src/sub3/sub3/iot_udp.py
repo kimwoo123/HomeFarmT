@@ -1,4 +1,3 @@
-
 import rclpy
 from rclpy.node import Node  
 import time
@@ -55,7 +54,21 @@ class iot_udp(Node):
         # self.send_port=7401
 
         # 로직 1. 통신 소켓 생성
+        # AF_INET => ipv4 인터넷 프로토콜
+        # AF_INET6 => ipv6 인터넷 프로토콜
+        # TCP를 사용하려면 SOCK_STREAM으로.
+        # UDP를 사용하려면 SCOK_DGRAM으로.
+        # socket.socket(family, type)
+        # family => default가 AF_INET
+        # type => default가 SOCK_STREAM
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        # 아래와 같이 데이터를 수신받을 IP와 포트를 튜플로 설정
+        recv_address = (self.ip, self.port)
+
+        # 리스닝 소켓 생성 과정
+        # Ref) https://webnautes.tistory.com/1381
+        # socket 정의 => bind => listen => accept
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         recv_address = (self.ip,self.port)
         self.sock.bind(recv_address)
@@ -63,13 +76,14 @@ class iot_udp(Node):
         self.parsed_data=[]
         
         # 로직 2. 멀티스레드를 이용한 데이터 수신
+        # 쓰레드를 통해 계속해서 데이터가 들어오는지 확인
         thread = threading.Thread(target=self.recv_udp_data)
         thread.daemon = True 
         thread.start() 
 
         self.is_recv_data=False
 
-        os.system('cls')
+        # os.system('cls') # 콘솔 클리어
         while True:
         #     print('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] ')
         #     '''
@@ -90,7 +104,7 @@ class iot_udp(Node):
                 self.all_procedures()
 
 
-    def data_parsing(self,raw_data) :
+    def data_parsing(self, raw_data):
         print(raw_data)
         header = raw_data[:19].decode()
         data_length = raw_data[19:23]
@@ -122,9 +136,7 @@ class iot_udp(Node):
     def send_data(self,uid,cmd):
         
         '''
-        로직 4. 데이터 송신 함수 생성
-
- 
+            로직 4. 데이터 송신 함수 생성
         '''
         header = bytes("$Ctrl-command$", 'utf-8')
         data_length = bytes([18, 0, 0, 0])
@@ -150,13 +162,13 @@ class iot_udp(Node):
         return uid_pack
 
         
-    def packet_to_uid(self,packet):
+    def packet_to_uid(self, packet):
         uid=""
         for data in packet:
-            if len(hex(data)[2:4])==1:
-                uid+="0"
+            if len(hex(data)[2:4]) == 1:
+                uid += "0"
             
-            uid+=hex(data)[2:4]
+            uid += hex(data)[2:4]
             
             
         return uid
@@ -211,7 +223,7 @@ class iot_udp(Node):
 
 
     def disconnect(self):
-        if self.is_recv_data==True :
+        if self.is_recv_data == True :
             self.send_data(self.recv_data[0],params_control_cmd["DISCONNECT"])
         
 
