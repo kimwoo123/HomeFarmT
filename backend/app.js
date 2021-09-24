@@ -10,7 +10,6 @@ const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
 const http = require('http')
 var indexRouter = require('./routes/index');
-const { createStore } = require('./graphql/utils');
 const UsertypeDefs = require('./graphql/Schema/UserSchema');
 const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
@@ -20,8 +19,6 @@ const _ = require('lodash');
 const typeDefs = [UsertypeDefs, ScheduletypeDefs]
 const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
 require('dotenv').config()
-
-const store = createStore();
 
 const context = ({ req }) => {
   if (!req.headers.authorization) return { user: null }
@@ -65,16 +62,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+// app.use(function(req, res, next) {
+//   next(createError(404));
+// });
 
-app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
-});
+// app.use(function(err, req, res, next) {
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
 
 app.disable('x-powered-by');
 
