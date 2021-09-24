@@ -12,6 +12,10 @@ import { setContext } from '@apollo/client/link/context';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:12001'); 
+Vue.prototype.$socket = socket;
 
 library.add(faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp)
 
