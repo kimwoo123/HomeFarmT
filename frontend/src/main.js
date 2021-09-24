@@ -14,11 +14,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:12001'); 
+const socket = io('http://localhost:3000'); 
 Vue.prototype.$socket = socket;
-
 library.add(faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp)
-
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 
@@ -37,7 +35,6 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const cache = new InMemoryCache()
-
 const apolloClient = new ApolloClient({
   link: authLink.concat(httpLink),
   cache,
@@ -49,7 +46,6 @@ Vue.prototype.$log = console.log
 const apolloProvider = new VueApollo({
   defaultClient: apolloClient,
 })
-
 
 new Vue({
   setup () {

@@ -20,7 +20,7 @@ import binascii
 # 5. 사용자 메뉴 생성 
 # 6. iot scan 
 # 7. iot connect
-# 8. iot control
+# 8. iot controlp
 
 # 통신프로토콜에 필요한 데이터입니다. 명세서에 제어, 상태 프로토콜을 참조하세요. 
 params_status = {
@@ -48,10 +48,10 @@ class iot_udp(Node):
         super().__init__('iot_udp')
 
         self.ip='127.0.0.1'
-        self.port=8002
-        self.send_port=7901
-        # self.port=7502
-        # self.send_port=7401
+        # self.port=8002
+        # self.send_port=7901
+        self.port = 7502
+        self.send_port = 7401
 
         # 로직 1. 통신 소켓 생성
         # AF_INET => ipv4 인터넷 프로토콜
@@ -85,12 +85,7 @@ class iot_udp(Node):
 
         # os.system('cls') # 콘솔 클리어
         while True:
-        #     print('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] ')
-        #     '''
-        #     로직 5. 사용자 메뉴 생성
-
-        #     '''
-            menu = input()
+            menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ]')
 
             if menu == '0':
                 self.scan()
@@ -105,7 +100,6 @@ class iot_udp(Node):
 
 
     def data_parsing(self, raw_data):
-        print(raw_data)
         header = raw_data[:19].decode()
         data_length = raw_data[19:23]
         aux_data = raw_data[23:35]
@@ -129,25 +123,28 @@ class iot_udp(Node):
             network_status = params_status[(raw_data[51], raw_data[52])]
             device_status = params_status[(raw_data[53], raw_data[54])]
 
-            self.is_recv_data=True
-            self.recv_data=[uid,network_status,device_status]
+            self.is_recv_data = True
+            self.recv_data = [uid,network_status, device_status]
             return self.recv_data
     
-    def send_data(self,uid,cmd):
+
+    def send_data(self, uid, cmd):
         
         '''
             로직 4. 데이터 송신 함수 생성
         '''
-        header = bytes("$Ctrl-command$", 'utf-8')
+        header = bytes("#Ctrl-command$", 'utf-8')
         data_length = bytes([18, 0, 0, 0])
         aux_data = bytes([0] * 12)
         self.upper = header + data_length + aux_data
         self.tail = bytes([13, 10])
 
         uid_pack = self.uid_to_packet(uid)
-        cmd_pack = bytes([cmd[0],cmd[1]])
+        print(cmd)
+        cmd_pack = bytes([cmd[0], cmd[1]])
 
         send_data = self.upper + uid_pack + cmd_pack + self.tail
+        print(send_data)
         self.sock.sendto(send_data, (self.ip, self.send_port))
 
 
@@ -157,7 +154,7 @@ class iot_udp(Node):
             self.data_parsing(raw_data)
             
             
-    def uid_to_packet(self,uid):
+    def uid_to_packet(self, uid):
         uid_pack=binascii.unhexlify(uid)
         return uid_pack
 
@@ -179,9 +176,9 @@ class iot_udp(Node):
         print('SCANNING NOW.....')
         print('BACK TO MENU : Ctrl+ C')
         '''
-        로직 6. iot scan
+            로직 6. iot scan
 
-        주변에 들어오는 iot 데이터(uid,network status, device status)를 출력하세요.
+            주변에 들어오는 iot 데이터(uid,network status, device status)를 출력하세요.
 
         '''
         while True:
@@ -194,26 +191,26 @@ class iot_udp(Node):
 
     def connect(self):
         '''
-        로직 7. iot connect
+            로직 7. iot connect
 
-        iot 네트워크 상태를 확인하고, CONNECTION_LOST 상태이면, RESET 명령을 보내고,
-        나머지 상태일 때는 TRY_TO_CONNECT 명령을 보내서 iot에 접속하세요.
-
+            iot 네트워크 상태를 확인하고, CONNECTION_LOST 상태이면, RESET 명령을 보내고,
+            나머지 상태일 때는 TRY_TO_CONNECT 명령을 보내서 iot에 접속하세요.
         '''
         uid, network_status, device_status = self.recv_data
         if network_status == 'CONNECTION_LOST':
             self.send_data(uid, params_control_cmd["RESET"])
         else:
+            print(self.recv_data)
             self.send_data(uid, params_control_cmd["TRY_TO_CONNECT"])
 
     
     def control(self):
 
         '''
-        로직 8. iot control
-        
-        iot 디바이스 상태를 확인하고, ON 상태이면 OFF 명령을 보내고, OFF 상태면 ON 명령을 보내서,
-        현재 상태를 토글시켜주세요.
+            로직 8. iot control
+            
+            iot 디바이스 상태를 확인하고, ON 상태이면 OFF 명령을 보내고, OFF 상태면 ON 명령을 보내서,
+            현재 상태를 토글시켜주세요.
         '''
         uid, network_status, device_status = self.recv_data
         if device_status == 'ON':
