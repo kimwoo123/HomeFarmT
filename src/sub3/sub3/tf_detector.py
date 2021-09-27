@@ -310,7 +310,6 @@ def main(args=None):
                         w.astype(np.int32).tolist(),
                         h.astype(np.int32).tolist()
                     ]).T
-                    # print(bbox) # [[x, y, w, h], [x, y, w, h], ...]
                     
                     """
                     # 로직 13. 인식된 물체의 위치 추정
