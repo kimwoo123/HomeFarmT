@@ -140,11 +140,11 @@ class iot_udp(Node):
         self.tail = bytes([13, 10])
 
         uid_pack = self.uid_to_packet(uid)
-        print(cmd)
+        # print(cmd)
         cmd_pack = bytes([cmd[0], cmd[1]])
 
         send_data = self.upper + uid_pack + cmd_pack + self.tail
-        print(send_data)
+        # print(send_data)
         self.sock.sendto(send_data, (self.ip, self.send_port))
 
 
@@ -174,11 +174,10 @@ class iot_udp(Node):
     def scan(self):
         
         print('SCANNING NOW.....')
-        print('BACK TO MENU : Ctrl+ C')
         '''
             로직 6. iot scan
             주변에 들어오는 iot 데이터(uid,network status, device status)를 출력하세요.
-
+            => 종료 키 변경
         '''
         while True:
             uid, network_status, device_status = self.recv_data
@@ -186,6 +185,9 @@ class iot_udp(Node):
             print('network_status: ',  network_status)
             print('device_status: ',  device_status)
             time.sleep(1)
+            txt = input("종료를 원하면 q, 재출력은 아무키나 누르세요.")
+            if txt == 'q':
+                break
                    
 
     def connect(self):
