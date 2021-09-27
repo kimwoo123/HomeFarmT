@@ -22,9 +22,9 @@
       <br>
       <!-- 로직 4. 수동 컨트롤 버튼 생성 -->
       <p>Manual Controller</p>
-      <button type ='button' id="A1-btn" @click="btn_turn_left">Turn Left</button>
-      <button type ='button' id="A2-btn" @click="btn_go_straight">Go Straight</button>
-      <button type ='button' id="A2-btn" @click="btn_turn_right">Turn Right</button>
+      <button type ='button' id="A1-btn" @mousedown="btn_turn_left" @mouseup="stop_interval">Turn Left</button>
+      <button type ='button' id="A2-btn" @mousedown="btn_go_straight" @mouseup="stop_interval">Go Straight</button>
+      <button type ='button' id="A2-btn" @mousedown="btn_turn_right" @mouseup="stop_interval">Turn Right</button>
 
     </form>
   </div>
@@ -33,6 +33,11 @@
 <script>
 export default {
   name: 'Test',
+  data() {
+    return {
+      inter: ''
+    }
+  },
   created() {
 
     this.$socket.on('disconnect', function()  {
@@ -65,18 +70,27 @@ export default {
     btn_turn_left() {
       console.log('btn_left');
       let data = 1;
-      this.$socket.emit('turnleftToServer', data);
+      this.inter = setInterval(() => {
+        this.$socket.emit('turnleftToServer', data);
+      }, 100)
     },
     btn_go_straight() {
       console.log('btn_go_straight');
       let data = 2;
-      this.$socket.emit('gostraightToServer', data);
+      this.inter = setInterval(() => {
+        this.$socket.emit('gostraightToServer', data);
+      }, 100)
     },
     btn_turn_right() {
       console.log('btn_turn_right');
       let data = 3;
-      this.$socket.emit('turnrightToServer', data);
+      this.inter = setInterval(() => {
+        this.$socket.emit('turnrightToServer', data);
+      }, 100)
     },
+    stop_interval() {
+      clearInterval(this.inter)
+    }
   }
 }
 </script>
