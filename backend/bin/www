@@ -60,7 +60,7 @@ io.on('connection', socket => {
     });
 
     socket.on('gostraightToServer', (data) => {
-        socket.to(roomName).emit('sendAirConOn', data);
+        socket.to(roomName).emit('gostraight', data);
     });
 
     socket.on('turnrightToServer', (data) => {
