@@ -28,6 +28,7 @@ class astarLocalpath(Node):
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
+        self.last_current_point = 0
 
         self.global_path_msg=Path()
 
@@ -65,29 +66,20 @@ class astarLocalpath(Node):
             x=self.odom_msg.pose.pose.position.x
             y=self.odom_msg.pose.pose.position.y
             current_waypoint=-1
-            
-            '''
-            로직 4. global_path 중 로봇과 가장 가까운 포인트 계산
-            
-            min_dis=
-            for i,waypoint in enumerate(self.global_path_msg.poses) : 
-                distance=
-                if distance < min_dis :
-                    min_dis=
-                    current_waypoint=
-
-            '''      
+              
             min_dis= float('inf')
-            for i,waypoint in enumerate(self.global_path_msg.poses) : 
-                distance=sqrt(pow(x - waypoint.pose.position.x, 2) + pow(y - waypoint.pose.position.y, 2))
+            for i, waypoint in enumerate(self.global_path_msg.poses):
+                if not (self.last_current_point <= i <= self.last_current_point + 30): continue
+                distance = sqrt(pow(x - waypoint.pose.position.x, 2) + pow(y - waypoint.pose.position.y, 2))
                 if distance < min_dis :
-                    min_dis=distance
-                    current_waypoint=i
+                    min_dis = distance
+                    current_waypoint = i
             
-            
+            self.last_current_point = current_waypoint
+            print(self.last_current_point)
             '''
             로직 5. local_path 예외 처리
-            '''      
+            '''
             if current_waypoint != -1 :
                 if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):
                     for num in range(current_waypoint, current_waypoint + self.local_path_size):

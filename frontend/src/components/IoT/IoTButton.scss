@@ -1,0 +1,21 @@
+.iot-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.iot-item { 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 100px;
+  margin: 20px;
+  border-radius: 15px;
+  box-shadow: 0px 1px 10px 1px $secondary;
+}
+
+.iot-active {
+  background-color: $secondary;
+  color: white;
+}
