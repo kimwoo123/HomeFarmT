@@ -26,6 +26,9 @@
       <button type ='button' id="A2-btn" @mousedown="btn_go_straight" @mouseup="stop_interval">Go Straight</button>
       <button type ='button' id="A2-btn" @mousedown="btn_turn_right" @mouseup="stop_interval">Turn Right</button>
 
+      <button type ='button' @click="btn_new_path_on">시작</button>
+      <button type ='button' @click="btn_new_path_off">끝</button>
+
     </form>
   </div>
 </template>
@@ -90,6 +93,16 @@ export default {
     },
     stop_interval() {
       clearInterval(this.inter)
+    },
+    btn_new_path_on() {
+      console.log('new_path_on');
+      let data = 3;
+      this.$socket.emit('newPathOnToServer', data);
+    },
+    btn_new_path_off() {
+      console.log('new_path_off');
+      let data = 3;
+      this.$socket.emit('newPathOffToServer', data);
     }
   }
 }

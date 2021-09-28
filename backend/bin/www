@@ -67,6 +67,14 @@ io.on('connection', socket => {
         socket.to(roomName).emit('turnright', data);
     });
 
+    socket.on('newPathOnToServer', (data) => {
+      socket.to(roomName).emit('newPathOn', data);
+    });
+
+    socket.on('newPathOffToServer', (data) => {
+      socket.to(roomName).emit('newPathOff', data);
+    });
+
     socket.on('disconnect', () => {
         console.log('disconnected from server');
     });
