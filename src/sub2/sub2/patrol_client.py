@@ -73,7 +73,7 @@ class PatrolCtrlFromServer(Node):
         self.m_control_iter = 0
         self.m_control_mode = 0
 
-        self.lfd=0.1
+        self.lfd = 0.1
         self.idx_wp = 0
         self.len_wp = None
         self.check_1_wp = False
@@ -85,11 +85,11 @@ class PatrolCtrlFromServer(Node):
         _, _, self.robot_yaw = q.to_euler()
 
     def path_callback(self, msg):
-        self.is_path=True
-        self.path_msg=msg
+        self.is_path = True
+        self.path_msg = msg
 
     def turtlebot_go(self):
-        self.cmd_msg.linear.x = 0.2
+        self.cmd_msg.linear.x = 0.5
         self.cmd_msg.angular.z = 0.0
 
     def turtlebot_stop(self):
@@ -159,31 +159,33 @@ class PatrolCtrlFromServer(Node):
         # auto patrol mode on
         else:
             sio.emit('PatrolStatus', 'On')
-            if self.is_odom == True and self.is_path==True:
+            if self.is_odom == True and self.is_path == True:
                 if not self.check_1_wp: 
                     self.search_start_point()
-                rotated_point=Point()
+                rotated_point = Point()
 
-                robot_pose_x=self.odom_msg.pose.pose.position.x
-                robot_pose_y=self.odom_msg.pose.pose.position.y
+                robot_pose_x = self.odom_msg.pose.pose.position.x
+                robot_pose_y = self.odom_msg.pose.pose.position.y
 
                 waypoint = self.path_msg.poses[self.idx_wp]
-                self.current_point=waypoint.pose.position
+                self.current_point = waypoint.pose.position
 
-                dx= self.current_point.x - robot_pose_x
-                dy= self.current_point.y - robot_pose_y
+                dx = self.current_point.x - robot_pose_x
+                dy = self.current_point.y - robot_pose_y
 
                 rotated_point.x = cos(self.robot_yaw)*dx + sin(self.robot_yaw)*dy
                 rotated_point.y = -sin(self.robot_yaw)*dx + cos(self.robot_yaw)*dy
-                theta = atan2(rotated_point.y,rotated_point.x)
+                theta = atan2(rotated_point.y, rotated_point.x)
 
                 dis = sqrt(pow(rotated_point.x, 2) + pow(rotated_point.y, 2))
-                if abs(theta) < pi/10:
-                    self.cmd_msg.linear.x=dis*2
-                    self.cmd_msg.angular.z=-theta*0.3
-                else:
-                    self.cmd_msg.linear.x=0.0
-                    self.cmd_msg.angular.z=-theta*0.3
+                self.cmd_msg.linear.x = 0.5
+                self.cmd_msg.angular.z = theta 
+                # if abs(theta) < pi/10:
+                #     self.cmd_msg.linear.x = dis*2
+                #     self.cmd_msg.angular.z = -theta*0.3
+                # else:
+                #     self.cmd_msg.linear.x = 0.0
+                #     self.cmd_msg.angular.z = -theta*0.3
                     
                 if dis <= self.lfd and  self.idx_wp < self.len_wp-1:
                     self.idx_wp += 1
