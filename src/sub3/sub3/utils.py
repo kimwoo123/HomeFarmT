@@ -6,7 +6,7 @@ import cv2
 
 def xyh2mat2D(vec):
     euler_rad = vec[2] * np.pi / 180
-    rot = np.array([np.cos(euler_rad), -np.sin(euler_rad), np.sin(euler_rad), np.cos(euler_rad)])
+    rot = np.array([np.cos(euler_rad), -np.sin(euler_rad), np.sin(euler_rad), np.cos(euler_rad)]) # 점의 회전
     trans = vec[0:2]
 
     T = np.identity(3)
