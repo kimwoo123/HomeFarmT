@@ -15,6 +15,7 @@ const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
 const ScheduleResolvers = require('./graphql/Resolvers/ScheduleResolvers');
 const _ = require('lodash');
+const httpServer = http.createServer(app)
 
 const typeDefs = [UsertypeDefs, ScheduletypeDefs]
 const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
@@ -29,7 +30,7 @@ const context = ({ req }) => {
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
-  const httpServer = http.createServer(app);
+  
 
   const server = new ApolloServer({
     typeDefs: typeDefs,
@@ -62,17 +63,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-// app.use(function(req, res, next) {
-//   next(createError(404));
-// });
+// client 경로의 폴더를 지정해줍니다.
+const publicPath = path.join(__dirname, "/../client");
 
-// app.use(function(err, req, res, next) {
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
+app.use(express.static(publicPath));
 
+// 로직 1. WebSocket 서버, WebClient 통신 규약 정의
+var fs = require('fs'); // required for file serving
+
+// 로직 2. 포트번호 지정
 app.disable('x-powered-by');
 
 module.exports = app;

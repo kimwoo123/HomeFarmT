@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize');
 
 module.exports.createStore = () => {
   const db = new Sequelize('iot', 'root', 'ssafy', {
-    host: '52.79.134.74"',
+    host: '52.79.134.74',
     dialect: 'mysql'
   });
 
