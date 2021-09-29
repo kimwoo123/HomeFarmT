@@ -6,6 +6,7 @@ import Home from '../views/Home.vue'
 import IoT from '../views/IoT.vue'
 import Schedule from '../views/Schedule.vue'
 import Patrol from '../views/Patrol.vue'
+import PatrolSetting from '../views/PatrolSetting.vue'
 import NavbarLayout from '../views/NavbarLayout.vue'
 import PageNotFound from '../views/PageNotFound.vue'
 import Test from '../views/Test.vue'
@@ -59,6 +60,11 @@ const routes = [
         path: '/patrol',
         name: 'Patrol',
         component: Patrol
+      },
+      {
+        path: '/patrol/setting',
+        name: 'PatrolSetting',
+        component: PatrolSetting
       },
     ]
   },

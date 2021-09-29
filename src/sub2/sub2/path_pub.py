@@ -34,7 +34,7 @@ class pathPub(Node):
         self.global_path_msg.header.frame_id = 'map'
 
         # 로직 2. 만들어 놓은 경로 데이터를 읽기 모드로 open
-        full_path = 'C:\\Users\\multicampus\\Desktop\\sub1_ws\\src\\sub1\\path\\first_path.txt'
+        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\path\\first_path.txt'
         self.path_file = open(full_path, 'r')
 
         # 로직 3. 경로 데이터를 읽어서 Path 메시지에 데이터를 넣기
