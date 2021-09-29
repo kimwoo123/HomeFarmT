@@ -8,15 +8,22 @@ import { createHttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { provide } from '@vue/composition-api'
 import { DefaultApolloClient } from '@vue/apollo-composable'
-import { setContext } from '@apollo/client/link/context';
+import { setContext } from '@apollo/client/link/context'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
-import io from 'socket.io-client';
+import { 
+  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock, faChevronDown, faChevronUp,
+  faEdit, faTrashAlt, faCheckCircle, 
+} from '@fortawesome/free-solid-svg-icons'
+import { faCircle } from '@fortawesome/free-regular-svg-icons'
+import io from 'socket.io-client'
 
 const socket = io('http://localhost:3000'); 
 Vue.prototype.$socket = socket;
-library.add(faUser, faArrowLeft, faPlus, faLock, faChevronDown, faChevronUp)
+library.add(
+  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock, faChevronDown, faChevronUp,
+  faEdit, faTrashAlt, faCheckCircle, faCircle
+)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
 

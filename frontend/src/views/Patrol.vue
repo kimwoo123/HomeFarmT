@@ -1,6 +1,6 @@
 <template>
   <div class="patrol-container">
-    <PatrolCam/>
+    <PatrolCam class="cam-bottom"/>
     <PatrolMenu/>
   </div>
 </template>
