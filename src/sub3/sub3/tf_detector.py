@@ -179,12 +179,15 @@ def main(args=None):
     ## 현재 sub3/sub3 디렉토리 안에 model_weights 폴더를 두고, 거기에 model 폴더인 
     ## 'ssd_mobilenet_v1_coco_11_06_2017'와 data 폴더 내 mscoco_label_map.pbtxt를
     ## 넣어둬야 합니다    
-
     CWD_PATH = os.getcwd()
+    
     MODEL_NAME = 'ssd_mobilenet_v1_coco_2018_01_28'
 
-    PATH_TO_LABELS = f'{CWD_PATH}\\src\\sub3\\sub3\\model_weights\\data\\mscoco_label_map.pbtxt'
-    PATH_TO_WEIGHT = f'{CWD_PATH}\\src\\sub3\\sub3\\model_weights\\{MODEL_NAME}\\frozen_inference_graph.pb'
+    PATH_TO_WEIGHT = os.path.join(CWD_PATH, 'model_weights', \
+    MODEL_NAME, 'frozen_inference_graph.pb')
+
+    PATH_TO_LABELS = os.path.join(CWD_PATH, 'model_weights', \
+    'data', 'mscoco_label_map.pbtxt')
 
     NUM_CLASSES = 90
 
@@ -307,7 +310,6 @@ def main(args=None):
                         w.astype(np.int32).tolist(),
                         h.astype(np.int32).tolist()
                     ]).T
-                    # print(bbox) # [[x, y, w, h], [x, y, w, h], ...]
                     
                     """
                     # 로직 13. 인식된 물체의 위치 추정
@@ -352,5 +354,3 @@ def main(args=None):
 if __name__ == '__main__':
 
     main()
-
-    

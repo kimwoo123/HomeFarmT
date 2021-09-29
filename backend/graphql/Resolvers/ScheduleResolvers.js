@@ -14,6 +14,7 @@ module.exports = {
   Mutation: {
     createSchedule: async (_, { schedule_title, schedule_dec }) => {
       const newSchedule = await Schedule.create({ schedule_title, schedule_dec })
+      return newSchedule
     },
     updateSchedule: async (_, { scheduleid, schedule_title, schedule_dec }) => {
       await Schedule.update({ schedule_title: schedule_title, schedule_dec: schedule_dec }, {
