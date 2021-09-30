@@ -10,8 +10,8 @@ import socketio
 sio = socketio.Client()
 
 # 0 1 2 => idle = close, open, write
-global make_path_state
-make_path_state = 0
+global make_path_state, path
+make_path_state, path = 0, 0
 
 @sio.event
 def connect():
@@ -23,14 +23,13 @@ def disconnect():
 
 @sio.on('newPathOn')
 def new_path_on(data):
-    global make_path_state
-    print(data)
+    global make_path_state, path
+    path = f'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\path\\path{data}.txt'
     make_path_state = 1
 
 @sio.on('newPathOff')
-def new_path_off(data):
+def new_path_off():
     global make_path_state
-    print(data)
     make_path_state = 0
 
 def next_state():
@@ -39,8 +38,9 @@ def next_state():
         make_path_state = 2
 
 def get_global_var():
-    global make_path_state
-    return make_path_state
+    global make_path_state, path
+    old_path, path = path, 0
+    return make_path_state, old_path
 
 class makePath(Node):
 
@@ -55,10 +55,9 @@ class makePath(Node):
         self.subscription = self.create_subscription(Odometry,'/odom', self.listener_callback, 10)
 
         # 로직 2. 저장할 경로 및 텍스트파일 이름을 정하고, 쓰기 모드로 열기
-        full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\path\\patrol_path.txt'
-        self.path_file = open(full_path, 'w')
-        
-        self.is_odom = True
+        # full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\path\\patrol_path.txt'
+        self.path_file = 0
+        self.is_odom = False
 
         #이전 위치를 저장할 변수입니다.
         self.prev_x = 0.0
@@ -68,12 +67,12 @@ class makePath(Node):
         self.path_msg.header.frame_id = 'map'
 
     def listener_callback(self,msg):
-        make_path_state_local = get_global_var()
+        make_path_state_local, full_path = get_global_var()
         
         if make_path_state_local == 1:
             # open
-            full_path = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\path\\patrol_path.txt'
             self.path_file = open(full_path, 'w')
+            self.is_odom = False
             self.prev_x = 0.0
             self.prev_y = 0.0
             next_state()
@@ -109,7 +108,8 @@ class makePath(Node):
                     self.prev_y = y
         else:
             # idle & closed
-            self.path_file.close()
+            if self.path_file:
+                self.path_file.close()
             
         
 def main(args=None):

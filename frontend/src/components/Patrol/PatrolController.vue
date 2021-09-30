@@ -18,13 +18,10 @@ export default {
   },
   data() {
     return {
-      da: '',
       inter: ''
     }
   },
   created() {
-    this.da = this.data
-    console.log(this.da)
     this.$socket.on('disconnect', function()  {
         console.log('disconnected form server_client.');
     });
