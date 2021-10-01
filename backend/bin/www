@@ -114,12 +114,12 @@ function normalizePort(val) {
     // named pipe
     return val;
   }
-
+  
   if (port >= 0) {
     // port number
     return port;
   }
-
+  
   return false;
 }
 
@@ -131,34 +131,86 @@ function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
-
+  
   var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
+  ? 'Pipe ' + port
+  : 'Port ' + port;
+  
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
       process.exit(1);
       break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+        default:
+          throw error;
+        }
+      }
+      
+      /**
+       * Event listener for HTTP server "listening" event.
+       */
+      
+      function onListening() {
+        var addr = server.address();
+        var bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+        debug('Listening on ' + bind);
+      }
+      
+      const io = require('socket.io')(server)
+      const roomName = 'team';
+      
+      io.on('connection', socket => {
+          socket.join(roomName);
+      
+          // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
+          socket.on('safety_status', (message) => {
+              console.log(message)
+              console.log(socket)
+              socket.to(roomName).emit('sendSafetyStatus', message);
+          });
+      
+          socket.on('PatrolStatus', (message) => {
+              socket.to(roomName).emit('sendPatrolStatus', message);
+          });
+      
+          socket.on('PatrolOnToServer', (data) => {
+              socket.to(roomName).emit('patrolOn', data);
+              console.log('Patrol On!');
+          });
+      
+          socket.on('PatrolOffToServer', (data) => {
+              socket.to(roomName).emit('patrolOff', data);
+          });
+      
+          socket.on('turnleftToServer', (data) => {
+              socket.to(roomName).emit('turnleft', data);
+          });
+      
+          socket.on('gostraightToServer', (data) => {
+              socket.to(roomName).emit('sendAirConOn', data);
+          });
+      
+          socket.on('turnrightToServer', (data) => {
+              socket.to(roomName).emit('turnright', data);
+          });
+      
+          socket.on('disconnect', () => {
+              console.log('disconnected from server');
+          });
+      
+          // 전달받은 이미지를 jpg 파일로 저장
+          // socket.on('streaming', (message) => {
+          //     socket.to(roomName).emit('sendStreaming', message);
+          //     // console.log(message);
+          //     buffer = Buffer.from(message, "base64");
+          //     fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
+          // });
+      
+      })

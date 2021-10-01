@@ -2,6 +2,11 @@ const { User } = require("../../models/index")
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto')
 
+function isEmail(email) {
+  let validate = /\S+@\S+\.\S+/
+  return validate.test(email)
+}
+
 module.exports = {
   Query: {
     allUser: async () =>{
@@ -15,6 +20,9 @@ module.exports = {
 },
   Mutation: {
     signUp: async (_, { email, password }) => {
+      if (!isEmail(email)) {
+        throw new Error('이메일의 형식이 아닙니다')
+      }
       const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
       const userCheck = await User.findOne({ where: { email: hashedEmail }})
       if (userCheck && userCheck.email === hashedEmail) {
@@ -29,7 +37,6 @@ module.exports = {
       password: hashedPassword,
       hashid: salt
     })
-      console.log(hashedPassword)
       return result
     },
     login: async (_, { email, password }) => {
@@ -45,7 +52,7 @@ module.exports = {
       if (userCheck.password !== hashedPassword) {
         throw new Error('Password Error')
       }
-      let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '5m'})
+      let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '100m'})
       const result = ({ 
         email: hashedEmail,
         password: hashedPassword,

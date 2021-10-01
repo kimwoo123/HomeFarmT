@@ -1,7 +1,7 @@
 <template>
   <div>
     <ScheduleCalendar/>
-    <SchedulePlan/>
+    <!-- <SchedulePlan/> -->
   </div>
 </template>
 
@@ -11,12 +11,14 @@
 
 <script>
 import ScheduleCalendar from '../components/Schedule/ScheduleCalendar.vue'
-import SchedulePlan from '../components/Schedule/SchedulePlan.vue'
+// import SchedulePlan from '../components/Schedule/SchedulePlan.vue'
+
+
 export default {
   name: 'Schedule',
   components: {
     ScheduleCalendar,
-    SchedulePlan
+    // SchedulePlan
   },
 }
 </script>
