@@ -40,9 +40,14 @@ async function startApolloServer(typeDefs, resolvers) {
     resolvers: resolvers,
     introspection: true,
     context: ({ req }) => {
-      const token = req.headers.authorization.split(' ')[1] || ''
-      const user = jwt.verify(token, process.env.SECRET_KEY)
-      return user
+      const token = req.headers.authorization|| ''
+      try {
+        const user = jwt.verify(token, process.env.SECRET_KEY)
+        return user
+      }
+      catch {
+        return null
+      }
     },
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
@@ -66,7 +71,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.get('/',function(res){
+//   res.sendfile(path.join(__dirname+'/../public/index.html'));
+// });
 
 app.use('/', indexRouter);
 

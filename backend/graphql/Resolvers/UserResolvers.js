@@ -20,7 +20,6 @@ module.exports = {
 },
   Mutation: {
     signUp: async (_, { email, password }) => {
-      console.log(isEmail(email))
       if (!isEmail(email)) {
         throw new Error('이메일의 형식이 아닙니다')
       }
@@ -38,7 +37,6 @@ module.exports = {
       password: hashedPassword,
       hashid: salt
     })
-      console.log(hashedPassword)
       return result
     },
     login: async (_, { email, password }) => {
@@ -54,7 +52,7 @@ module.exports = {
       if (userCheck.password !== hashedPassword) {
         throw new Error('Password Error')
       }
-      let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '5m'})
+      let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '100m'})
       const result = ({ 
         email: hashedEmail,
         password: hashedPassword,
