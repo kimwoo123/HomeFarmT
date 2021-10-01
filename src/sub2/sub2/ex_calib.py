@@ -14,7 +14,7 @@ params_lidar = {
     "X": 0, # meter
     "Y": 0,
     # "Z": 0.4+0.1,
-    "Z": 0.21+ 0.1,
+    "Z": 0.20 + 0.1,
     "YAW": 0, # deg
     "PITCH": 0,
     "ROLL": 0
@@ -30,7 +30,7 @@ params_cam = {
     "Block_SIZE": int(65000),
     "X": 0., # meter
     "Y": 0,
-    "Z":  0.19,
+    "Z":  0.23,
     "YAW": 0, # deg
     "PITCH": 0.0,
     "ROLL": 0
@@ -261,7 +261,6 @@ class LIDAR2CAMTransform:
         self.proj_mtx = project2img_mtx(params_cam)
 
     def transform_lidar2cam(self, xyz_p):
-        
         xyz_c = xyz_p
         
         """
@@ -272,7 +271,6 @@ class LIDAR2CAMTransform:
         np_concat = np.concatenate((xyz_p, np_ones), axis=1)  # 기존 xyz 행렬과 1로 이루어진 행렬 합치기 -> (179, 4)
         xyz_c = np.matmul(self.RT, np_concat.T)
 
-        
         return xyz_c
 
     def project_pts2img(self, xyz_c, crop=True):
@@ -299,7 +297,7 @@ class LIDAR2CAMTransform:
             xyi = self.crop_pts(xyi)
         else:
             pass
-
+        
         return xyi
 
     def crop_pts(self, xyi):

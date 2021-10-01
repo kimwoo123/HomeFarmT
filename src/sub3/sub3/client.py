@@ -38,7 +38,7 @@ def disconnect():
 
 
 # 로직 3. 서버 연결
-sio.connect('http://localhost:3000')
+sio.connect('http://localhost:30001')
 
 # 로직 4. 데이터 송신
 sio.emit('sendTime','TEST')
