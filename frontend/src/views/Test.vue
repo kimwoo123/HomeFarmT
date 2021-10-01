@@ -53,9 +53,9 @@ export default {
   },
   methods: {
     btn_patrol_on() {
-      console.log('btn_patrol_on');
-      let data = 1;
-      this.$socket.emit('PatrolOnToServer', data);
+      console.log('iot-control');
+      let data = '0 1';
+      this.$socket.emit('iot-control', data);
     },
     btn_patrol_off() {
       console.log('btn_patrol_off');
