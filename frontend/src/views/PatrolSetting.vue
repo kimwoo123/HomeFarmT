@@ -2,7 +2,7 @@
   <div class="container">
     <PatrolCam style="margin-bottom: 4px"/>
     <PatrolController style="margin-bottom: 18px" :data="'adda'"/>
-    <PatrolPath/>
+    <PatrolPathSetting/>
   </div>
 </template>
 
@@ -13,14 +13,14 @@
 <script>
 import PatrolCam from '../components/Patrol/PatrolCam.vue'
 import PatrolController from '../components/Patrol/PatrolController.vue'
-import PatrolPath from '../components/Patrol/PatrolPath.vue'
+import PatrolPathSetting from '../components/Patrol/PatrolPathSetting.vue'
 
 export default {
   name: 'PatrolSetting',
   components: {
     PatrolCam,
     PatrolController,
-    PatrolPath,
+    PatrolPathSetting,
   }
 }
 </script>
