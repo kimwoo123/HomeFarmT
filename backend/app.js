@@ -3,23 +3,22 @@ var path = require('path');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const cors = require('cors')
-const helmet = require('helmet')
-const jwt = require('jsonwebtoken')
+const cors = require('cors');
+const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 const { ApolloServer } = require('apollo-server-express');
-const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
-const http = require('http')
+const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core');
+const http = require('http');
 var indexRouter = require('./routes/index');
 const UsertypeDefs = require('./graphql/Schema/UserSchema');
 const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
 const ScheduleResolvers = require('./graphql/Resolvers/ScheduleResolvers');
 const _ = require('lodash');
-const httpServer = http.createServer(app)
-
-const typeDefs = [UsertypeDefs, ScheduletypeDefs]
-const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
-require('dotenv').config()
+const httpServer = http.createServer(app);
+const typeDefs = [UsertypeDefs, ScheduletypeDefs];
+const resolvers = _.merge({}, UserResolvers, ScheduleResolvers);
+require('dotenv').config();
 
 const context = ({ req }) => {
   if (!req.headers.authorization) return { user: null }
@@ -31,7 +30,6 @@ const context = ({ req }) => {
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
   
-
   const server = new ApolloServer({
     typeDefs: typeDefs,
     resolvers: resolvers,
@@ -60,12 +58,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', indexRouter);
 
 // client 경로의 폴더를 지정해줍니다.
 const publicPath = path.join(__dirname, "/../client");
-
 app.use(express.static(publicPath));
 
 // 로직 1. WebSocket 서버, WebClient 통신 규약 정의
@@ -73,5 +69,4 @@ var fs = require('fs'); // required for file serving
 
 // 로직 2. 포트번호 지정
 app.disable('x-powered-by');
-
 module.exports = app;
