@@ -22,7 +22,7 @@ const io = require('socket.io')(server)
 var fs = require('fs'); // required for file serving
 
 // 로직 2. 포트번호 지정
-const port = process.env.port || 12001
+const port = 12001
 
 server.listen(port, () => {
     console.log(`listening on *:${port}`);
@@ -35,6 +35,8 @@ io.on('connection', socket => {
 
     // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
     socket.on('safety_status', (message) => {
+        console.log(message)
+        console.log(socket)
         socket.to(roomName).emit('sendSafetyStatus', message);
     });
 
@@ -56,7 +58,7 @@ io.on('connection', socket => {
     });
 
     socket.on('gostraightToServer', (data) => {
-        socket.to(roomName).emit('gostraight', data);
+        socket.to(roomName).emit('sendAirConOn', data);
     });
 
     socket.on('turnrightToServer', (data) => {
@@ -68,11 +70,11 @@ io.on('connection', socket => {
     });
 
     // 전달받은 이미지를 jpg 파일로 저장
-    socket.on('streaming', (message) => {
-        socket.to(roomName).emit('sendStreaming', message);
-        // console.log(message);
-        buffer = Buffer.from(message, "base64");
-        fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
-    });
+    // socket.on('streaming', (message) => {
+    //     socket.to(roomName).emit('sendStreaming', message);
+    //     // console.log(message);
+    //     buffer = Buffer.from(message, "base64");
+    //     fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
+    // });
 
 })

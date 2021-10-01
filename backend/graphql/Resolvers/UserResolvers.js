@@ -32,9 +32,7 @@ module.exports = {
       console.log(hashedPassword)
       return result
     },
-    login: async (_, { email, password }, context) => {
-      console.log(_, 'parents')
-      console.log(context, 'contetx')
+    login: async (_, { email, password }) => {
       const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
       const userCheck = await User.findOne({ where: { email: hashedEmail }})
       if (!userCheck) {

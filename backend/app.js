@@ -10,18 +10,26 @@ const { ApolloServer } = require('apollo-server-express');
 const { ApolloServerPluginDrainHttpServer } = require('apollo-server-core')
 const http = require('http')
 var indexRouter = require('./routes/index');
-const { createStore } = require('./graphql/utils');
 const UsertypeDefs = require('./graphql/Schema/UserSchema');
 const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
 const ScheduleResolvers = require('./graphql/Resolvers/ScheduleResolvers');
 const _ = require('lodash');
+const socketIo = require('socket.io')
 
 const typeDefs = [UsertypeDefs, ScheduletypeDefs]
 const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
 require('dotenv').config()
 
-const store = createStore();
+const { sequelize } = require('./models')
+
+sequelize.sync({force: false})
+.then(()=>{
+    console.log('데이터베이스 연결 성공');
+})
+.catch((err)=>{
+    console.error(err);
+});
 
 const context = ({ req }) => {
   if (!req.headers.authorization) return { user: null }
@@ -65,16 +73,87 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+async function startSocketSErver() {
+  const app = express();
+  const socketServer = http.createServer(app)
+  const io = socketIo(socketServer)
+  const port = 30001
 
-app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status || 500);
-  res.render('error');
-});
+  socketServer.listen(port, () => {
+    console.log('listen on 30001')
+  })
+}
+
+startSocketSErver()
+// Websocket 서버 구동을 위한 서버 코드입니다.
+
+// 노드 로직 순서
+
+
+// client 경로의 폴더를 지정해줍니다.
+const publicPath = path.join(__dirname, "/../client");
+
+app.use(express.static(publicPath));
+
+// 로직 1. WebSocket 서버, WebClient 통신 규약 정의
+
+
+
+var fs = require('fs'); // required for file serving
+
+// 로직 2. 포트번호 지정
+
+const roomName = 'team';
+
+// io.on('connection', socket => {
+//     socket.join(roomName);
+
+//     // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
+//     socket.on('safety_status', (message) => {
+//         console.log(message)
+//         console.log(socket)
+//         socket.to(roomName).emit('sendSafetyStatus', message);
+//     });
+
+//     socket.on('PatrolStatus', (message) => {
+//         socket.to(roomName).emit('sendPatrolStatus', message);
+//     });
+
+//     socket.on('PatrolOnToServer', (data) => {
+//         socket.to(roomName).emit('patrolOn', data);
+//         console.log('Patrol On!');
+//     });
+
+//     socket.on('PatrolOffToServer', (data) => {
+//         socket.to(roomName).emit('patrolOff', data);
+//     });
+
+//     socket.on('turnleftToServer', (data) => {
+//         socket.to(roomName).emit('turnleft', data);
+//     });
+
+//     socket.on('gostraightToServer', (data) => {
+//         socket.to(roomName).emit('sendAirConOn', data);
+//     });
+
+//     socket.on('turnrightToServer', (data) => {
+//         socket.to(roomName).emit('turnright', data);
+//     });
+
+//     socket.on('disconnect', () => {
+//         console.log('disconnected from server');
+//     });
+
+//     // 전달받은 이미지를 jpg 파일로 저장
+//     // socket.on('streaming', (message) => {
+//     //     socket.to(roomName).emit('sendStreaming', message);
+//     //     // console.log(message);
+//     //     buffer = Buffer.from(message, "base64");
+//     //     fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
+//     // });
+
+// })
+
 
 app.disable('x-powered-by');
 
