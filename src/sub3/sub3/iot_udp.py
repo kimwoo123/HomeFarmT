@@ -87,7 +87,6 @@ class iot_udp(Node):
         self.is_recv_data = False
 
         # os.system('cls') # 콘솔 클리어
-<<<<<<< HEAD
         # while True:
         #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ]')
 
@@ -101,10 +100,8 @@ class iot_udp(Node):
         #         self.disconnect()
         #     elif menu == '4':
         #         self.all_procedures()
-=======
-        while True:
-            menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] : ')
->>>>>>> 51b700abd2a91134b5dcf6d5ab6c6cf93c8eec3f
+        # while True:
+        #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] : ')
 
     
     def iot_control_callback(self, msg) -> None:
@@ -203,14 +200,6 @@ class iot_udp(Node):
             주변에 들어오는 iot 데이터(uid,network status, device status)를 출력하세요.
             => 종료 키 변경
         '''
-<<<<<<< HEAD
-
-        uid, network_status, device_status = self.recv_data
-        print('uid: ', uid)
-        print('network_status: ',  network_status)
-        print('device_status: ',  device_status)
-
-=======
         while True:
             uid, network_status, device_status = self.recv_data
             print('uid: ', uid)
@@ -220,7 +209,6 @@ class iot_udp(Node):
             txt = input("종료를 원하면 q, 재출력은 아무키나 누르세요.")
             if txt == 'q':
                 break
->>>>>>> 51b700abd2a91134b5dcf6d5ab6c6cf93c8eec3f
                    
 
     def connect(self):
