@@ -30,6 +30,8 @@ setup(
             'seg_binarizer = sub2.seg_binarizer:main',
             'path_pub = sub2.path_pub:main',
             'lidar_trans = sub2.lidar_trans:main',
+            'make_path = sub2.make_path:main',
+            'patrol_client = sub2.patrol_client:main',
         ],
     },
 )

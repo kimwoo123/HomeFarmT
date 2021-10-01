@@ -1,7 +1,8 @@
 <template>
   <div class="patrol-container">
-    <PatrolCam/>
-    <PatrolMenu/>
+    <PatrolCam style="margin-bottom: 5px"/>
+    <PatrolPath/>
+    <PatrolAnormal/>
   </div>
 </template>
 <style>
@@ -9,13 +10,15 @@
 </style>
 <script>
 import PatrolCam from '../components/Patrol/PatrolCam.vue'
-import PatrolMenu from '../components/Patrol/PatrolMenu.vue'
+import PatrolPath from '../components/Patrol/PatrolPath.vue'
+import PatrolAnormal from '../components/Patrol/PatrolAnormal.vue'
 
 export default {
   name: 'Patrol',
   components: {
     PatrolCam,
-    PatrolMenu,
+    PatrolPath,
+    PatrolAnormal,
   }
 
 }
