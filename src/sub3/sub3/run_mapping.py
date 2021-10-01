@@ -33,7 +33,7 @@ params_map = {
     "MAP_RESOLUTION": 0.05,
     "OCCUPANCY_UP": 0.02,
     "OCCUPANCY_DOWN": 0.01,
-    "MAP_CENTER": (-8.0, -4.0),
+    "MAP_CENTER": (-50.0, -50.0),
     "MAP_SIZE": (17.5, 17.5),
     "MAP_FILENAME": 'test.png',
     "MAPVIS_RESIZE_SCALE": 2.0
@@ -211,7 +211,7 @@ class Mapping:
 
 
         # 로직 8. laser scan 데이터 좌표 변환
-        pose_mat = np.matmul(pose_mat,self.T_r_l)
+        pose_mat = np.matmul(pose_mat, self.T_r_l)
         laser_mat = np.ones((3, n_points))
         laser_mat[:2, :] = laser
         laser_global = np.matmul(pose_mat, laser_mat)
@@ -229,7 +229,7 @@ class Mapping:
         pose_y = (pose[1] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
         laser_global_x = (laser_global[0, :] - self.map_center[0] + (self.map_size[0]*self.map_resolution)/2) / self.map_resolution
         laser_global_y = (laser_global[1, :] - self.map_center[1] + (self.map_size[1]*self.map_resolution)/2) / self.map_resolution
-        
+
         """
         # 로직 10. laser scan 공간을 맵에 표시
         for i in range(laser_global.shape[1]):
@@ -317,9 +317,9 @@ class Mapper(Node):
         '/scan',self.scan_callback,10)
         self.map_pub = self.create_publisher(OccupancyGrid, '/map', 1)
         
-        self.map_msg=OccupancyGrid()
-        self.map_msg.header.frame_id="map"
-        self.map_size=int(params_map["MAP_SIZE"][0]\
+        self.map_msg = OccupancyGrid()
+        self.map_msg.header.frame_id = "map"
+        self.map_size = int(params_map["MAP_SIZE"][0]\
             /params_map["MAP_RESOLUTION"]*params_map["MAP_SIZE"][1]/params_map["MAP_RESOLUTION"])
         
 
@@ -329,8 +329,8 @@ class Mapper(Node):
         m.height = int(params_map["MAP_SIZE"][1]/params_map["MAP_RESOLUTION"])
         quat = np.array([0, 0, 0, 1])
         m.origin = Pose()
-        m.origin.position.x = params_map["MAP_CENTER"][0]-8.75
-        m.origin.position.y = params_map["MAP_CENTER"][1]-8.75
+        m.origin.position.x = params_map["MAP_CENTER"][0] - 8.75
+        m.origin.position.y = params_map["MAP_CENTER"][1] - 8.75
         self.map_meta_data = m
 
         self.map_msg.info=self.map_meta_data
@@ -370,12 +370,12 @@ class Mapper(Node):
         list_map_data=np_map_data.tolist()
 
         for i in range(self.map_size):
-            list_map_data[0][i]=100-int(list_map_data[0][i]*100)
-            if list_map_data[0][i] >100 :
-                list_map_data[0][i]=100
+            list_map_data[0][i] = 100 - int(list_map_data[0][i] * 100)
+            if list_map_data[0][i] > 100 :
+                list_map_data[0][i] = 100
 
-            if list_map_data[0][i] <0 :
-                list_map_data[0][i]=0
+            if list_map_data[0][i] < 0 :
+                list_map_data[0][i] = 0
 
         """
         로직 11 : 업데이트 중인 map publish(#으로 주석처리된 것을 해제하고 쓰시고, 나머지 부분은 직접 완성시켜 실행하십시오)
@@ -394,7 +394,7 @@ def save_map(node,file_path):
 
     # 로직 12 : 맵 저장
     pkg_path =os.getcwd()
-    back_folder='C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2'
+    back_folder='C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3'
     folder_name='map'
     file_name=file_path
     full_path=os.path.join(pkg_path,back_folder,folder_name,file_name)
