@@ -26,6 +26,7 @@ def connect():
 def aircon_on(data):
     print('message received with ', data)
 
+
 @sio.on('sendAirConOff')
 def aircon_off(data):
     print('message received with ', data)

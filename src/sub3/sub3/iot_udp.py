@@ -1,5 +1,6 @@
 import rclpy
-from rclpy.node import Node  
+from rclpy.node import Node
+from std_msgs.msg import String
 import time
 import os
 import socket
@@ -10,7 +11,6 @@ import binascii
 # iot_udp 노드는 udp 통신을 이용해 iot로 부터 uid를 얻어 접속, 제어를 하는 노드입니다.
 # sub1,2 에서는 ros 메시지를 이용해 쉽게 제어했지만, advanced iot 제어에서는 정의된 통신프로토콜을 보고 iot와 직접 데이터를 주고 받는 형식으로 제어하게 됩니다.
 # 통신 프로토콜은 명세서를 참조해주세요.
-
 
 # 노드 로직 순서
 # 1. 통신 소켓 생성
@@ -47,7 +47,10 @@ class iot_udp(Node):
     def __init__(self):
         super().__init__('iot_udp')
 
-        self.ip='127.0.0.1'
+        #
+        self.iot_control_sub = self.create_subscription(String, 'iot_control', self.iot_control_callback, 1)
+
+        self.ip = '127.0.0.1'
         # self.port=8002
         # self.send_port=7901
         self.port = 7502
@@ -84,19 +87,37 @@ class iot_udp(Node):
         self.is_recv_data = False
 
         # os.system('cls') # 콘솔 클리어
-        while True:
-            menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] : ')
+        # while True:
+        #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ]')
 
-            if menu == '0':
-                self.scan()
-            elif menu == '1':
-                self.connect()
-            elif menu == '2':
-                self.control()
-            elif menu == '3':
-                self.disconnect()
-            elif menu == '4':
-                self.all_procedures()
+        #     if menu == '0':
+        #         self.scan()
+        #     elif menu == '1':
+        #         self.connect()
+        #     elif menu == '2':
+        #         self.control()
+        #     elif menu == '3':
+        #         self.disconnect()
+        #     elif menu == '4':
+        #         self.all_procedures()
+        # while True:
+        #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] : ')
+
+    
+    def iot_control_callback(self, msg) -> None:
+        print('iot 컨트롤 메시지 도착', msg)
+        application_type, control_type = msg.data.split()
+
+        if control_type == '0':
+            self.scan()
+        elif control_type == '1':
+            self.connect()
+        elif control_type == '2':
+            self.control()
+        elif control_type == '3':
+            self.disconnect()
+        elif control_type == '4':
+            self.all_procedures()
 
 
     def data_parsing(self, raw_data):

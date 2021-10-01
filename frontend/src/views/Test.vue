@@ -1,5 +1,16 @@
 <template>
   <div>
+    <button @click="modalOn">모달</button>
+    <ModalView v-show="isModalViewed" @close-modal="modalOff" :modalTitle="'asdasda'">
+      <div>
+        adasd
+        <p>sdadada</p>
+        <p>sdadada</p>
+        <p>sdadada</p>
+        <p>sdadada</p>
+      </div>
+    </ModalView>
+
     <form>
       <!-- 로직 1. textarea 생성 -->
       <p>Security Status</p>
@@ -38,7 +49,8 @@ export default {
   name: 'Test',
   data() {
     return {
-      inter: ''
+      inter: '',
+      isModalViewed: false,
     }
   },
   created() {
@@ -61,9 +73,9 @@ export default {
   },
   methods: {
     btn_patrol_on() {
-      console.log('btn_patrol_on');
-      let data = 1;
-      this.$socket.emit('PatrolOnToServer', data);
+      console.log('iot-control');
+      let data = '0 1';
+      this.$socket.emit('iot-control', data);
     },
     btn_patrol_off() {
       console.log('btn_patrol_off');
@@ -103,6 +115,12 @@ export default {
       console.log('new_path_off');
       let data = 3;
       this.$socket.emit('newPathOffToServer', data);
+    },
+    modalOn() {
+      this.isModalViewed = true
+    }, 
+    modalOff() {
+      this.isModalViewed = false
     }
   }
 }

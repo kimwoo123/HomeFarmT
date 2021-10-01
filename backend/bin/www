@@ -43,18 +43,14 @@ io.on('connection', socket => {
     });
 
     socket.on('PatrolStatus', (message) => {
-        socket.to(roomName).emit('sendPatrolStatus', message);
+      socket.to(roomName).emit('sendPatrolStatus', message);
     });
 
-    socket.on('PatrolOnToServer', (data) => {
-        socket.to(roomName).emit('patrolOn', data);
-        console.log('Patrol On!');
+    socket.on('disconnect', () => {
+      console.log('disconnected from server');
     });
 
-    socket.on('PatrolOffToServer', (data) => {
-        socket.to(roomName).emit('patrolOff', data);
-    });
-
+    // 이동 제어
     socket.on('turnleftToServer', (data) => {
         socket.to(roomName).emit('turnleft', data);
     });
@@ -67,17 +63,34 @@ io.on('connection', socket => {
         socket.to(roomName).emit('turnright', data);
     });
 
+    // patrol 주행
+    socket.on('PatrolOnToServer', (data) => {
+      socket.to(roomName).emit('patrolOn', data);
+      console.log('Patrol On!');
+    });
+
+    socket.on('cam', (message) => {
+      socket.to(roomName).emit('cam-streaming', message)
+    })
+    
+    socket.on('PatrolOffToServer', (data) => {
+      socket.to(roomName).emit('patrolOff', data);
+    });
+
+    // patrol 경로 생성
     socket.on('newPathOnToServer', (data) => {
       socket.to(roomName).emit('newPathOn', data);
     });
 
-    socket.on('newPathOffToServer', (data) => {
-      socket.to(roomName).emit('newPathOff', data);
+    socket.on('newPathOffToServer', () => {
+      socket.to(roomName).emit('newPathOff');
     });
 
-    socket.on('disconnect', () => {
-        console.log('disconnected from server');
+    // patrol 경로 변경
+    socket.on('changePathToServer', (data) => {
+      socket.to(roomName).emit('changePath', data);
     });
+
 
     // 전달받은 이미지를 jpg 파일로 저장
     // socket.on('streaming', (message) => {
