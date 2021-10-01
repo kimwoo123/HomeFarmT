@@ -393,11 +393,10 @@ class Mapper(Node):
 def save_map(node,file_path):
 
     # 로직 12 : 맵 저장
-    pkg_path =os.getcwd()
     back_folder='C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3'
     folder_name='map'
     file_name=file_path
-    full_path=os.path.join(pkg_path,back_folder,folder_name,file_name)
+    full_path=os.path.join(back_folder,folder_name,file_name)
     print(full_path)
     f=open(full_path,'w')
     data=''
