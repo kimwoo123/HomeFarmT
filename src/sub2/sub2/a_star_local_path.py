@@ -4,6 +4,7 @@ from geometry_msgs.msg import PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt
+from std_msgs.msg import Bool
 
 # a_star_local_path 노드는 a_star 노드에서 나오는 전역경로(/global_path)를 받아서, 로봇이 실제 주행하는 지역경로(/local_path)를 publish 하는 노드입니다.
 # path_pub 노드와 하는 역할은 비슷하나, path_pub은 텍스트를 읽어서 global_path를 지역경로를 생성하는 반면, a_star_local_path는 global_path를 다른 노드(a_star)에서 받아서 지역경로를 생성합니다.
@@ -25,11 +26,12 @@ class astarLocalpath(Node):
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
         self.subscription = self.create_subscription(Path,'/global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
+        self.subscription = self.create_subscription(Bool,'/collision',self.collision_callback,10)
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
         self.last_current_point = 0
-
+        self.collision = False
         self.global_path_msg=Path()
 
 
@@ -38,6 +40,12 @@ class astarLocalpath(Node):
         self.timer = self.create_timer(time_period, self.timer_callback)
         self.local_path_size = 15
         self.count = 0
+
+    def collision_callback(self, msg) :
+        if msg == False :
+            return
+         self.collision = True
+        print('collision int a_start_local_path')
 
 
     def listener_callback(self,msg):

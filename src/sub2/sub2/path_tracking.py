@@ -7,6 +7,7 @@ from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt,atan2
 import numpy as np
+from std_msgs.msg import Bool
 
 # path_tracking 노드는 로봇의 위치(/odom), 로봇의 속도(/turtlebot_status), 주행 경로(/local_path)를 받아서, 주어진 경로를 따라가게 하는 제어 입력값(/cmd_vel)을 계산합니다.
 # 제어입력값은 선속도와 각속도로 두가지를 구합니다. 
@@ -31,7 +32,8 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-        self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)        # 로직 1. 제어 주기 및 타이머 설정
+        self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)
+        self.colision_publisher = self.create_publisher(Bool, '/test', 10)
         time_period=0.05 
         self.timer = self.create_timer(time_period, self.lidar_callback)
 
