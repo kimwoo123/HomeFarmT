@@ -22,7 +22,7 @@ import {
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import io from 'socket.io-client'
 
-const socket = io('http://localhost:3000'); 
+const socket = io(process.env.VUE_APP_BACKEND_SERVER || 'http://localhost:3000'); 
 Vue.prototype.$socket = socket;
 library.add(
   faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock, faChevronDown, faChevronUp,
@@ -35,7 +35,7 @@ Vue.use(IconsPlugin)
 
 
 const httpLink = createHttpLink({
-  uri: process.env.NODE_DEV || 'http://localhost:4000/graphql',
+  uri: process.env.VUE_APP_GRAPHQL_SERVER || 'http://localhost:4000/graphql',
 })
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -56,13 +56,9 @@ const setAuthorizationLink = setContext(() => ({
   }
 }));
 
-// const authLink = setContext(() => {
-//   if (token) return { token }
-// })
   
 const cache = new InMemoryCache()
 const apolloClient = new ApolloClient({
-  // link: authLink.concat(httpLink),
   link: errorLink.concat(setAuthorizationLink.concat(httpLink)),
   cache,
 })
