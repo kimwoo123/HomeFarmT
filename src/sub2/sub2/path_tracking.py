@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
-
-from geometry_msgs.msg import Twist,Point
+from sensor_msgs.msg import Imu,LaserScan, PointCloud
+from geometry_msgs.msg import Twist,Point32
 from ssafy_msgs.msg import TurtlebotStatus
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
@@ -31,33 +31,34 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-
-        # 로직 1. 제어 주기 및 타이머 설정
+        self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)        # 로직 1. 제어 주기 및 타이머 설정
         time_period=0.05 
-        self.timer = self.create_timer(time_period, self.timer_callback)
+        self.timer = self.create_timer(time_period, self.lidar_callback)
 
-        self.is_odom=False
-        self.is_path=False
-        self.is_status=False
+        self.is_odom = False
+        self.is_path = False
+        self.is_status = False
+        self.is_lidar = False
+        self.collision = False
 
-        self.odom_msg=Odometry()            
+        self.odom_msg = Odometry()            
+        self.path_msg = Path()
+        self.cmd_msg = Twist()
+        self.lidar_msg = LaserScan()
         self.robot_yaw=0.0
-        self.path_msg=Path()
-        self.cmd_msg=Twist()
 
-        # 로직 2. 파라미터 설정
+        # 로직 2. 파라미터 설정 
         self.lfd=0.1
         self.min_lfd=0.1
         self.max_lfd=1.0
 
-
     def timer_callback(self):
 
-        if self.is_status and self.is_odom ==True and self.is_path==True:
+        if self.is_status and self.is_odom ==True and self.is_path==True and self.is_lidar == True:
 
 
-            if len(self.path_msg.poses)> 1:
-                self.is_look_forward_point= False
+            if len(self.path_msg.poses) > 1:
+                self.is_look_forward_point = False
                 
                 # 로봇의 현재 위치를 나타내는 변수
                 robot_pose_x=self.odom_msg.pose.pose.position.x
@@ -109,7 +110,7 @@ class followTheCarrot(Node):
                         self.is_look_forward_point = True
                 if self.is_look_forward_point :
             
-                    global_forward_point=[self.forward_point.x ,self.forward_point.y,1]
+                    global_forward_point=[self.forward_point.x, self.forward_point.y, 1]
 
                     '''
                     로직 6. 전방 주시 포인트와 로봇 헤딩과의 각도 계산
@@ -147,7 +148,10 @@ class followTheCarrot(Node):
                     out_rad_vel = theta
 
                     self.cmd_msg.linear.x = out_vel
-                    self.cmd_msg.angular.z = out_rad_vel                    
+                    self.cmd_msg.angular.z = out_rad_vel
+
+                    if self.collision == True :
+                        self.cmd_msg.linear.x = 0.0
 
             else :
                 print("no found forward point")
@@ -157,7 +161,42 @@ class followTheCarrot(Node):
             
             self.cmd_pub.publish(self.cmd_msg)
 
-            
+    def lidar_callback(self, msg) :
+        self.lidar_msg = msg
+        if self.is_path == True and self.is_odom == True :
+
+            pcd_msg = PointCloud()
+            pcd_msg.header.frame_id = 'map'
+
+            pose_x = msg.range_min;
+            pose_y = msg.scan_time;
+            heading = msg.time_increment;
+
+
+            t = np.array([
+                        [cos(self.robot_yaw), -sin(self.robot_yaw), pose_x],
+                        [sin(self.robot_yaw), cos(self.robot_yaw), pose_y],
+                        [0, 0, 1],
+                    ])
+
+            for angle, r in enumerate(msg.ranges) :
+                global_point = Point32()
+
+                if 0.0 < r < 12: # 라이다의 측정거리가 12m이기에 이렇게 설정
+                    local_x = r * cos(angle * pi / 180)
+                    local_y = r * sin(angle * pi / 180)
+                    local_point = np.array([[local_x], [local_y], [1]])
+                    global_result = t.dot(local_point)
+                    global_point.x = global_result[0][0]
+                    global_point.y = global_result[1][0]
+                    pcd_msg.points.append(global_point)
+            self.collision = False
+            for waypoint in self.path_msg.poses :
+                for lidar_point in pcd_msg.points :
+                    distance = sqrt(pow(waypoint.pose.position.x - lidar_point.x, 2) + pow(waypoint.pose.position.y - lidar_point.y, 2))
+                    if distance < 0.1:
+                        self.collision = True
+                        print('collision 경로 재탐색')
 
     def odom_callback(self, msg):
         self.is_odom=True
