@@ -33,7 +33,7 @@ class followTheCarrot(Node):
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
         self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)
-        self.colision_publisher = self.create_publisher(Bool, '/test', 10)
+        self.collision_publisher = self.create_publisher(Bool, '/collision', 10)
         time_period=0.05 
         self.timer = self.create_timer(time_period, self.lidar_callback)
 
@@ -196,8 +196,9 @@ class followTheCarrot(Node):
             for waypoint in self.path_msg.poses :
                 for lidar_point in pcd_msg.points :
                     distance = sqrt(pow(waypoint.pose.position.x - lidar_point.x, 2) + pow(waypoint.pose.position.y - lidar_point.y, 2))
-                    if distance < 0.1:
+                    if distance < 0.3:
                         self.collision = True
+                        self.collision_publisher(True)
                         print('collision 경로 재탐색')
 
     def odom_callback(self, msg):

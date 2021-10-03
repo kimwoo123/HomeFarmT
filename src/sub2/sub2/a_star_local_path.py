@@ -5,6 +5,9 @@ from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt
 from std_msgs.msg import Bool
+from nav_msgs.msg import Odometry,Path,OccupancyGrid,MapMetaData
+import numpy as np
+from collections import deque
 
 # a_star_local_path 노드는 a_star 노드에서 나오는 전역경로(/global_path)를 받아서, 로봇이 실제 주행하는 지역경로(/local_path)를 publish 하는 노드입니다.
 # path_pub 노드와 하는 역할은 비슷하나, path_pub은 텍스트를 읽어서 global_path를 지역경로를 생성하는 반면, a_star_local_path는 global_path를 다른 노드(a_star)에서 받아서 지역경로를 생성합니다.
@@ -27,13 +30,14 @@ class astarLocalpath(Node):
         self.subscription = self.create_subscription(Path,'/global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
         self.subscription = self.create_subscription(Bool,'/collision',self.collision_callback,10)
+        self.subscription = self.create_subscription(OccupancyGrid,'/local_map',self.local_map_callback,10)
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
         self.last_current_point = 0
         self.collision = False
+        self.loadLocalMap = False
         self.global_path_msg=Path()
-
 
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period=0.05 
@@ -41,10 +45,31 @@ class astarLocalpath(Node):
         self.local_path_size = 15
         self.count = 0
 
+        self.GRIDSIZE = 350 
+        self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
+        self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
+        self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
+    def local_map_callback(self, msg) :
+        if self.collision == False :
+            return
+        m = np.array(msg.data)
+        self.grid = np.reshape(m,(350, 350))
+        for y in range(350):
+            for x in range(350):
+                if self.grid[x][y] == 100 :
+                    for dx in range(-5, 6):
+                        for dy in range(-5, 6):
+                            nx = x + dx
+                            ny = y + dy 
+                            if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
+                                self.grid[nx][ny] = 127
+        self.loadLocalMap = True
+
     def collision_callback(self, msg) :
         if msg == False :
+            self.collision = False
             return
-         self.collision = True
+        self.collision = True
         print('collision int a_start_local_path')
 
 
@@ -54,19 +79,12 @@ class astarLocalpath(Node):
 
 
     def path_callback(self,msg):
-        '''
-        로직 2. global_path 데이터 수신 후 저장
-
-        self.is_path=
-        self.global_path_msg=
-        
-        '''
         self.is_path = True
         self.global_path_msg = msg
 
         
     def timer_callback(self):
-        if self.is_odom and self.is_path ==True:
+        if self.is_odom and self.is_path ==True and self.collision == False:
             
             local_path_msg=Path()
             local_path_msg.header.frame_id='/map'
@@ -74,7 +92,7 @@ class astarLocalpath(Node):
             x=self.odom_msg.pose.pose.position.x
             y=self.odom_msg.pose.pose.position.y
             current_waypoint=-1
-              
+
             min_dis= float('inf')
             for i, waypoint in enumerate(self.global_path_msg.poses):
                 if not (self.last_current_point <= i <= self.last_current_point + 30): continue
@@ -106,8 +124,89 @@ class astarLocalpath(Node):
                         local_path_msg.poses.append(tmp_pose)     
 
             self.local_path_pub.publish(local_path_msg)
-        
+        elif self.is_odom and self.is_path ==True and self.collision == True and self.loadLocalMap == True:
+            local_path_msg=Path()
+            local_path_msg.header.frame_id='/map'
+            current_waypoint=-1
+            x=self.odom_msg.pose.pose.position.x
+            y=self.odom_msg.pose.pose.position.y
+            min_dis= float('inf')
+            # global_path 중 local_cost_map과 안겹치는 부분 찾아내서 self.goal에 저장
+            for i, waypoint in enumerate(self.global_path_msg.poses):
+                if not (self.last_current_point <= i): continue
+                distance = sqrt(pow(x - waypoint.pose.position.x, 2) + pow(y - waypoint.pose.position.y, 2))
+                local_destination = self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y)
+                if distance < 0.3 or self.grid[local_destination[0]][local_destination[1]] > 50 : continue
+                self.goal = [local_destination[0], local_destination[1]]
+                current_waypoint = i
+                break
+            
+            self.last_current_point = current_waypoint 
+            if current_waypoint == -1 :
+                print('local_path goal 찾을 수 없음')
+                return;
+            # 다익스트라로 local_path 생성
+            self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+            self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+            self.final_path=[]
+            Q = deque()
+            start = self.pose_to_grid_cell(x, y)
+            Q.append(start)
+            self.cost[start[0]][start[1]] = 1
+            found = False
+            cnt = 0
+            visited = dict()
+            visited[(start[0], start[1])] = True
+            while Q : # while Q:
+                current = Q.popleft()
+                cnt += 1
+                if found :
+                    break
+                for i in range(8) :
+                    next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                    if visited.get((next[0], next[1]), False) : 
+                        continue
+                    if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                        if self.grid[next[0]][next[1]] <= 50 :
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                                    Q.append(next)
+                                    self.path[next[0]][next[1]] = current
+                                    self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                                    visited[(next[0], next[1])] = True
+                                    if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                        found = True
+            
+            print(found)
+            if(found == False) :
+                return
+            node = self.goal
+            while node != start :
+                nextNode = node
+                self.final_path.append(nextNode)
+                node = self.path[nextNode[0]][nextNode[1]]
+            print('다익스트라 cnt : ', cnt)
 
+            for grid_cell in reversed(self.final_path) :
+                tmp_pose = PoseStamped()
+                waypoint_x, waypoint_y=self.grid_cell_to_pose(grid_cell)
+                tmp_pose.pose.position.x = waypoint_x
+                tmp_pose.pose.position.y = waypoint_y
+                tmp_pose.pose.orientation.w = 1.0
+                local_path_msg.poses.append(tmp_pose)
+            if len(self.final_path) != 0 :
+                self.local_path_pub.publish(local_path_msg)
+
+        
+    def pose_to_grid_cell(self, x, y):
+        map_point_x = int((x - self.map_offset_x) / self.map_resolution)
+        map_point_y = int((y - self.map_offset_y) / self.map_resolution)
+        return [map_point_x, map_point_y]
+
+
+    def grid_cell_to_pose(self,grid_cell):
+        x = (grid_cell[0] * self.map_resolution) + self.map_offset_x
+        y = (grid_cell[1] * self.map_resolution) + self.map_offset_y 
+        return [x, y]
         
 def main(args=None):
     rclpy.init(args=args)

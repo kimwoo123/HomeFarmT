@@ -55,7 +55,7 @@ class loadMap(Node):
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data
         
-        f = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map.txt'
+        f = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3\\map\\map.txt'
         self.f = open(f, 'r')
 
         line = self.f.readlines()
@@ -84,8 +84,7 @@ class loadMap(Node):
 
         np_map_data = grid.reshape(1, 350 * 350) 
         list_map_data = np_map_data.tolist()
-   
-   
+        
         # 로직2를 완성하고 주석을 해제 시켜주세요.
         self.f.close()
         self.map_msg.data = list_map_data[0]
