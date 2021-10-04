@@ -1,0 +1,19 @@
+.map-text {
+  font-size: 12px;
+}
+
+.my-modal-content {
+  width: 290px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.minimap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: -100px;
+  img {
+    z-index: 1;
+  }
+}
