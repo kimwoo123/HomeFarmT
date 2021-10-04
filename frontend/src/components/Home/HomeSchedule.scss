@@ -3,6 +3,7 @@
   background-color: white;
   width: 328px;
   height: 159px;
+  padding: 16px;
 }
 
 .schedule-box {
@@ -12,4 +13,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.top-align {
+  display: flex;
+  justify-content: space-between;
 }

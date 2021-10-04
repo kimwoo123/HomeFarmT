@@ -1,8 +1,8 @@
 <template>
   <div class="home-schedule shadows">
-    <div>
+    <div class="top-align">
       <span>오늘의 일정</span>
-      <span>icon</span>
+      <img src="@/assets/icon/alarm.svg" alt="alarm">
     </div>
     <div class="schedule-box">
       <font-awesome-icon icon="chevron-left" />
