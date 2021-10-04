@@ -66,11 +66,15 @@ export default {
   },
   methods: {
     turnOn(item) {
-      console.log('켜기')
-      item.status = true
+      console.log('iot-control');
+      let data = '0 1';
+      this.$socket.emit('iot-control', data);
+      item.status
     },
     turnOff(item) {
-      console.log('끄기')
+      console.log(item);
+      let data = '0 1';
+      this.$socket.emit('iot-control', data);
       item.status = false
     },
   }
