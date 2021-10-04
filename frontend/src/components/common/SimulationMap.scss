@@ -1,0 +1,23 @@
+.map-conatiner {
+  position: relative;
+}
+
+.map-canvas-pos, .map-canvas-grid, .map-canvas-path{
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+  position: absolute;
+}
+
+.map-canvas-path {
+  z-index: 3;
+}
+
+.map-canvas-pos {
+  z-index: 2;
+}
+
+.map-canvas-grid {
+  z-index: 1;
+}
+

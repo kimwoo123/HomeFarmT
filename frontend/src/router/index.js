@@ -10,6 +10,7 @@ import Patrol from '../views/Patrol.vue'
 import PatrolSetting from '../views/PatrolSetting.vue'
 import Control from '../views/Control.vue'
 import Test from '../views/Test.vue'
+import SimulationMap from '../components/common/SimulationMap.vue'
 
 Vue.use(VueRouter)
 
@@ -70,6 +71,11 @@ const routes = [
     path: '/control',
     name: 'Control',
     component: Control
+  },
+  {
+    path: '/map',
+    name: 'SimulationMap',
+    component: SimulationMap
   },
   {
     path: '/test',
