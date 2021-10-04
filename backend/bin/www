@@ -32,6 +32,11 @@ server.on('listening', onListening);
 const io = require('socket.io')(server)
 const roomName = 'team';
 
+const path = require('path');
+const fs = require('fs');
+// frontend로 이동
+const picPath = path.join(__dirname, "/../../frontend");
+
 io.on('connection', socket => {
     socket.join(roomName);
 
@@ -91,14 +96,12 @@ io.on('connection', socket => {
       socket.to(roomName).emit('changePath', data);
     });
 
-
-    // 전달받은 이미지를 jpg 파일로 저장
-    // socket.on('streaming', (message) => {
-    //     socket.to(roomName).emit('sendStreaming', message);
-    //     // console.log(message);
-    //     buffer = Buffer.from(message, "base64");
-    //     fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
-    // });
+    // 이상 감지 => 이미지 저장
+    socket.on('streaming', (message) => {
+      // socket.to(roomName).emit('sendStreaming', message);
+      buffer = Buffer.from(message, "base64");
+      fs.writeFileSync(path.join(picPath, "/src/assets/anormal/anormal.jpg"), buffer);
+    });
 
 })
 
