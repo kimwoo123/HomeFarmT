@@ -8,6 +8,7 @@ import Schedule from '../views/Schedule.vue'
 import ScheduleNew from '../views/ScheduleNew.vue'
 import Patrol from '../views/Patrol.vue'
 import PatrolSetting from '../views/PatrolSetting.vue'
+import Control from '../views/Control.vue'
 import Test from '../views/Test.vue'
 
 Vue.use(VueRouter)
@@ -36,11 +37,13 @@ const routes = [
     name: 'Home',
     component: Home
   },
+  // iot
   {
     path: '/iot',
     name: 'IoT',
     component: IoT
   },
+  // schedule
   {
     path: '/schedule',
     name: 'Schedule',
@@ -51,6 +54,7 @@ const routes = [
     name: 'ScheduleNew',
     component: ScheduleNew
   },
+  // patrol
   {
     path: '/patrol',
     name: 'Patrol',
@@ -60,6 +64,12 @@ const routes = [
     path: '/patrol/setting',
     name: 'PatrolSetting',
     component: PatrolSetting
+  },
+  // control 
+  {
+    path: '/control',
+    name: 'Control',
+    component: Control
   },
   {
     path: '/test',
