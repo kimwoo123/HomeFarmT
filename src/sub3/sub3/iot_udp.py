@@ -86,8 +86,6 @@ class iot_udp(Node):
 
         self.is_recv_data = False
 
-        # os.system('cls') # 콘솔 클리어
-
     
     def iot_control_callback(self, msg) -> None:
         print('iot 컨트롤 메시지 도착', msg)
@@ -189,6 +187,15 @@ class iot_udp(Node):
         print('network_status: ',  network_status)
         print('device_status: ',  device_status)
 
+        # while True:
+        #     uid, network_status, device_status = self.recv_data
+        #     print('uid: ', uid)
+        #     print('network_status: ',  network_status)
+        #     print('device_status: ',  device_status)
+        #     time.sleep(1)
+        #     txt = input("종료를 원하면 q, 재출력은 아무키나 누르세요.")
+        #     if txt == 'q':
+        #         break
                    
 
     def connect(self):

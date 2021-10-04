@@ -37,6 +37,7 @@ db.Sequelize = Sequelize;
 db.User = require("./users")(sequelize, Sequelize);
 db.Schedule = require("./schedule")(sequelize, Sequelize);
 
-db.Schedule.belongsTo(db.User)
+db.User.hasMany(db.Schedule, { foreignKey: 'userid', sourceKey: 'userid'})
+db.Schedule.belongsTo(db.User, { foreignKey: 'userid', targetKey: 'userid'})
 
 module.exports = db;

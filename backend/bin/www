@@ -1,9 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * Module dependencies.
- */
-
 var app = require('../app');
 var debug = require('debug')('second-backend:server');
 var http = require('http');
@@ -32,6 +26,11 @@ server.on('listening', onListening);
 const io = require('socket.io')(server)
 const roomName = 'team';
 
+const path = require('path');
+const fs = require('fs');
+// frontend로 이동
+const picPath = path.join(__dirname, "/../../frontend");
+
 io.on('connection', socket => {
     socket.join(roomName);
 
@@ -42,14 +41,25 @@ io.on('connection', socket => {
         socket.to(roomName).emit('sendSafetyStatus', message);
     });
 
+    
     socket.on('PatrolStatus', (message) => {
       socket.to(roomName).emit('sendPatrolStatus', message);
     });
-
+    
     socket.on('disconnect', () => {
       console.log('disconnected from server');
     });
 
+    // iot 제어
+    socket.on('iot-control', (message) => {
+      socket.to(roomName).emit('iot-control', message);
+    });
+
+    // 캠 
+    socket.on('cam', (message) => {
+      socket.to(roomName).emit('cam-streaming', message)
+    })
+    
     // 이동 제어
     socket.on('turnleftToServer', (data) => {
         socket.to(roomName).emit('turnleft', data);
@@ -103,6 +113,13 @@ io.on('connection', socket => {
     socket.on('requestPath', (data) => {
       socket.emit('')
     })
+    
+    // 이상 감지 => 이미지 저장
+    socket.on('streaming', (message) => {
+      // socket.to(roomName).emit('sendStreaming', message);
+      buffer = Buffer.from(message, "base64");
+      fs.writeFileSync(path.join(picPath, "/src/assets/anormal/anormal.jpg"), buffer);
+    });
 
     // // vue-client에서 나온 emit 요청, data => (start, end)
     // socket.on('requestPath', (data) => {
