@@ -1,11 +1,8 @@
 import rclpy
 import numpy as np
 from rclpy.node import Node
-
-import os
 from geometry_msgs.msg import Pose
-from squaternion import Quaternion
-from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData
+from nav_msgs.msg import OccupancyGrid, MapMetaData
 from math import pi
 
 # load_map 노드는 맵 데이터를 읽어서, 맵 상에서 점유영역(장애물) 근처에 로봇이 움직일 수 없는 영역을 설정하고 맵 데이터로 publish 해주는 노드입니다.
@@ -22,7 +19,7 @@ class loadMap(Node):
         super().__init__('load_map')
         self.map_pub = self.create_publisher(OccupancyGrid, 'map', 1)
         
-        time_period = 1  
+        time_period = 10
         self.timer = self.create_timer(time_period, self.timer_callback)
 
         # 로직 1. 맵 파라미터 설정
