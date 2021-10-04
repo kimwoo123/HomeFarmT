@@ -25,10 +25,28 @@ $white: white;
   padding: 0px;
 }
 
+// 텍스트 컬러
+.text-darkgray {
+  color: $darkgray;
+}
+
+.text-gray {
+  color: $gray;
+}
+
+.text-lightgray {
+  color: $lightgray;
+}
+
+// 기타
 body {
   background-color: grey !important;
 }
 
 ::-webkit-scrollbar { 
   display: none;
+}
+
+.shadows {
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
 }

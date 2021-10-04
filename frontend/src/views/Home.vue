@@ -1,34 +1,36 @@
 <template>
   <div>
-    <Navbar/>
+    <Navbar :title="'Home'" :left_icon="false" :right_text="''"/>
     <div class="home-container">
-      <HomeBotStatus/>
-      <div class="home-mid-side">
-        <HomeBotCam/>
-        <HomeMenus/>
+      <HomeToday style="margin-bottom: 20px"/>
+      <HomeSchedule style="margin-bottom: 30px"/>
+
+      <HomeMenus style="margin-bottom: 20px"/>
+      <div>
+        <span class="text-darkgray">터틀봇이 이야기를 감지중입니다.</span>
       </div>
-      <HomeBotCurrentTask/>
     </div>
+
   </div>
 </template>
+
 <style lang="scss" scoped>
-  @import url('./Home.scss');
+  @import "@/views/Home.scss";
 </style>
+
 <script>
-import Navbar from '../components/Home/Navbar.vue'
-import HomeBotStatus from '../components/Home/HomeBotStatus.vue'
-import HomeBotCam from '../components/Home/HomeBotCam.vue'
-import HomeMenus from '../components/Home/HomeMenus.vue'
-import HomeBotCurrentTask from '../components/Home/HomeBotCurrentTask.vue'
+import Navbar from '@/components/common/Navbar.vue'
+import HomeMenus from '@/components/Home/HomeMenus.vue'
+import HomeSchedule from '@/components/Home/HomeSchedule.vue'
+import HomeToday from '@/components/Home/HomeToday.vue'
 
 export default {
   name: "Home",
   components: {
     Navbar,
-    HomeBotStatus,
-    HomeBotCam,
     HomeMenus,
-    HomeBotCurrentTask,
+    HomeSchedule,
+    HomeToday
   }
 }
 </script>
