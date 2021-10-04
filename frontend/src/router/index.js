@@ -5,10 +5,10 @@ import Login from '../views/user/Login.vue'
 import Home from '../views/Home.vue'
 import IoT from '../views/IoT.vue'
 import Schedule from '../views/Schedule.vue'
+import ScheduleNew from '../views/ScheduleNew.vue'
 import Patrol from '../views/Patrol.vue'
 import PatrolSetting from '../views/PatrolSetting.vue'
-import NavbarLayout from '../views/NavbarLayout.vue'
-import PageNotFound from '../views/PageNotFound.vue'
+import Control from '../views/Control.vue'
 import Test from '../views/Test.vue'
 import SimulationMap from '../components/common/SimulationMap.vue'
 
@@ -17,12 +17,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '*',
-    redirect: '/404'
-  },
-  {
-    path: '/404',
-    name: 'PageNotFound',
-    component: PageNotFound
+    redirect: '/'
   },
   {
     path: '/',
@@ -43,36 +38,44 @@ const routes = [
     name: 'Home',
     component: Home
   },
+  // iot
   {
-    path: '/navbar-layout',
-    component: NavbarLayout,
-    children: [
-      {
-        path: '/iot',
-        name: 'IoT',
-        component: IoT
-      },
-      {
-        path: '/schedule',
-        name: 'Schedule',
-        component: Schedule
-      },
-      {
-        path: '/patrol',
-        name: 'Patrol',
-        component: Patrol
-      },
-      {
-        path: '/patrol/setting',
-        name: 'PatrolSetting',
-        component: PatrolSetting
-      },
-      {
-        path: '/map',
-        name: 'SimulationMap',
-        component: SimulationMap
-      }
-    ]
+    path: '/iot',
+    name: 'IoT',
+    component: IoT
+  },
+  // schedule
+  {
+    path: '/schedule',
+    name: 'Schedule',
+    component: Schedule
+  },
+  {
+    path: '/schedule/new',
+    name: 'ScheduleNew',
+    component: ScheduleNew
+  },
+  // patrol
+  {
+    path: '/patrol',
+    name: 'Patrol',
+    component: Patrol
+  },
+  {
+    path: '/patrol/setting',
+    name: 'PatrolSetting',
+    component: PatrolSetting
+  },
+  // control 
+  {
+    path: '/control',
+    name: 'Control',
+    component: Control
+  },
+  {
+    path: '/map',
+    name: 'SimulationMap',
+    component: SimulationMap
   },
   {
     path: '/test',

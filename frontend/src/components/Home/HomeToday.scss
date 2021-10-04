@@ -1,0 +1,39 @@
+.today-weather {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  img {
+    margin-right: 15px;
+  }
+}
+
+.text-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.today-date {
+  font-size: 12px;
+  color: $darkgray;
+}
+
+.today-status-group {
+  display: flex;
+  justify-content: space-around;
+  width: 328px;
+}
+
+.today-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+}
+
+.status-title {
+  font-size: 12px;
+  color: $gray;
+}
+
+.status-value {
+  font-size: 18px;
+}

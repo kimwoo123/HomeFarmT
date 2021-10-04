@@ -1,7 +1,28 @@
 @font-face {
+  font-family: 'Pretendard-Light';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Pretendard-Regular';
   src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
   font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-Medium';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard-SemiBold';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff') format('woff');
+  font-weight: 600;
   font-style: normal;
 }
 
@@ -25,10 +46,54 @@ $white: white;
   padding: 0px;
 }
 
+// 텍스트 컬러
+.text-darkgray {
+  color: $darkgray;
+}
+
+.text-gray {
+  color: $gray;
+}
+
+.text-lightgray {
+  color: $lightgray;
+}
+
+// 폰트 두께
+.font-300 {
+  font-family: 'Pretendard-Light';
+}
+
+.font-400 {
+  font-family: 'Pretendard-Regular';
+}
+
+.font-600 {
+  font-family: 'Pretendard-SemiBold';
+}
+
+// 기타
 body {
   background-color: grey !important;
 }
 
 ::-webkit-scrollbar { 
   display: none;
+}
+
+.shadows {
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+}
+
+.my-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 328px;
+  height: 58px;
+  background-color: $primary;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  color: white;
+  margin: 0px auto;
 }

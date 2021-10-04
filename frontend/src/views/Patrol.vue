@@ -1,26 +1,32 @@
 <template>
-  <div class="patrol-container">
-    <PatrolCam style="margin-bottom: 5px"/>
-    <PatrolPath/>
-    <PatrolAnormal/>
+  <div>
+    <Navbar :title="'감시'" :left_icon="true" :right_text="''"/>
+    <PatrolCam style="margin-bottom: 25px;"/>
+    <div class="patrol-container">
+      <PatrolPath style="margin-bottom: 22px;"/>
+      <PatrolHistory/>
+    </div>
+
   </div>
 </template>
-<style>
-  @import './Patrol.scss';
-</style>
+
 <script>
-import PatrolCam from '../components/Patrol/PatrolCam.vue'
-import PatrolPath from '../components/Patrol/PatrolPath.vue'
-import PatrolAnormal from '../components/Patrol/PatrolAnormal.vue'
+import Navbar from '@/components/common/Navbar.vue'
+import PatrolCam from '@/components/Patrol/PatrolCam.vue'
+import PatrolPath from '@/components/Patrol/PatrolPath.vue'
+import PatrolHistory from '@/components/Patrol/PatrolHistory.vue'
 
 export default {
   name: 'Patrol',
   components: {
+    Navbar,
     PatrolCam,
+    PatrolHistory,
     PatrolPath,
-    PatrolAnormal,
   }
-
 }
 </script>
 
+<style lang="scss" scoped>
+  @import './Patrol.scss';
+</style>

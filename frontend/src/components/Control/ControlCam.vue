@@ -1,24 +1,14 @@
 <template>
-  <div class="cam-conatiner">
-    <div class="menu-name">Cam</div>
-    <img class="cam">
+  <div class="patrol-cam-container">
+    <img class="patrol-cam" src="@/assets/images/patrol.png">
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import url('./HomeBotCam.scss');
-</style>
-
 <script>
 export default {
-  name: 'HomeBotCam',
-  state() {
-    return {
-      cnt: 0,  
-    }
-  },
+  name: 'ControlCam',
   mounted() {
-    const img = document.querySelector('.cam')
+    const img = document.querySelector('.patrol-cam')
     this.$socket.on('cam-streaming', message => {
       const byteCharacters = atob(message)
       const byteNumbers = new Array(byteCharacters.length);
@@ -31,8 +21,11 @@ export default {
         URL.revokeObjectURL(event.target.src)
       }
       img.src = URL.createObjectURL(blob)
-
     })
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  @import './ControlCam.scss';
+</style>

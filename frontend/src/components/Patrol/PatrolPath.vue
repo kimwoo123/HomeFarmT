@@ -1,38 +1,29 @@
 <template>
-  <div>
-    <p class="m-0 path-text">감시경로</p>
-    <div class="container">
-      <div class="path-item">
-        <div class="align">
-          <font-awesome-icon :icon="['far', 'circle']" class="icon"/>
-          <span>감시경로1</span>
-        </div>
-        <div class="align">
-          <font-awesome-icon icon="edit" class="icon"/>
-          <font-awesome-icon icon="trash-alt" class="icon"/>
-        </div>
+  <div class="patrol-path shadows">
+    <div class="text-content">
+      <div>
+        <span class="target-path">{{ path }}</span>
+        <span>로 감시를 실행합니다.</span>
       </div>
-      <div class="path-item">
-        <div class="align">
-          <font-awesome-icon icon="check-circle" class="icon"/>
-          <span>감시경로2</span>
-        </div>
-        <div class="align">
-          <font-awesome-icon icon="edit" class="icon"/>
-          <font-awesome-icon icon="trash-alt" class="icon"/>
-        </div>
-      </div>
-      <div class="path-item-empty">새로운 감시 경로 만들기</div>
+      <span v-if="!status" class="status font-300">상태 이상없음</span>
+      <span v-else class="status font-300">상태 이상 발생</span>
     </div>
+    <img src="@/assets/icons/switch.svg" alt="switch">
   </div>
 </template>
+
+<script>
+export default {
+  name: 'PatrolPath',
+  data() {
+    return {
+      path: '1번 경로',
+      status: false,
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
   @import './PatrolPath.scss';
 </style>
-
-<script>
-export default {
-  name: 'PatrolPath'
-}
-</script>

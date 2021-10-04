@@ -1,8 +1,10 @@
 <template>
   <div class="iot-container">
-    <div v-for="(item, idx) in items" :key="idx" class="iot-item" :class="{ 'iot-active' :item.status }"
+    <div v-for="(item, idx) in items" :key="idx" class="iot-item shadows" :class="{ 'iot-active' :item.status }"
       @click="item.status ? turnOff(item) : turnOn(item)">
-      {{ item.name }}
+      <img src="@/assets/icons/devices/light.svg" alt="light" class="icon">
+      <span class="name">{{ item.name }}</span>
+      <span class="position font-300" :class="{ 'position-active' :item.status }">{{ item.position }}</span>
     </div>
   </div>
 </template>
@@ -40,26 +42,32 @@ export default {
         {
           name: '에어컨',
           status: false,
+          position: '부엌'
         },
         {
           name: '에어컨2',
           status: false,
+          position: '부엌'
         },
         {
           name: '에어컨',
           status: false,
+          position: '부엌'
         },
         {
           name: '에어컨2',
           status: false,
+          position: '거실'
         },
         {
           name: '에어컨',
           status: false,
+          position: '거실'
         },
         {
           name: '에어컨2',
           status: false,
+          position: '침실'
         },
       ]
     }
