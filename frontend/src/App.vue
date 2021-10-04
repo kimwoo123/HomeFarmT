@@ -10,9 +10,10 @@ export default {
 }
 </script>
 
-
 <style lang="scss">
   #app {
+    font-family: 'Pretendard-Regular';
+    color: $dark;
     width: 360px;
     height: 683px;
     margin: 0px auto;  
