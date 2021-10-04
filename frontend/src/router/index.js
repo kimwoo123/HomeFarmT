@@ -4,6 +4,7 @@ import Signup from '../views/user/Signup.vue'
 import Login from '../views/user/Login.vue'
 import Home from '../views/Home.vue'
 import IoT from '../views/IoT/IoT.vue'
+import IoTNew from '../views/IoT/IoTNew.vue'
 import Schedule from '../views/Schedule/Schedule.vue'
 import ScheduleNew from '../views/Schedule/ScheduleNew.vue'
 import Patrol from '../views/Patrol/Patrol.vue'
@@ -43,6 +44,11 @@ const routes = [
     path: '/iot',
     name: 'IoT',
     component: IoT
+  },
+  {
+    path: '/iot/new',
+    name: 'IoTNew',
+    component: IoTNew
   },
   // schedule
   {

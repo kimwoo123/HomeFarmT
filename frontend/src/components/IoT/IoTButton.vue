@@ -9,10 +9,6 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import './IoTButton.scss';
-</style>
-
 <script>
 // [0] 신발장 조명
 // 0 : 상태유지
@@ -88,3 +84,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  @import './IoTButton.scss';
+</style>
