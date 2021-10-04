@@ -1,6 +1,10 @@
 .today-weather {
   display: flex;
+  align-items: center;
   margin-bottom: 20px;
+  img {
+    margin-right: 15px;
+  }
 }
 
 .text-box {

@@ -2,7 +2,7 @@
   <div>
 
     <div class="today-weather">
-      <div>icon</div>
+      <img src="@/assets/icons/weather/sun.svg" alt="iot">
       <div class="text-box">
         <span class="today-date">2021년 2월 2일</span>
         <span class="weather-text">맑음</span>

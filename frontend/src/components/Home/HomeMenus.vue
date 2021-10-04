@@ -1,9 +1,21 @@
 <template>
   <div class="menus">
-    <div class="shadows menu" @click="$router.push({ name: 'IoT' })">제어</div>
-    <div class="shadows menu" @click="$router.push({ name: 'Patrol' })">감시</div>
-    <div class="shadows menu" @click="$router.push({ name: 'Schedule' })">일정</div>
-    <div class="shadows menu" @click="$router.push({ name: 'Control' })">조작</div>
+    <div class="shadows menu" @click="$router.push({ name: 'IoT' })">
+      <img src="@/assets/icons/iot.svg" alt="iot">
+      <span>제어</span>
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Patrol' })">
+      <img src="@/assets/icons/patrol.svg" alt="patrol">
+      <span>감시</span>  
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Schedule' })">
+      <img src="@/assets/icons/schedule.svg" alt="schedule">
+      <span>일정</span>  
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Control' })">
+      <img src="@/assets/icons/control.svg" alt="control">
+      <span>조작</span>  
+    </div>
   </div>
 </template>
 

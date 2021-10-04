@@ -4,15 +4,15 @@
     <div class="content-box">
       <div class="content">
         <span class="title">{{ title }}</span>
-        <span class="description">{{ description }}</span>
+        <span class="description font-300">{{ description }}</span>
       </div>
-      <img src="@/assets/icon/switch.svg" alt="">
+      <img src="@/assets/icons/switch.svg" alt="">
     </div>
 
     <div class="time-box">
-      <img src="@/assets/icon/time.svg" alt="time" class="icon">
+      <img src="@/assets/icons/time.svg" alt="time" class="icon">
       <span class="time">{{ time }}</span>
-      <img src="@/assets/icon/calender.svg" alt="date" class="icon">
+      <img src="@/assets/icons/calender.svg" alt="date" class="icon">
       <span class="date">{{ date }}</span>
     </div>
 
