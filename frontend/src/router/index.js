@@ -10,6 +10,7 @@ import PatrolSetting from '../views/PatrolSetting.vue'
 import NavbarLayout from '../views/NavbarLayout.vue'
 import PageNotFound from '../views/PageNotFound.vue'
 import Test from '../views/Test.vue'
+import SimulationMap from '../components/common/SimulationMap.vue'
 
 Vue.use(VueRouter)
 
@@ -66,6 +67,11 @@ const routes = [
         name: 'PatrolSetting',
         component: PatrolSetting
       },
+      {
+        path: '/map',
+        name: 'SimulationMap',
+        component: SimulationMap
+      }
     ]
   },
   {

@@ -71,18 +71,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
-async function startSocketSErver() {
-  const app = express();
-  const socketServer = http.createServer(app)
-  const io = socketIo(socketServer)
-  const port = 30001
+// async function startSocketSErver() {
+//   const app = express();
+//   const socketServer = http.createServer(app)
+//   const io = socketIo(socketServer)
+//   const port = 30001
 
-  socketServer.listen(port, () => {
-    console.log('listen on 30001')
-  })
-}
+//   socketServer.listen(port, () => {
+//     console.log('listen on 30001')
+//   })
+// }
 
-startSocketSErver()
+// startSocketSErver()
 // Websocket 서버 구동을 위한 서버 코드입니다.
 
 // 노드 로직 순서

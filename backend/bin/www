@@ -72,7 +72,7 @@ io.on('connection', socket => {
     socket.on('cam', (message) => {
       socket.to(roomName).emit('cam-streaming', message)
     })
-    
+
     socket.on('PatrolOffToServer', (data) => {
       socket.to(roomName).emit('patrolOff', data);
     });
@@ -91,15 +91,24 @@ io.on('connection', socket => {
       socket.to(roomName).emit('changePath', data);
     });
 
+    // 맵 정보를 ROS로부터 받아서, client으로 전송.
+    socket.on('mapFromRos', (data) => {
+      socket.to(roomName).emit('map', data);
+    });
 
-    // 전달받은 이미지를 jpg 파일로 저장
-    // socket.on('streaming', (message) => {
-    //     socket.to(roomName).emit('sendStreaming', message);
-    //     // console.log(message);
-    //     buffer = Buffer.from(message, "base64");
-    //     fs.writeFileSync(path.join(picPath, "/../client/cam.jpg"), buffer);
-    // });
+    socket.on('turtle_pos_response', (data) => {
+      socket.to(roomName).emit('turtleBotPos', data)
+    })
+    
+    socket.on('requestPath', (data) => {
+      socket.emit('')
+    })
 
+    // // vue-client에서 나온 emit 요청, data => (start, end)
+    // socket.on('requestPath', (data) => {
+    //   // ros2로 emit
+    //   socket.to(roomName).emit('requestPathToRos', data)
+    // })
 })
 
 
