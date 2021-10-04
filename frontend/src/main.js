@@ -16,8 +16,10 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import { 
-  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock, faChevronDown, faChevronUp,
+  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock,
   faEdit, faTrashAlt, faCheckCircle, 
+  
+  faChevronLeft, faChevronRight, faChevronUp, faChevronDown
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle } from '@fortawesome/free-regular-svg-icons'
 import io from 'socket.io-client'
@@ -25,8 +27,10 @@ import io from 'socket.io-client'
 const socket = io(process.env.VUE_APP_BACKEND_SERVER || 'http://localhost:3000'); 
 Vue.prototype.$socket = socket;
 library.add(
-  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock, faChevronDown, faChevronUp,
-  faEdit, faTrashAlt, faCheckCircle, faCircle
+  faUser, faArrowLeft, faArrowUp, faArrowRight, faPlus, faLock,
+  faEdit, faTrashAlt, faCheckCircle, faCircle,
+
+  faChevronLeft, faChevronRight, faChevronUp, faChevronDown
 )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 Vue.config.productionTip = false
