@@ -11,9 +11,9 @@
 
 <script>
 import Navbar from '@/components/common/Navbar.vue'
-import ScheduleCalendar from '../components/Schedule/ScheduleCalendar.vue'
-// import SchedulePlan from '../components/Schedule/SchedulePlan.vue'
-import ScheduleCard from '../components/Schedule/ScheduleCard.vue'
+import ScheduleCalendar from '@/components/Schedule/ScheduleCalendar.vue'
+// import SchedulePlan from '@/components/Schedule/SchedulePlan.vue'
+import ScheduleCard from '@/components/Schedule/ScheduleCard.vue'
 
 export default {
   name: 'Schedule',
@@ -27,5 +27,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import '@/views/Schedule.scss';
+  @import './Schedule.scss';
 </style>

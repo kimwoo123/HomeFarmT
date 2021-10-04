@@ -3,12 +3,13 @@ import VueRouter from 'vue-router'
 import Signup from '../views/user/Signup.vue'
 import Login from '../views/user/Login.vue'
 import Home from '../views/Home.vue'
-import IoT from '../views/IoT.vue'
-import Schedule from '../views/Schedule.vue'
-import ScheduleNew from '../views/ScheduleNew.vue'
-import Patrol from '../views/Patrol.vue'
-import PatrolSetting from '../views/PatrolSetting.vue'
-import Control from '../views/Control.vue'
+import IoT from '../views/IoT/IoT.vue'
+import IoTNew from '../views/IoT/IoTNew.vue'
+import Schedule from '../views/Schedule/Schedule.vue'
+import ScheduleNew from '../views/Schedule/ScheduleNew.vue'
+import Patrol from '../views/Patrol/Patrol.vue'
+import PatrolSetting from '../views/Patrol/PatrolSetting.vue'
+import Control from '../views/Control/Control.vue'
 import Test from '../views/Test.vue'
 import SimulationMap from '../components/common/SimulationMap.vue'
 
@@ -43,6 +44,11 @@ const routes = [
     path: '/iot',
     name: 'IoT',
     component: IoT
+  },
+  {
+    path: '/iot/new',
+    name: 'IoTNew',
+    component: IoTNew
   },
   // schedule
   {

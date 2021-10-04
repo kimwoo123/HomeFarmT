@@ -6,14 +6,10 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import './PatrolSetting.scss';
-</style>
-
 <script>
-import PatrolCam from '../components/Patrol/PatrolCam.vue'
-import PatrolController from '../components/Patrol/PatrolController.vue'
-import PatrolPathSetting from '../components/Patrol/PatrolPathSetting.vue'
+import PatrolCam from '@/components/Patrol/PatrolCam.vue'
+import PatrolController from '@/components/Patrol/PatrolController.vue'
+import PatrolPathSetting from '@/components/Patrol/PatrolPathSetting.vue'
 
 export default {
   name: 'PatrolSetting',
@@ -24,3 +20,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  @import './PatrolSetting.scss';
+</style>

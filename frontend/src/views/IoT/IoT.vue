@@ -16,7 +16,7 @@
 
 <script>
 import Navbar from '@/components/common/Navbar.vue'
-import IoTButton from '../components/IoT/IoTButton.vue'
+import IoTButton from '@/components/IoT/IoTButton.vue'
 
 export default {
   name: 'IoT',

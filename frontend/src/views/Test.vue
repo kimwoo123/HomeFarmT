@@ -1,17 +1,5 @@
 <template>
   <div>
-    <Navbar :title="'테스트'" :left_icon="true" :right_text="'확인'"/>
-    <button @click="modalOn">모달</button>
-    <ModalView v-show="isModalViewed" @close-modal="modalOff" :modalTitle="'asdasda'">
-      <div>
-        adasd
-        <p>sdadada</p>
-        <p>sdadada</p>
-        <p>sdadada</p>
-        <p>sdadada</p>
-      </div>
-    </ModalView>
-
     <form>
       <!-- 로직 1. textarea 생성 -->
       <p>Security Status</p>
@@ -46,13 +34,8 @@
 </template>
 
 <script>
-import Navbar from '@/components/common/Navbar.vue'
-
 export default {
   name: 'Test',
-  components: {
-    Navbar,
-  },
   data() {
     return {
       inter: '',
