@@ -19,8 +19,7 @@
       <br>
 
       <!-- 로직 2. 침입자 인지 시점 이미지 뷰어 생성 -->
-      <!-- <img src="cam.jpg?t=" width='480' onload='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 50)'
-      onerror='setTimeout(function() {src = src.substring(0, (src.lastIndexOf("t=")+2))+(new Date()).getTime()}, 50)'/> -->
+      <img :src="require(`@/assets/anormal/anormal1.jpg`)" id="anormal-img" width='480'/>
 
       
       <!-- 로직 3. 순찰 모드 스위치 버튼 생성 -->
@@ -69,6 +68,10 @@ export default {
     this.$socket.on('sendPatrolStatus', function(message) {
         console.log('sendPatrolStatus', message);
         document.querySelector('#tPatrolStatus').value = message;
+    });
+    this.$socket.on('sendAnormalStatus', function(message) {
+        console.log('침입자', message)
+        // document.querySelector('#anormal-img').src = require(`@/assets/anormal/anormal.jpg`);
     });
   },
   methods: {

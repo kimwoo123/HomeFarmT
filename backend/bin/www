@@ -35,10 +35,10 @@ io.on('connection', socket => {
     socket.join(roomName);
 
     // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
-    socket.on('safety_status', (message) => {
-        console.log(message)
-        console.log(socket)
-        socket.to(roomName).emit('sendSafetyStatus', message);
+    socket.on('anormal_status', (message) => {
+        // console.log(message)
+        // console.log(socket)
+        socket.to(roomName).emit('sendAnormalStatus', message);
     });
 
     
@@ -103,6 +103,7 @@ io.on('connection', socket => {
       // socket.to(roomName).emit('sendStreaming', message);
       buffer = Buffer.from(message, "base64");
       fs.writeFileSync(path.join(picPath, "/src/assets/anormal/anormal.jpg"), buffer);
+      // => 파일로 저장됨 s3 에 저장하기
     });
 
 })

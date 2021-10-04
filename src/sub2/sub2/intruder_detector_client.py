@@ -73,8 +73,7 @@ class HumanDetectorToServer(Node):
         self.timer_period = 0.03
         # self.img_saved = False
         self.human_detected = False
-        self.dir_img = os.path.join(os.getcwd(), "detect.png")
-        print(self.dir_img)
+        self.dir_img = os.path.join(os.getcwd(), "tmp.png") # 초기값 상관X
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
         self.pedes_detector = cv2.HOGDescriptor()
         self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
@@ -103,23 +102,15 @@ class HumanDetectorToServer(Node):
     def timer_callback(self):
 
         if self.img_bgr is not None:
-            print("subscribed")
             self.detect_human()
             b64data = base64.b64encode(self.byte_data)
             if self.human_detected:
                 self.byte_data = cv2.imencode('.jpg', self.img_bgr)[1].tobytes()
-
-            sio.emit('streaming', b64data.decode( 'utf-8' ) )
-
-            if self.human_detected:
-                str_to_web = "house intruder detected"
-            else:
-                str_to_web = "safe"
-
-            sio.emit('safety_status', str_to_web)
+                sio.emit('streaming', b64data.decode( 'utf-8' ) )
+                sio.emit('anormal_status', "house intruder detected")
+                print('침입자발견')
 
         else:
-
             pass
         
 
