@@ -2,20 +2,37 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  row-gap: 16px;
+  column-gap: 16px;
 }
 
 .iot-item { 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 120px;
-  height: 100px;
-  margin: 20px;
+  width: 156px;
+  height: 130px;
   border-radius: 15px;
-  box-shadow: 0px 1px 10px 1px $secondary;
+  background-color: white;
+  border-radius: 10px;
 }
 
 .iot-active {
-  background-color: $secondary;
+  background-color: $primary;
   color: white;
+}
+
+.name {
+  font-size: 14px;
+}
+
+.position {
+  font-size: 11px;
+  color: $darkgray;
+  margin-top: -3px;
+}
+
+.position-active {
+  color: white
 }

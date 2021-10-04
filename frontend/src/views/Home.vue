@@ -14,10 +14,6 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import "@/views/Home.scss";
-</style>
-
 <script>
 import Navbar from '@/components/common/Navbar.vue'
 import HomeMenus from '@/components/Home/HomeMenus.vue'
@@ -35,3 +31,6 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+  @import "./Home.scss";
+</style>
