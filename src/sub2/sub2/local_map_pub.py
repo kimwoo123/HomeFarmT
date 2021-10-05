@@ -200,6 +200,17 @@ class Mapper(Node):
         pose = np.array([[pose_x],[pose_y],[heading]])
         self.mapping.update(pose, laser)
 
+        for y in range(350):
+            for x in range(350):
+                if self.mapping.map[x][y] == 100 :
+                    for dx in range(-5, 6):
+                        for dy in range(-5, 6):
+                            nx = x + dx
+                            ny = y + dy 
+                            if 0 <= nx < 350 and 0 <= ny < 350 and self.mapping.map[nx][ny] < 80:
+                                self.mapping.map[nx][ny] = 110
+
+                                
         np_map_data = self.mapping.map.reshape(1, self.map_size) 
         list_map_data = np_map_data.tolist()
 
@@ -207,6 +218,8 @@ class Mapper(Node):
 
         self.map_msg.data = list_map_data[0]
         self.map_pub.publish(self.map_msg)
+
+        
 
 def save_map(node,file_path):
 

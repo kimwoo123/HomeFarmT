@@ -62,15 +62,15 @@ class astarLocalpath(Node):
         m = np.array(msg.data)
         self.grid = m.reshape(350, 350, order = 'F')
 
-        for y in range(350):
-            for x in range(350):
-                if self.grid[x][y] == 100 :
-                    for dx in range(-5, 6):
-                        for dy in range(-5, 6):
-                            nx = x + dx
-                            ny = y + dy 
-                            if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
-                                self.grid[nx][ny] = 110
+        # for y in range(350):
+        #     for x in range(350):
+        #         if self.grid[x][y] == 100 :
+        #             for dx in range(-5, 6):
+        #                 for dy in range(-5, 6):
+        #                     nx = x + dx
+        #                     ny = y + dy 
+        #                     if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
+        #                         self.grid[nx][ny] = 110
 
 
         # 아래는 publish 용
@@ -94,6 +94,7 @@ class astarLocalpath(Node):
         self.last_current_point = 0
 
     def findLocalPath(self, current_waypoint, collision_point) :
+        self.last_current_point = collision_point
         is_goal = False
         length = len(self.global_path_msg.poses)
         for num in range(collision_point, length):
@@ -160,7 +161,7 @@ class astarLocalpath(Node):
             node = self.path[nextNode[0]][nextNode[1]]
         print('다익스트라 cnt : ', cnt)
 
-        cnt = 0;
+        cnt = 0
         for grid_cell in reversed(self.final_path) :
             if grid_cell[0] == start[0] and grid_cell[1] == start[1] : continue;
             if grid_cell[0] == self.goal[0] and grid_cell[1] == self.goal[1] : continue;
@@ -189,7 +190,6 @@ class astarLocalpath(Node):
                 if distance < min_dis :
                     min_dis = distance
                     current_waypoint = i
-            
             self.last_current_point = current_waypoint
             print(current_waypoint)
             '''
@@ -202,12 +202,12 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
-                        # temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
-                        # if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
-                        #     print('제')
-                        #     self.local_path_pub.publish(local_path_msg)
-                        #     self.findLocalPath(current_waypoint, num)
-                        #     return
+                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                            print('제')
+                            self.local_path_pub.publish(local_path_msg)
+                            self.findLocalPath(current_waypoint, num)
+                            return
                         local_path_msg.poses.append(tmp_pose)
 
                 else :
@@ -217,12 +217,12 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
-                        # temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
-                        # if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
-                        #     print('발')
-                        #     self.local_path_pub.publish(local_path_msg)
-                        #     self.findLocalPath(current_waypoint, num)
-                        #     return
+                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                            print('발')
+                            self.local_path_pub.publish(local_path_msg)
+                            self.findLocalPath(current_waypoint, num)
+                            return
                         local_path_msg.poses.append(tmp_pose)    
 
             self.local_path_pub.publish(local_path_msg)
