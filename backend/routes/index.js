@@ -12,13 +12,26 @@ router.get('/map1', function(req, res) {
   })
 });
 
-// router.get('/patrol', getTest);
-// function getTest(req, res) {
-//   let rule = new schedule.RecurrenceRule()
-//   let job = schedule.scheduleJob('10 * * * * *', function () {
-//     console.log('schedule work')
-//   })
-// }
+router.get('/patrol', getTest);
+function getTest(req, res) {
+  let rule = new schedule.RecurrenceRule()
+  let job = schedule.scheduleJob('10 * * * * *', function () {
+      const opt = {
+          shell: true,
+          cwd: 'C:/Users/multicampus/Desktop/iot/src/sub2/sub2/'
+      }
+      const child = spawn('call C:/dev/ros2_eloquent/setup.bat && call C:/Users/multicampus/Desktop/iot/install/local_setup.bat && python ex_calib.py', opt)
+      child.stderr.on('data', function (data) {
+        console.error("STDERR:", data.toString());
+      });
+      child.stdout.on('data', function (data) {
+        console.log("STDOUT:", data.toString());
+      });
+      child.on('exit', function (exitCode) {
+        console.log("Child exited with code: " + exitCode);
+      });
+  })
+}
 
 // 	socket.on('cleanerOnToServer', () => {
 //         const opt = {
