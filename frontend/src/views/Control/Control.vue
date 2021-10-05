@@ -1,6 +1,6 @@
 <template>
   <div class="control-container">
-    <Navbar :title="'터틀봇 조작'" :left_icon="true" :right_text="'제어'"/>
+    <Navbar :title="'터틀봇 조작'" :left_icon="true" :right_text="'제어'" :left_push="'Home'" :right_push="'IoT'"/>
     
     <div class="minimap" @click="isModalViewed=true">
       <SimulationMap :clickEnable="false" :size="'150'" v-if="!isModalViewed"/>
