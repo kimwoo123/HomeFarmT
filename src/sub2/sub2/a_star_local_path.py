@@ -39,7 +39,6 @@ class astarLocalpath(Node):
 
         self.map_offset_x = -50 - 8.75 #-8 - 8.75
         self.map_offset_y = -50 - 8.75 # -4 - 8.75
-        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
 
         self.odom_msg=Odometry()
         self.is_odom=False
@@ -58,7 +57,6 @@ class astarLocalpath(Node):
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-        self.dijkstra = False
 
     def local_map_callback(self, msg) :
         m = np.array(msg.data)
@@ -96,7 +94,6 @@ class astarLocalpath(Node):
         self.last_current_point = 0
 
     def findLocalPath(self, current_waypoint, collision_point) :
-        self.dijkstra = True
         is_goal = False
         length = len(self.global_path_msg.poses)
         for num in range(collision_point, length):
