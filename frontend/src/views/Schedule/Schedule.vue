@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Navbar :title="'스케줄'" :left_icon="true" :right_text="'추가'"/>
+    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="'추가'"/>
     <div class="schedule-container">
+      <ScheduleCalendar/>
       <ScheduleCard/>
     </div>
-    <ScheduleCalendar/>
     <!-- <SchedulePlan/> -->
   </div>
 </template>
@@ -23,6 +23,13 @@ export default {
     // SchedulePlan,
     ScheduleCard
   },
+  data() {
+    return {
+      today: '',
+      todayWeek: '',
+      targetWeeok: '',
+    }
+  }
 }
 </script>
 
