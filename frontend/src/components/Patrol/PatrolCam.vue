@@ -3,9 +3,6 @@
     <img class="patrol-cam" src="@/assets/images/patrol.png">
   </div>
 </template>
-<style lang="scss" scoped>
-  @import './PatrolCam.scss';
-</style>
 <script>
 export default {
   name: 'PatrolCam',
@@ -28,4 +25,6 @@ export default {
   }
 }
 </script>
-
+<style lang="scss" scoped>
+  @import './PatrolCam.scss';
+</style>

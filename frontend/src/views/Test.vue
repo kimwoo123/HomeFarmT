@@ -1,16 +1,5 @@
 <template>
   <div>
-    <button @click="modalOn">모달</button>
-    <ModalView v-show="isModalViewed" @close-modal="modalOff" :modalTitle="'asdasda'">
-      <div>
-        adasd
-        <p>sdadada</p>
-        <p>sdadada</p>
-        <p>sdadada</p>
-        <p>sdadada</p>
-      </div>
-    </ModalView>
-
     <form>
       <!-- 로직 1. textarea 생성 -->
       <p>Security Status</p>
@@ -74,8 +63,8 @@ export default {
   methods: {
     btn_patrol_on() {
       console.log('iot-control');
-      let data = '0 1';
-      this.$socket.emit('iot-control', data);
+      let data = 1;
+      this.$socket.emit('PatrolOnToServer', data);
     },
     btn_patrol_off() {
       console.log('btn_patrol_off');

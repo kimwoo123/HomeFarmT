@@ -30,14 +30,18 @@ module.exports = {
     }
   },
   Mutation: {
-    createSchedule: async (_, { schedule_time }, context) => {
+    createSchedule: async (_, { schedule_time, schedule_title, schedule_desc, schedule_status }, context) => {
+      console.log('----------------------------')
       if (!context) {
         throw new Error('인증된 유저가 아닙니다')
       }
       const user = await User.findOne({ where: { email: context.hashedEmail }})
       const userid = user.dataValues.userid
       const newSchedule = await Schedule.create({ 
-        schedule_time: schedule_time,
+        // schedule_time: schedule_time,
+        // schedule_title: schedule_title,
+        // schedule_desc: schedule_desc,
+        // schedule_status: schedule_status,
         userid: userid
        })
       return newSchedule

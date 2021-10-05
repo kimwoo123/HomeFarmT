@@ -3,12 +3,6 @@ import VueRouter from 'vue-router'
 import Signup from '../views/user/Signup.vue'
 import Login from '../views/user/Login.vue'
 import Home from '../views/Home.vue'
-import IoT from '../views/IoT.vue'
-import Schedule from '../views/Schedule.vue'
-import Patrol from '../views/Patrol.vue'
-import PatrolSetting from '../views/PatrolSetting.vue'
-import NavbarLayout from '../views/NavbarLayout.vue'
-import PageNotFound from '../views/PageNotFound.vue'
 import Test from '../views/Test.vue'
 
 Vue.use(VueRouter)
@@ -16,12 +10,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '*',
-    redirect: '/404'
-  },
-  {
-    path: '/404',
-    name: 'PageNotFound',
-    component: PageNotFound
+    redirect: '/'
   },
   {
     path: '/',
@@ -42,31 +31,44 @@ const routes = [
     name: 'Home',
     component: Home
   },
+  // iot
   {
-    path: '/navbar-layout',
-    component: NavbarLayout,
-    children: [
-      {
-        path: '/iot',
-        name: 'IoT',
-        component: IoT
-      },
-      {
-        path: '/schedule',
-        name: 'Schedule',
-        component: Schedule
-      },
-      {
-        path: '/patrol',
-        name: 'Patrol',
-        component: Patrol
-      },
-      {
-        path: '/patrol/setting',
-        name: 'PatrolSetting',
-        component: PatrolSetting
-      },
-    ]
+    path: '/iot',
+    name: 'IoT',
+    component: () => import('../views/IoT/IoT.vue')
+  },
+  {
+    path: '/iot/new',
+    name: 'IoTNew',
+    component: () => import('../views/IoT/IoTNew.vue')
+  },
+  // schedule
+  {
+    path: '/schedule',
+    name: 'Schedule',
+    component: () => import('../views/Schedule/Schedule.vue')
+  },
+  {
+    path: '/schedule/new',
+    name: 'ScheduleNew',
+    component: () => import('../views/Schedule/ScheduleNew.vue')
+  },
+  // patrol
+  {
+    path: '/patrol',
+    name: 'Patrol',
+    component: () => import('../views/Patrol/Patrol.vue')
+  },
+  {
+    path: '/patrol/setting',
+    name: 'PatrolSetting',
+    component: () => import('../views/Patrol/PatrolSetting.vue')
+  },
+  // control 
+  {
+    path: '/control',
+    name: 'Control',
+    component: () => import('../views/Control/Control.vue')
   },
   {
     path: '/test',

@@ -12,24 +12,26 @@ const http = require('http');
 var indexRouter = require('./routes/index');
 const UsertypeDefs = require('./graphql/Schema/UserSchema');
 const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
+const HistorytypeDefs = require('./graphql/Schema/HistorySchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
 const ScheduleResolvers = require('./graphql/Resolvers/ScheduleResolvers');
+const HistoryResolvers = require('./graphql/Resolvers/HistoryResolvers');
 const _ = require('lodash');
 const socketIo = require('socket.io')
 
-const typeDefs = [UsertypeDefs, ScheduletypeDefs]
-const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
+const typeDefs = [UsertypeDefs, ScheduletypeDefs, HistorytypeDefs]
+const resolvers = _.merge({}, UserResolvers, ScheduleResolvers, HistoryResolvers)
 require('dotenv').config()
 
-// const { sequelize } = require('./models')
+const { sequelize } = require('./models')
 
-// sequelize.sync({force: false})
-// .then(()=>{
-//     console.log('데이터베이스 연결 성공');
-// })
-// .catch((err)=>{
-//     console.error(err);
-// });
+sequelize.sync({force: false})
+.then(()=>{
+    console.log('데이터베이스 연결 성공');
+})
+.catch((err)=>{
+    console.error(err);
+});
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
@@ -73,18 +75,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 
-async function startSocketSErver() {
-  const app = express();
-  const socketServer = http.createServer(app)
-  const io = socketIo(socketServer)
-  const port = 30001
+// async function startSocketSErver() {
+//   const app = express();
+//   const socketServer = http.createServer(app)
+//   const io = socketIo(socketServer)
+//   const port = 30001
 
-  socketServer.listen(port, () => {
-    console.log('listen on 30001')
-  })
-}
+//   socketServer.listen(port, () => {
+//     console.log('listen on 30001')
+//   })
+// }
 
-startSocketSErver()
+// startSocketSErver()
 // Websocket 서버 구동을 위한 서버 코드입니다.
 
 // 노드 로직 순서

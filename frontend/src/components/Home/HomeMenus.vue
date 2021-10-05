@@ -1,26 +1,30 @@
 <template>
-  <div class="menus-container">
-    <div class="menu-name">Actions</div>
-    <div class="menus-wrapper">
-      <div class="menu one" @click="clickMenuButton" data-menu-name="Patrol">Patrol</div>
-      <div class="menu two" @click="clickMenuButton" data-menu-name="Schedule">Schedule</div>
-      <div class="menu two" @click="clickMenuButton" data-menu-name="IoT">IoT</div>
-      <div class="menu one">메뉴 4</div>
+  <div class="menus">
+    <div class="shadows menu" @click="$router.push({ name: 'IoT' })">
+      <img src="@/assets/icons/iot.svg" alt="iot">
+      <span>제어</span>
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Patrol' })">
+      <img src="@/assets/icons/patrol.svg" alt="patrol">
+      <span>감시</span>  
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Schedule' })">
+      <img src="@/assets/icons/schedule.svg" alt="schedule">
+      <span>일정</span>  
+    </div>
+    <div class="shadows menu" @click="$router.push({ name: 'Control' })">
+      <img src="@/assets/icons/control.svg" alt="control">
+      <span>조작</span>  
     </div>
   </div>
 </template>
-<style scoped lang="scss">
-  @import './HomeMenus.scss';
-</style>
+
 <script>
 export default {
   name: 'HomeMenus',
-  methods: {
-    clickMenuButton (event) {
-      const menu = event.target.dataset.menuName
-      this.$router.push({name: menu})
-    },
-  }
 }
 </script>
 
+<style lang="scss" scoped>
+  @import './HomeMenus.scss';
+</style>
