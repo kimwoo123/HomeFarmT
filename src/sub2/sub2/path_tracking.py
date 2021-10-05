@@ -32,11 +32,9 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-        self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)
+        self.subscription = self.create_subscription(LaserScan, '/scan',self.lidar_callback,10)
         self.collision_publisher = self.create_publisher(Bool, '/collision', 10)
         time_period=0.05 
-        self.timer = self.create_timer(time_period, self.lidar_callback)
-
         self.is_odom = False
         self.is_path = False
         self.is_status = False
@@ -48,17 +46,15 @@ class followTheCarrot(Node):
         self.cmd_msg = Twist()
         self.lidar_msg = LaserScan()
         self.robot_yaw=0.0
-
+        self.bool_msg = Bool();
         # 로직 2. 파라미터 설정 
         self.lfd=0.1
         self.min_lfd=0.1
         self.max_lfd=1.0
+        self.timer = self.create_timer(time_period, self.timer_callback)
 
     def timer_callback(self):
-
         if self.is_status and self.is_odom ==True and self.is_path==True and self.is_lidar == True:
-
-
             if len(self.path_msg.poses) > 1:
                 self.is_look_forward_point = False
                 
@@ -90,19 +86,7 @@ class followTheCarrot(Node):
                 if self.lfd > self.max_lfd:
                     self.lfd=self.max_lfd
 
-                min_dis=float('inf')
-                '''
-                로직 5. 전방 주시 포인트 설정
-                for num,waypoint in enumerate(self.path_msg.poses) :
-
-                    self.current_point=
-                    dis=
-                    if abs(dis-self.lfd) < min_dis :
-                        min_dis=
-                        self.forward_point=
-                        self.is_look_forward_point=
-
-                '''               
+                min_dis=float('inf')          
                 for waypoint in self.path_msg.poses :
                     self.current_point = waypoint.pose.position
                     dis = sqrt(pow(closest_local_path_x - self.current_point.x, 2) + pow(closest_local_path_y - self.current_point.y, 2))
@@ -114,23 +98,7 @@ class followTheCarrot(Node):
             
                     global_forward_point=[self.forward_point.x, self.forward_point.y, 1]
 
-                    '''
-                    로직 6. 전방 주시 포인트와 로봇 헤딩과의 각도 계산
-
-                    (테스트) 맵에서 로봇의 위치(robot_pose_x,robot_pose_y)가 (5,5)이고, 헤딩(self.robot_yaw) 1.57 rad 일 때, 선택한 전방포인트(global_forward_point)가 (3,7)일 때
-                    변환행렬을 구해서 전방포인트를 로봇 기준좌표계로 변환을 하면 local_forward_point가 구해지고, atan2를 이용해 선택한 점과의 각도를 구하면
-                    theta는 0.7853 rad 이 나옵니다.
-                    trans_matrix는 로봇좌표계에서 기준좌표계(Map)로 좌표변환을 하기위한 변환 행렬입니다.
-                    det_tran_matrix는 trans_matrix의 역행렬로, 기준좌표계(Map)에서 로봇좌표계로 좌표변환을 하기위한 변환 행렬입니다.  
-                    local_forward_point 는 global_forward_point를 로봇좌표계로 옮겨온 결과를 저장하는 변수입니다.
-                    theta는 로봇과 전방 주시 포인트와의 각도입니다. 
-
-                    trans_matrix=
-                    det_trans_matrix=
-                    local_forward_point=
-                    theta=
-                    
-                    '''
+            
                     trans_matrix = np.array([
                         [cos(self.robot_yaw), -sin(self.robot_yaw), robot_pose_x],
                         [sin(self.robot_yaw), cos(self.robot_yaw), robot_pose_y],
@@ -140,12 +108,7 @@ class followTheCarrot(Node):
                     det_trans_matrix = np.linalg.inv(trans_matrix)
                     local_forward_point = det_trans_matrix.dot(global_forward_point)
                     theta = -atan2(local_forward_point[1], local_forward_point[0])
-                    '''
-                    로직 7. 선속도, 각속도 정하기
-                    out_vel=
-                    out_rad_vel=
 
-                    '''             
                     out_vel = 0.5
                     out_rad_vel = theta
 
@@ -154,19 +117,16 @@ class followTheCarrot(Node):
 
                     if self.collision == True :
                         self.cmd_msg.linear.x = 0.0
-
+                        self.cmd_msg.angular.z = 0.0
             else :
                 print("no found forward point")
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
-
-            
             self.cmd_pub.publish(self.cmd_msg)
-
     def lidar_callback(self, msg) :
         self.lidar_msg = msg
+        self.is_lidar = True
         if self.is_path == True and self.is_odom == True :
-
             pcd_msg = PointCloud()
             pcd_msg.header.frame_id = 'map'
 
@@ -183,7 +143,6 @@ class followTheCarrot(Node):
 
             for angle, r in enumerate(msg.ranges) :
                 global_point = Point32()
-
                 if 0.0 < r < 12: # 라이다의 측정거리가 12m이기에 이렇게 설정
                     local_x = r * cos(angle * pi / 180)
                     local_y = r * sin(angle * pi / 180)
@@ -196,20 +155,22 @@ class followTheCarrot(Node):
             for waypoint in self.path_msg.poses :
                 for lidar_point in pcd_msg.points :
                     distance = sqrt(pow(waypoint.pose.position.x - lidar_point.x, 2) + pow(waypoint.pose.position.y - lidar_point.y, 2))
-                    if distance < 0.3:
+                    if distance < 0.2:
+                        print('충돌발생!!!! 씨@발')
                         self.collision = True
-                        self.collision_publisher(True)
-                        print('collision 경로 재탐색')
+                        self.bool_msg.data = self.collision;
+                        self.collision_publisher.publish(self.bool_msg)
+                        return;
+            self.collision = False
+            self.bool_msg.data = self.collision;
+            self.collision_publisher.publish(self.bool_msg)
+
+            
 
     def odom_callback(self, msg):
         self.is_odom=True
         self.odom_msg=msg
-        '''
-        로직 3. Quaternion 을 euler angle 로 변환
-        q=
-        _,_,self.robot_yaw=
 
-        ''' 
         w = msg.pose.pose.orientation.w
         x = msg.pose.pose.orientation.x
         y = msg.pose.pose.orientation.y
@@ -218,13 +179,14 @@ class followTheCarrot(Node):
         self.robot_yaw = q.to_euler()[2]
     
     def path_callback(self, msg):
-        self.is_path=True
-        self.path_msg=msg
+        self.collision = False
+        self.is_path = True
+        self.path_msg = msg
 
 
     def status_callback(self,msg):
-        self.is_status=True
-        self.status_msg=msg
+        self.is_status = True
+        self.status_msg = msg
         
 
         

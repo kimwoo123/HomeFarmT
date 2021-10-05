@@ -20,7 +20,7 @@ class loadMap(Node):
 
     def __init__(self):
         super().__init__('load_map')
-        self.map_pub = self.create_publisher(OccupancyGrid, 'map', 1)
+        self.map_pub = self.create_publisher(OccupancyGrid, '/global_map', 1)
         
         time_period = 1  
         self.timer = self.create_timer(time_period, self.timer_callback)
@@ -35,8 +35,8 @@ class loadMap(Node):
         self.map_size_y = 350
         self.map_resolution = 0.05
 
-        self.map_offset_x = -8 - 8.75 #-8 - 8.75
-        self.map_offset_y = -4 - 8.75 # -4 - 8.75
+        self.map_offset_x = -50 - 8.75 #-8 - 8.75
+        self.map_offset_y = -50 - 8.75 # -4 - 8.75
         self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
         grid=np.array(self.map_data)
         grid=np.reshape(grid,(350, 350))
@@ -65,24 +65,7 @@ class loadMap(Node):
             self.map_data[num] = int(data)
 
         map_to_grid = np.array(self.map_data)
-        grid = np.reshape(map_to_grid,(350, 350))
-        for y in range(350):
-            for x in range(350):
-                if grid[x][y] == 100 :
-                    '''
-                        로직 3. 점유영역 근처 필터처리
-
-                        채워 넣기
-                    '''
-                    for dx in range(-5, 6):
-                        for dy in range(-5, 6):
-                            nx = x + dx
-                            ny = y + dy 
-                            if 0 <= nx < 350 and 0 <= ny < 350 and grid[nx][ny] < 80:
-                                grid[nx][ny] = 127                                
-
-
-        np_map_data = grid.reshape(1, 350 * 350) 
+        np_map_data = map_to_grid.reshape(1, 350 * 350) 
         list_map_data = np_map_data.tolist()
         
         # 로직2를 완성하고 주석을 해제 시켜주세요.

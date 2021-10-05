@@ -34,7 +34,7 @@ class a_star(Node):
     def __init__(self):
         super().__init__('a_star')
         # 로직 1. publisher, subscriber 만들기
-        self.map_sub = self.create_subscription(OccupancyGrid,'map', self.map_callback, 1)
+        self.map_sub = self.create_subscription(OccupancyGrid,'global_map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry,'odom', self.odom_callback, 1)
         self.goal_sub = self.create_subscription(PoseStamped, 'goal_pose', self.goal_callback, 1)
         self.a_star_pub = self.create_publisher(Path, 'global_path', 1)
@@ -52,8 +52,8 @@ class a_star(Node):
         self.map_size_x = 350
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 - 8
-        self.map_offset_y = -8.75 - 4
+        self.map_offset_x = -50 - 8.75
+        self.map_offset_y = -50 - 8.75
     
         self.GRIDSIZE = 350 
 
@@ -201,44 +201,44 @@ class a_star(Node):
     # 담영
     def A_star_dam(self, start):
 
-        # ######################################### 다익스트라 ################################################
-        start_time = time.time()
-        Q = deque()
-        Q.append(start)
-        self.cost[start[0]][start[1]] = 1
-        found = False
-        cnt = 0
-        visited = dict()
-        visited[(start[0], start[1])] = True
-        while Q : # while Q:
-            current = Q.popleft()
-            cnt += 1
-            if found :
-                break
-            for i in range(8) :
-                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if visited.get((next[0], next[1]), False) : 
-                    continue
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                    if self.grid[next[0]][next[1]] <= 50 :
-                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
-                                Q.append(next)
-                                self.path[next[0]][next[1]] = current
-                                self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
-                                visited[(next[0], next[1])] = True
-                                if next[0] == self.goal[0] and next[1] == self.goal[1]:
-                                    found = True
+        # # ######################################### 다익스트라 ################################################
+        # start_time = time.time()
+        # Q = deque()
+        # Q.append(start)
+        # self.cost[start[0]][start[1]] = 1
+        # found = False
+        # cnt = 0
+        # visited = dict()
+        # visited[(start[0], start[1])] = True
+        # while Q : # while Q:
+        #     current = Q.popleft()
+        #     cnt += 1
+        #     if found :
+        #         break
+        #     for i in range(8) :
+        #         next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+        #         if visited.get((next[0], next[1]), False) : 
+        #             continue
+        #         if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+        #             if self.grid[next[0]][next[1]] <= 50 :
+        #                 if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+        #                         Q.append(next)
+        #                         self.path[next[0]][next[1]] = current
+        #                         self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+        #                         visited[(next[0], next[1])] = True
+        #                         if next[0] == self.goal[0] and next[1] == self.goal[1]:
+        #                             found = True
         
-        print(found)
-        if(found == False) :
-            return
-        node = self.goal
-        while node != start :
-            nextNode = node
-            self.final_path.append(nextNode)
-            node = self.path[nextNode[0]][nextNode[1]]
-        print('다익스트라 cnt : ', cnt)
-        print("time :", time.time() - start_time)
+        # print(found)
+        # if(found == False) :
+        #     return
+        # node = self.goal
+        # while node != start :
+        #     nextNode = node
+        #     self.final_path.append(nextNode)
+        #     node = self.path[nextNode[0]][nextNode[1]]
+        # print('다익스트라 cnt : ', cnt)
+        # print("time :", time.time() - start_time)
 
         ####################################################       A*         ################################################
         def heuristic_dam(x, y) :
@@ -337,6 +337,7 @@ class a_star(Node):
         openlist = []
         cnt = 0
         found = False
+        cost_so_far = dict()
         heappush(openlist, [0, start[0], start[1]])
         for i in range(repeat):
 

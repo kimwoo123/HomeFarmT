@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Pose
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt
@@ -27,10 +27,21 @@ class astarLocalpath(Node):
         super().__init__('a_star_local_path')
         # 로직 1. publisher, subscriber 만들기
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
-        self.subscription = self.create_subscription(Path,'/global_path',self.path_callback,10)
-        self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
-        self.subscription = self.create_subscription(Bool,'/collision',self.collision_callback,10)
-        self.subscription = self.create_subscription(OccupancyGrid,'/local_map',self.local_map_callback,10)
+        self.subscription = self.create_subscription(Path,'global_path',self.path_callback,10)
+        self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
+        self.subscription = self.create_subscription(Bool,'collision',self.collision_callback,10)
+        self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
+        
+        self.temp_map_pub = self.create_publisher(OccupancyGrid, '/temp_map', 1)
+        self.map_msg = OccupancyGrid()
+        self.map_msg.header.frame_id="map"
+        self.map_size_x = 350 
+        self.map_size_y = 350
+        self.map_resolution = 0.05
+
+        self.map_offset_x = -50 - 8.75 #-8 - 8.75
+        self.map_offset_y = -50 - 8.75 # -4 - 8.75
+        self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
@@ -45,15 +56,34 @@ class astarLocalpath(Node):
         self.local_path_size = 15
         self.count = 0
 
+        self.map_resolution = 0.05
+        self.map_offset_x = -50 - 8.75
+        self.map_offset_y = -50 - 8.75
         self.GRIDSIZE = 350 
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
+
+
+        m = MapMetaData()
+        m.resolution = self.map_resolution
+        m.width = self.map_size_x
+        m.height = self.map_size_y
+        m.origin = Pose()
+        m.origin.position.x = self.map_offset_x
+        m.origin.position.y = self.map_offset_y
+
+        self.map_meta_data = m
+        self.map_msg.info = self.map_meta_data
+
     def local_map_callback(self, msg) :
+
         if self.collision == False :
             return
+        print('local_map_callback')
         m = np.array(msg.data)
-        self.grid = np.reshape(m,(350, 350))
+        self.grid = m.reshape(350, 350, order = 'F')
+
         for y in range(350):
             for x in range(350):
                 if self.grid[x][y] == 100 :
@@ -62,11 +92,19 @@ class astarLocalpath(Node):
                             nx = x + dx
                             ny = y + dy 
                             if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
-                                self.grid[nx][ny] = 127
+                                self.grid[nx][ny] = 110
+
+
+        # 아래는 publish 용
+        np_map_data = self.grid.reshape(1, 350 * 350) 
+        list_map_data = np_map_data.tolist()
+        self.map_msg.data = list_map_data[0]
+        self.map_msg.header.stamp = rclpy.clock.Clock().now().to_msg()
+        self.temp_map_pub.publish(self.map_msg)
         self.loadLocalMap = True
 
     def collision_callback(self, msg) :
-        if msg == False :
+        if msg.data == False :
             self.collision = False
             return
         self.collision = True
@@ -81,6 +119,7 @@ class astarLocalpath(Node):
     def path_callback(self,msg):
         self.is_path = True
         self.global_path_msg = msg
+        self.last_current_point = 0
 
         
     def timer_callback(self):
@@ -91,7 +130,7 @@ class astarLocalpath(Node):
             
             x=self.odom_msg.pose.pose.position.x
             y=self.odom_msg.pose.pose.position.y
-            current_waypoint=-1
+            current_waypoint = -1
 
             min_dis= float('inf')
             for i, waypoint in enumerate(self.global_path_msg.poses):
@@ -102,7 +141,7 @@ class astarLocalpath(Node):
                     current_waypoint = i
             
             self.last_current_point = current_waypoint
-            print(self.last_current_point)
+
             '''
             로직 5. local_path 예외 처리
             '''
@@ -116,35 +155,41 @@ class astarLocalpath(Node):
                         local_path_msg.poses.append(tmp_pose)
 
                 else :
+                    print('-1 입니당')
                     for num in range(current_waypoint, len(self.global_path_msg.poses)):
                         tmp_pose = PoseStamped()
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
-                        local_path_msg.poses.append(tmp_pose)     
+                        local_path_msg.poses.append(tmp_pose)    
 
             self.local_path_pub.publish(local_path_msg)
         elif self.is_odom and self.is_path ==True and self.collision == True and self.loadLocalMap == True:
-            local_path_msg=Path()
+            print('로컬패스 생성!!! 다익스트라!!! 빠크')
+            local_path_msg = Path()
             local_path_msg.header.frame_id='/map'
-            current_waypoint=-1
-            x=self.odom_msg.pose.pose.position.x
-            y=self.odom_msg.pose.pose.position.y
+            current_waypoint = -1
+            x = self.odom_msg.pose.pose.position.x
+            y = self.odom_msg.pose.pose.position.y
             min_dis= float('inf')
             # global_path 중 local_cost_map과 안겹치는 부분 찾아내서 self.goal에 저장
+            print('start : ', self.pose_to_grid_cell(x, y))
             for i, waypoint in enumerate(self.global_path_msg.poses):
-                if not (self.last_current_point <= i): continue
+                if not (self.last_current_point - 30 <= i): continue
+                print(i , ' : ', self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y))
                 distance = sqrt(pow(x - waypoint.pose.position.x, 2) + pow(y - waypoint.pose.position.y, 2))
                 local_destination = self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y)
-                if distance < 0.3 or self.grid[local_destination[0]][local_destination[1]] > 50 : continue
+                print('distance : ', distance)
+                print('local_destination : ', local_destination)
+                if distance < 0.2 or self.grid[local_destination[0]][local_destination[1]] > 50 : continue
                 self.goal = [local_destination[0], local_destination[1]]
                 current_waypoint = i
+                print(self.goal)
                 break
-            
-            self.last_current_point = current_waypoint 
             if current_waypoint == -1 :
                 print('local_path goal 찾을 수 없음')
                 return;
+            self.last_current_point = current_waypoint 
             # 다익스트라로 local_path 생성
             self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
             self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
@@ -188,7 +233,7 @@ class astarLocalpath(Node):
 
             for grid_cell in reversed(self.final_path) :
                 tmp_pose = PoseStamped()
-                waypoint_x, waypoint_y=self.grid_cell_to_pose(grid_cell)
+                waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
                 tmp_pose.pose.position.x = waypoint_x
                 tmp_pose.pose.position.y = waypoint_y
                 tmp_pose.pose.orientation.w = 1.0
