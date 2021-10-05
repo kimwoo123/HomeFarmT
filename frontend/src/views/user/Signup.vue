@@ -1,36 +1,37 @@
 <template>
-  <div class="signup-container">
-    <div class="nav-container">
-      <font-awesome-icon icon="arrow-left" @click="$router.push({ name: 'Login' })" class="icon"/>
-      <span>Signup</span>
-      <font-awesome-icon icon="user" class="icon-display"/>
+  <div class="bg">
+    <Navbar :title="'회원가입'" :left_icon="true" :right_text="''" style="color: white;"/>
+    <div class="signup-container">
+      <div class="input-container"> 
+        <div class="item">
+          <span class="font-400">이메일</span>
+          <input type="email" v-model="email" placeholder="이메일"> 
+        </div>
+        <div class="item">
+          <span class="font-400">비밀번호</span>
+          <input type="password" id="password" v-model="password" placeholder="비밀번호"> 
+        </div>
+        <div class="item">
+          <span class="font-400">비밀번호 재입력</span>
+          <input type="password" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="비밀번호 재입력">
+        </div>
+      </div>
+
+      <button class="user-btn" @click="requestSignup()">회원가입</button>
     </div>
-
-    <div class="logo"></div>
-
-    <div class="input-container">
-      <font-awesome-icon icon="user" class="icon"/>
-      <input type="email" v-model="email" placeholder="email">
-      <font-awesome-icon icon="lock" class="icon"/>
-      <input type="password" id="password" v-model="password" placeholder="password">
-      <font-awesome-icon icon="lock" class="icon"/>
-      <input type="passwordConfirmation" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="passwordConfirmation">
-    </div>
-
-    <button @click="requestSignup()">Signup</button>
   </div>
 </template>
 
-<style lang="scss" scoped>
-@import './Signup.scss';
-</style>
-
 <script>
+import Navbar from '@/components/common/Navbar.vue'
 import gql from 'graphql-tag'
 // import { useMutation } from '@vue/apollo-composable'
 
 export default {
   name: 'Signup',
+  components: {
+    Navbar,
+  },
   data() {
     return {
       email: '',
@@ -67,3 +68,7 @@ export default {
     },
   }
 </script>
+
+<style lang="scss" scoped>
+  @import './Signup.scss';
+</style>

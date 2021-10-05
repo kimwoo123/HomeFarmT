@@ -1,35 +1,35 @@
 <template>
-  <div class="login-container">
-    <div class="nav-container">
-      <span>Login</span>
-    </div>
-
-    <div class="logo"></div>
-
-    <div class="input-container">
-      <font-awesome-icon icon="user" class="icon"/>
-      <input type="email" v-model="email" placeholder="email">
-      <font-awesome-icon icon="lock" class="icon"/>
-      <input type="password" v-model="password" @keyup.enter="requestLogin" placeholder="password">
-      <div class="option">
-        <small>Forgot Password?</small>
-        <small @click="$router.push({ name: 'Signup' })">Sign Up</small>
+  <div class="bg">
+    <Navbar :title="'로그인'" :left_icon="false" :right_text="''" style="color: white;"/>
+    <div class="login-container">
+      <div class="input-container">
+        <div class="item">
+          <span class="font-400">이메일</span>
+          <input type="email" v-model="email" placeholder="이메일">
+        </div>
+        <div class="item">
+          <span class="font-400">비밀번호</span>
+          <input type="password" v-model="password" @keyup.enter="requestLogin" placeholder="비밀번호">
+        </div>
+        <button class="user-btn" @click="requestLogin()">Login</button>
+      </div>
+      <div @click="$router.push({ name: 'Signup' })" class="btn-signup">
+        <span>처음 이용하시나요?</span>
+        <font-awesome-icon icon="chevron-right"/>
       </div>
     </div>
-
-    <button @click="requestLogin">Login</button>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import './Login.scss';
-</style>
-
 <script>
+import Navbar from '@/components/common/Navbar.vue'
 import gql from 'graphql-tag'
 
 export default {
   name: 'Login',
+  components: {
+    Navbar,
+  },
   data() {
     return {
       email: '',
@@ -62,4 +62,6 @@ export default {
   }
 </script>
 
-
+<style lang="scss" scoped>
+  @import './Login.scss';
+</style>
