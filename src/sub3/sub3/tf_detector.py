@@ -17,7 +17,8 @@ from object_detection.utils import visualization_utils as vis_util
 
 import socketio
 import base64
-# from std_msgs.msg import Float32MultiArray
+from std_msgs.msg import String
+
 
 # 설치한 tensorflow를 tf 로 import 하고,
 # object_detection api 내의 utils인 vis_util과 label_map_util도 import해서
@@ -83,8 +84,6 @@ img_bgr = xyz = None
 sio = socketio.Client()
 
 object_distance = dict()
-# objects = []
-distances = []
 
 past_time = time.time()
 
@@ -163,22 +162,6 @@ class detection_net_class():
         return image_process, infer_time, boxes_detect, scores, classes_pick
 
 
-# class ObjectDistanceNode(Node):
-
-#     def __init__(self):
-#         super().__init__(node_name='object_distance')
-#         self.publisher_object_distance = self.create_publisher(
-#             Float32MultiArray, 'object_distance', 5)
-#         self.timer_period = 1/60
-#         self.timer = self.create_timer(self.timer_period, self.timer_callback)
-
-
-#     def timer_callback(self):
-#         self.msg = Float32MultiArray()
-#         self.msg.data = distances
-#         self.publisher_object_distance.publish(self.msg)
-
-
 def visualize_images(image_out, t_cost):
 
     font = cv2.FONT_HERSHEY_SIMPLEX
@@ -233,18 +216,14 @@ def obj_img_sender(classes_pick, custom_obj, crops, image_process, interval):
 
 
 def object_distance_mapping(classes_pick, custom_obj, ostate_list):
-    global object_distance, objects, distances
+    global object_distance
 
-    objects = []
-    distances = []
-
-    object_distance['object'] = []
+    object_distance = dict()
     for idx, obj in enumerate(classes_pick[0]):
-        find_obj = (custom_obj[int(obj)-1], ostate_list[idx][0])
-        object_distance['object'].append(find_obj)
-
-        # objects.append(custom_obj[int(obj)-1])
-        distances.append(ostate_list[idx][0])
+        if object_distance.get(custom_obj[int(obj)-1]):
+            object_distance[custom_obj[int(obj)-1]].append(ostate_list[idx][0])
+        else:
+            object_distance[custom_obj[int(obj)-1]] = [ostate_list[idx][0]]
 
     
     # print(object_distance)
@@ -318,15 +297,14 @@ def main(args=None):
     global g_node
 
     rclpy.init(args=args)
-    # 요기
-    # obj_dist_parser = ObjectDistanceNode()
-    # rclpy.spin(obj_dist_parser)
 
     g_node = rclpy.create_node('tf_detector')
 
     subscription_img = g_node.create_subscription(CompressedImage, '/image_jpeg/compressed', img_callback, 3)
 
     subscription_scan = g_node.create_subscription(LaserScan, '/scan', scan_callback, 3)
+
+    publisher_object_distance = g_node.create_publisher(String, '/object_distance', 5)
 
     # subscription_scan
 
@@ -355,6 +333,9 @@ def main(args=None):
         for _ in range(4):
 
             rclpy.spin_once(g_node)
+
+        obj_dist = ''
+        msg = String()
 
         if img_bgr is not None:
             # 로직 10. object detection model inference
@@ -438,11 +419,19 @@ def main(args=None):
                     # image_process = draw_pts_img(image_process, xy_i[:, 0].astype(np.int32), xy_i[:, 1].astype(np.int32))
 
                     # print(ostate_list)
+
+                    
+                    for k, vlist in object_distance.items():
+                        obj_dist += str(k)
+                        for v in vlist:
+                            obj_dist += '-' + f'{v:.2f}'
+                        obj_dist += '/'
                 
                 visualize_images(image_process, infer_time)
 
-    # 요기
-    # obj_dist_parser.destroy_node()
+        msg.data = obj_dist
+        publisher_object_distance.publish(msg)
+
     g_node.destroy_node()
     rclpy.shutdown()
 
