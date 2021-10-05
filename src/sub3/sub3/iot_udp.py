@@ -88,6 +88,9 @@ class iot_udp(Node):
 
     
     def iot_control_callback(self, msg) -> None:
+        if not self.is_recv_data:
+            return
+
         print('iot 컨트롤 메시지 도착', msg)
         application_type, control_type = msg.data.split()
 
@@ -214,6 +217,8 @@ class iot_udp(Node):
             else:
                 self.send_data(uid, params_control_cmd["TRY_TO_CONNECT"])
             network_status = self.recv_data[1]
+        
+        return network_status
 
     
     def control(self):
@@ -225,7 +230,10 @@ class iot_udp(Node):
             현재 상태를 토글시켜주세요. => 요청 한 번으로 반영이 안 돼서 반복문
         '''
         uid, network_status, device_status = self.recv_data
+        while network_status != 'CONNECTION':
+            network_status = self.connect()
 
+        uid, network_status, device_status = self.recv_data
         old_status = device_status
         while device_status == old_status:
             if device_status == 'ON':
