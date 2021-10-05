@@ -111,7 +111,7 @@ io.on('connection', socket => {
     })
     
     socket.on('requestPath', (data) => {
-      socket.emit('')
+      socket.to(roomName).emit('requestPathToRos', data)
     })
     
     // 이상 감지 => 이미지 저장
@@ -120,6 +120,10 @@ io.on('connection', socket => {
       buffer = Buffer.from(message, "base64");
       fs.writeFileSync(path.join(picPath, "/src/assets/anormal/anormal.jpg"), buffer);
     });
+
+    socket.on('responsePath', (data) => {
+      socket.to(roomName).emit('responsePathFromRos', data)
+    })
 
     // // vue-client에서 나온 emit 요청, data => (start, end)
     // socket.on('requestPath', (data) => {

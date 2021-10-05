@@ -1,21 +1,17 @@
 <template>
-  <div>
-    <font-awesome-icon icon="arrow-left" class="icon" @mousedown="btn_turn_left" @mouseup="stop_interval"/>
-    <font-awesome-icon icon="arrow-up" class="up icon" @mousedown="btn_go_straight" @mouseup="stop_interval"/>
-    <font-awesome-icon icon="arrow-right" class="icon" @mousedown="btn_turn_right" @mouseup="stop_interval"/>
+  <div class="controller-container">
+    <font-awesome-icon icon="chevron-up" class="item shadows" @mousedown="btn_go_straight" @mouseup="stop_interval"/>
+    <div class="group">
+      <font-awesome-icon icon="chevron-left" class="item shadows" @mousedown="btn_turn_left" @mouseup="stop_interval"/>
+      <font-awesome-icon icon="chevron-down" class="item shadows"/>
+      <font-awesome-icon icon="chevron-right" class="item shadows"  @mousedown="btn_turn_right" @mouseup="stop_interval"/>
+    </div>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  @import './PatrolController.scss';
-</style>
-
 <script>
 export default {
-  name: 'PatrolController',
-  props: {
-    data: String
-  },
+  name: 'Controller',
   data() {
     return {
       inter: ''
@@ -55,3 +51,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  @import './Controller.scss';
+</style>

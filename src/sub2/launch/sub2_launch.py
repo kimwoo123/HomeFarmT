@@ -34,12 +34,12 @@ def generate_launch_description():
         #     node_executable='path_pub',
         #     node_name='path_pub',
         # ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='a_star',
-        #     node_name='a_star',
-        #     output='screen',
-        # ),
+        Node(
+            package='sub2',
+            node_executable='a_star',
+            node_name='a_star',
+            output='screen',
+        ),
     ])
 
 
