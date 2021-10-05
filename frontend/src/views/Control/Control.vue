@@ -14,7 +14,8 @@
 
     <ControlCam style="margin-bottom: 30px;"/>
     <div class="my-btn">물건 들기</div>
-  
+
+  <Controller style="margin-top: -230px;" />
   </div>
 </template>
 
@@ -23,6 +24,7 @@ import Navbar from '@/components/common/Navbar.vue'
 import ModalView from '@/components/common/ModalView.vue'
 import ControlCam from '@/components/Control/ControlCam.vue'
 import SimulationMap from '@/components/common/SimulationMap.vue'
+import Controller from '@/components/common/Controller.vue'
 
 export default {
   name: 'Control',
@@ -31,6 +33,7 @@ export default {
     ControlCam,
     ModalView,
     SimulationMap,
+    Controller,
   },
   data() {
     return {
