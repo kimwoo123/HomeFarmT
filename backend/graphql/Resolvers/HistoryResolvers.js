@@ -14,7 +14,7 @@ module.exports = {
       for (let history of userHistory ) {
         historyList.push(history.dataValues)
       }
-      return scheduleList
+      return historyList
     }
   },
   Mutation: {
