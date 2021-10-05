@@ -32,8 +32,10 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-        self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
+
         time_period=0.05 
+        self.timer = self.create_timer(time_period, self.timer_callback)
+
         self.is_odom = False
         self.is_path = False
         self.is_status = False
@@ -42,26 +44,26 @@ class followTheCarrot(Node):
         self.path_msg = Path()
         self.cmd_msg = Twist()
         self.robot_yaw=0.0
+
         # 로직 2. 파라미터 설정 
         self.lfd=0.1
         self.min_lfd=0.1
         self.max_lfd=1.0
-        self.timer = self.create_timer(time_period, self.timer_callback)
 
     def timer_callback(self):
-        if self.is_status and self.is_odom ==True and self.is_path==True:
-            if len(self.path_msg.poses) > 1:
-                self.is_look_forward_point = False
-                
-                # 로봇의 현재 위치를 나타내는 변수
-                robot_pose_x=self.odom_msg.pose.pose.position.x
-                robot_pose_y=self.odom_msg.pose.pose.position.y
 
+        if self.is_status and self.is_odom ==True and self.is_path==True:
+
+
+            if len(self.path_msg.poses)> 1:
+                self.is_look_forward_point= False
+                
+                robot_pose_x = self.odom_msg.pose.pose.position.x
+                robot_pose_y = self.odom_msg.pose.pose.position.y
                 closest_local_path_x = self.path_msg.poses[0].pose.position.x
                 closest_local_path_y = self.path_msg.poses[0].pose.position.y
-                # 로봇이 경로에서 떨어진 거리를 나타내는 변수
                 lateral_error= sqrt(pow(closest_local_path_x - robot_pose_x, 2) + pow(closest_local_path_y - robot_pose_y, 2))
-                # print(robot_pose_x,robot_pose_y,lateral_error)
+                
                 self.lfd = (self.status_msg.twist.linear.x + lateral_error) * 0.5
                 
                 if self.lfd < self.min_lfd:
@@ -69,19 +71,21 @@ class followTheCarrot(Node):
                 if self.lfd > self.max_lfd:
                     self.lfd=self.max_lfd
 
-                min_dis=float('inf')          
+                min_dis = float('inf')
+
                 for waypoint in self.path_msg.poses :
                     self.current_point = waypoint.pose.position
                     dis = sqrt(pow(closest_local_path_x - self.current_point.x, 2) + pow(closest_local_path_y - self.current_point.y, 2))
+                    
                     if abs(dis - self.lfd) < min_dis:
                         min_dis = abs(dis - self.lfd)
                         self.forward_point = self.current_point
                         self.is_look_forward_point = True
+
                 if self.is_look_forward_point :
             
                     global_forward_point=[self.forward_point.x, self.forward_point.y, 1]
 
-            
                     trans_matrix = np.array([
                         [cos(self.robot_yaw), -sin(self.robot_yaw), robot_pose_x],
                         [sin(self.robot_yaw), cos(self.robot_yaw), robot_pose_y],
@@ -91,20 +95,20 @@ class followTheCarrot(Node):
                     det_trans_matrix = np.linalg.inv(trans_matrix)
                     local_forward_point = det_trans_matrix.dot(global_forward_point)
                     theta = -atan2(local_forward_point[1], local_forward_point[0])
-
+                    
                     out_vel = 0.5
                     out_rad_vel = theta
 
                     self.cmd_msg.linear.x = out_vel
-                    self.cmd_msg.angular.z = out_rad_vel
+                    self.cmd_msg.angular.z = out_rad_vel                    
 
             else :
                 print("no found forward point")
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
-            print('출발~ : ', self.cmd_msg.linear.x)
-            self.cmd_pub.publish(self.cmd_msg)
 
+            print(self.cmd_msg.linear.x,' : ', self.cmd_msg.angular.z )
+            self.cmd_pub.publish(self.cmd_msg)
 
     def odom_callback(self, msg):
         self.is_odom=True

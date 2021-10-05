@@ -92,6 +92,7 @@ class astarLocalpath(Node):
     def path_callback(self,msg):
         self.is_path = True
         self.global_path_msg = msg
+        print('global path')
         self.last_current_point = 0
 
     def findLocalPath(self, current_waypoint, collision_point) :
@@ -161,8 +162,8 @@ class astarLocalpath(Node):
             self.final_path.append(nextNode)
             node = self.path[nextNode[0]][nextNode[1]]
         print('다익스트라 cnt : ', cnt)
+
         cnt = 0;
-        
         for grid_cell in reversed(self.final_path) :
             if grid_cell[0] == start[0] and grid_cell[1] == start[1] : continue;
             if grid_cell[0] == self.goal[0] and grid_cell[1] == self.goal[1] : continue;
@@ -204,11 +205,12 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
-                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
-                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
-                            self.local_path_pub.publish(local_path_msg)
-                            self.findLocalPath(current_waypoint, num)
-                            return
+                        # temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        # if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                        #     print('제')
+                        #     self.local_path_pub.publish(local_path_msg)
+                        #     self.findLocalPath(current_waypoint, num)
+                        #     return
                         local_path_msg.poses.append(tmp_pose)
 
                 else :
@@ -218,11 +220,12 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
-                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
-                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
-                            self.local_path_pub.publish(local_path_msg)
-                            self.findLocalPath(current_waypoint, num)
-                            return
+                        # temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        # if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                        #     print('발')
+                        #     self.local_path_pub.publish(local_path_msg)
+                        #     self.findLocalPath(current_waypoint, num)
+                        #     return
                         local_path_msg.poses.append(tmp_pose)    
 
             self.local_path_pub.publish(local_path_msg)
