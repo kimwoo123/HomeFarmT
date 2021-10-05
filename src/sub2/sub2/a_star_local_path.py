@@ -29,7 +29,6 @@ class astarLocalpath(Node):
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
         self.subscription = self.create_subscription(Path,'global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
-        self.subscription = self.create_subscription(Bool,'collision',self.collision_callback,10)
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
         
         self.temp_map_pub = self.create_publisher(OccupancyGrid, '/temp_map', 1)
@@ -46,7 +45,6 @@ class astarLocalpath(Node):
         self.is_odom=False
         self.is_path=False
         self.last_current_point = 0
-        self.collision = False
         self.loadLocalMap = False
         self.global_path_msg = Path()
 
@@ -54,8 +52,6 @@ class astarLocalpath(Node):
         time_period=0.05 
         self.timer = self.create_timer(time_period, self.timer_callback)
         self.local_path_size = 15
-        self.count = 0
-
         self.map_resolution = 0.05
         self.map_offset_x = -50 - 8.75
         self.map_offset_y = -50 - 8.75
@@ -63,13 +59,9 @@ class astarLocalpath(Node):
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-
+        self.dijkstra = False
 
     def local_map_callback(self, msg) :
-
-        if self.collision == False :
-            return
-        print('local_map_callback')
         m = np.array(msg.data)
         self.grid = m.reshape(350, 350, order = 'F')
 
@@ -92,13 +84,6 @@ class astarLocalpath(Node):
         self.temp_map_pub.publish(msg)
         self.loadLocalMap = True
 
-    def collision_callback(self, msg) :
-        if msg.data == False :
-            self.collision = False
-            return
-        self.collision = True
-        print('collision int a_start_local_path')
-
 
     def listener_callback(self,msg):
         self.is_odom=True
@@ -110,9 +95,91 @@ class astarLocalpath(Node):
         self.global_path_msg = msg
         self.last_current_point = 0
 
+    def findLocalPath(self, current_waypoint, collision_point) :
+        self.dijkstra = True
+        is_goal = False
+        length = len(self.global_path_msg.poses)
+        local_goal_point = 0
+        for num in range(collision_point, length):
+            x = self.global_path_msg.poses[collision_point].pose.position.x
+            y = self.global_path_msg.poses[collision_point].pose.position.y
+            pose_to_grid = self.pose_to_grid_cell(x, y)
+            if self.grid[pose_to_grid[0]][pose_to_grid[1]] <= 50 :
+                self.goal = [pose_to_grid[0], pose_to_grid[1]]
+                is_goal = True
+                local_goal_point = num
+                break
+            else :
+                self.global_path_msg.poses.pop(collision_point)
+                
         
+        if is_goal == False or self.loadLocalMap == False: 
+            print('더이상 갈 곳이 없다')
+            return;
+
+        print('로컬패스 생성!!! 다익스트라!!! 빠크')
+        local_path_msg = Path()
+        local_path_msg.header.frame_id='/map'
+        self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        self.final_path=[]
+        x = self.global_path_msg.poses[collision_point - 1].pose.position.x
+        y = self.global_path_msg.poses[collision_point - 1].pose.position.y
+        start = self.pose_to_grid_cell(x, y)
+        Q = deque()
+        print('start : ', start)
+        print('goal : ', self.goal)
+        Q.append(start)
+        self.cost[start[0]][start[1]] = 1
+        found = False
+        cnt = 0
+        visited = dict()
+        visited[(start[0], start[1])] = True
+
+        while Q : # while Q:
+            current = Q.popleft()
+            cnt += 1
+            if found :
+                break
+            for i in range(8) :
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if visited.get((next[0], next[1]), False) : 
+                    continue
+                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                    if self.grid[next[0]][next[1]] <= 50 :
+                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                            Q.append(next)
+                            self.path[next[0]][next[1]] = current
+                            self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                            visited[(next[0], next[1])] = True
+                            if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                found = True
+            
+        print(found)
+        if(found == False) :
+            return
+        node = self.goal
+        while node != start :
+            nextNode = node
+            self.final_path.append(nextNode)
+            node = self.path[nextNode[0]][nextNode[1]]
+        print('다익스트라 cnt : ', cnt)
+        cnt = 0;
+        for grid_cell in reversed(self.final_path) :
+            if grid_cell[0] == start[0] and grid_cell[1] == start[1] : continue;
+            if grid_cell[0] == self.goal[0] and grid_cell[1] == self.goal[1] : continue;
+            tmp_pose = PoseStamped()
+            waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
+            tmp_pose.pose.position.x = waypoint_x
+            tmp_pose.pose.position.y = waypoint_y
+            tmp_pose.pose.orientation.w = 1.0
+            self.global_path_msg.poses.insert(collision_point + cnt, tmp_pose)
+            cnt += 1
+
+
+        self.dijkstra = False
     def timer_callback(self):
-        if self.is_odom and self.is_path ==True and self.collision == False:
+        if self.is_odom and self.is_path ==True and self.dijkstra == False:
             local_path_msg = Path()
             local_path_msg.header.frame_id = '/map'
             
@@ -140,6 +207,10 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
+                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                            self.findLocalPath(current_waypoint, num)
+                            return;
                         local_path_msg.poses.append(tmp_pose)
 
                 else :
@@ -152,86 +223,6 @@ class astarLocalpath(Node):
                         local_path_msg.poses.append(tmp_pose)    
 
             self.local_path_pub.publish(local_path_msg)
-        elif self.is_odom and self.is_path ==True and self.collision == True and self.loadLocalMap == True:
-            print('로컬패스 생성!!! 다익스트라!!! 빠크')
-            local_path_msg = Path()
-            local_path_msg.header.frame_id='/map'
-            current_waypoint = -1
-            x = self.odom_msg.pose.pose.position.x
-            y = self.odom_msg.pose.pose.position.y
-            min_dis= float('inf')
-            # global_path 중 local_cost_map과 안겹치는 부분 찾아내서 self.goal에 저장
-            is_collision_area = False
-            for i, waypoint in enumerate(self.global_path_msg.poses):
-                if not (self.last_current_point - 30 <= i): continue
-                print(i , ' : ', self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y))
-                global_path_grid = self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y)
-                if is_collision_area == False and self.grid[global_path_grid[0]][global_path_grid[1]] >= 100 :
-                    print('is_collision_area : ', global_path_grid)
-                    is_collision_area = True
-                
-                if is_collision_area == True and self.grid[global_path_grid[0]][global_path_grid[1]] <= 50 :
-                    self.goal = [global_path_grid[0], global_path_grid[1]];
-                    current_waypoint = i
-                    break;
-            if current_waypoint == -1 : 
-                print('찾을 수 없다')
-                return
-
-            self.last_current_point = current_waypoint 
-            # 다익스트라로 local_path 생성
-            self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
-            self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
-            self.final_path=[]
-            Q = deque()
-            start = self.pose_to_grid_cell(x, y)
-            print('start : ', start)
-            print('goal : ', self.goal)
-            Q.append(start)
-            self.cost[start[0]][start[1]] = 1
-            found = False
-            cnt = 0
-            visited = dict()
-            visited[(start[0], start[1])] = True
-
-            while Q : # while Q:
-                current = Q.popleft()
-                cnt += 1
-                if found :
-                    break
-                for i in range(8) :
-                    next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                    if visited.get((next[0], next[1]), False) : 
-                        continue
-                    if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                        if self.grid[next[0]][next[1]] <= 50 :
-                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
-                                    Q.append(next)
-                                    self.path[next[0]][next[1]] = current
-                                    self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
-                                    visited[(next[0], next[1])] = True
-                                    if next[0] == self.goal[0] and next[1] == self.goal[1]:
-                                        found = True
-            
-            print(found)
-            if(found == False) :
-                return
-            node = self.goal
-            while node != start :
-                nextNode = node
-                self.final_path.append(nextNode)
-                node = self.path[nextNode[0]][nextNode[1]]
-            print('다익스트라 cnt : ', cnt)
-
-            for grid_cell in reversed(self.final_path) :
-                tmp_pose = PoseStamped()
-                waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
-                tmp_pose.pose.position.x = waypoint_x
-                tmp_pose.pose.position.y = waypoint_y
-                tmp_pose.pose.orientation.w = 1.0
-                local_path_msg.poses.append(tmp_pose)
-            if len(self.final_path) != 0 :
-                self.local_path_pub.publish(local_path_msg)
 
         
     def pose_to_grid_cell(self, x, y):
