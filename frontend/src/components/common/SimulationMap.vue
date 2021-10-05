@@ -73,9 +73,18 @@ export default {
       posContext.putImageData(posImageData, 0, 0)
     })
 
-    this.$socket.on('patrolPath', message => {
-      console.log(imageData, 'canvas')
-      console.log(message,'path')
+    this.$socket.on('responsePathFromRos', message => {
+      const pathContext = document.querySelector('#map-path').getContext('2d')
+      this.isClicked = false
+      pathContext.clearRect(0, 0, w, h)
+      pathContext.fillStyle = 'green'
+      const path = JSON.parse(message)
+      path.forEach(node => {
+        const x = node[0]
+        const y = node[1]
+        pathContext.fillRect(x, y, 2, 2)
+      })
+      this.isProcessing = false
     })
 
     axios('http://localhost:3000/map1', { method: 'GET'})
@@ -83,17 +92,17 @@ export default {
         const grid = res.data.split(' ')
         for (let i = 0; i < w * h; i++) {
             const idx = i * 4
-            if (grid[i] === 50) {
+            if (parseInt(grid[i]) === 50) {
               imageData.data[idx + 0] = 128 
               imageData.data[idx + 1] = 128 
               imageData.data[idx + 2] = 128 
               imageData.data[idx + 3] = 127 
-            } else if (grid[i] > 100) {
+            } else if (parseInt(grid[i]) > 100) {
               imageData.data[idx + 0] = 0 
               imageData.data[idx + 1] = 128 
               imageData.data[idx + 2] = 0 
               imageData.data[idx + 3] = 127 
-            } else if (grid[i] >= 30) {
+            } else if (parseInt(grid[i]) >= 30) {
               imageData.data[idx + 0] = 0 
               imageData.data[idx + 1] = 0
               imageData.data[idx + 2] = 0 
@@ -128,13 +137,12 @@ export default {
         posContext.fillText('START', x - 5, y - 5)
         posContext.fillRect(x, y, 5, 5)
       } else if (this.isClicked) {
+        this.isProcessing = true
         this.end = [x, y]
         posContext.font = '20px serif bold'
         posContext.fillStyle = 'black'
         posContext.fillText('END', x - 5, y - 5)
         posContext.fillRect(x, y, 5, 5)
-        this.isProcessing = true
-        this.isClicked = false
         this.$socket.emit('requestPath',{
           data: {
             start: this.start,
