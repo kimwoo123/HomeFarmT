@@ -6,7 +6,6 @@ sequelize.define('history', {
     event_time: { type: DataTypes.STRING },
     event_title: { type: DataTypes.STRING },
     event_desc: { type: DataTypes.STRING },
-    event_status: { type: DataTypes.STRING }
 },{
     timestamps: false
 });
