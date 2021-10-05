@@ -2,7 +2,7 @@
   <div>
     <div class="navbar-container">
       <font-awesome-icon v-if="left_icon" icon="chevron-left" @click="$router.push({ name: 'Home' })"/>
-      <span class="right-text">{{ right_text }}</span>
+      <span @click="clickRightText" class="right-text">{{ right_text }}</span>
     </div>
     <p class="title">{{ title }}</p>
   </div>
@@ -19,6 +19,14 @@ export default {
     title: String,
     left_icon: Boolean,
     right_text: String,
+    type: String,
+  },
+  methods: {
+    clickRightText() {
+      if (this.type === 'control') {
+        this.$router.push({name: 'IoTNew'})
+      }
+    }
   }
 }
 </script>

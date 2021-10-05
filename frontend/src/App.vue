@@ -13,6 +13,7 @@ export default {
 <style lang="scss">
   #app {
     font-family: 'Pretendard-Medium';
+    position: relative;
     color: $dark;
     width: 360px;
     height: 683px;
