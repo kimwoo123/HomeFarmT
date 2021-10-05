@@ -44,7 +44,6 @@ class astarLocalpath(Node):
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
-        self.last_current_point = 0
         self.loadLocalMap = False
         self.global_path_msg = Path()
 
@@ -99,7 +98,6 @@ class astarLocalpath(Node):
         self.dijkstra = True
         is_goal = False
         length = len(self.global_path_msg.poses)
-        local_goal_point = 0
         for num in range(collision_point, length):
             x = self.global_path_msg.poses[collision_point].pose.position.x
             y = self.global_path_msg.poses[collision_point].pose.position.y
@@ -107,7 +105,6 @@ class astarLocalpath(Node):
             if self.grid[pose_to_grid[0]][pose_to_grid[1]] <= 50 :
                 self.goal = [pose_to_grid[0], pose_to_grid[1]]
                 is_goal = True
-                local_goal_point = num
                 break
             else :
                 self.global_path_msg.poses.pop(collision_point)
@@ -165,26 +162,26 @@ class astarLocalpath(Node):
             node = self.path[nextNode[0]][nextNode[1]]
         print('다익스트라 cnt : ', cnt)
         cnt = 0;
+        
         for grid_cell in reversed(self.final_path) :
             if grid_cell[0] == start[0] and grid_cell[1] == start[1] : continue;
             if grid_cell[0] == self.goal[0] and grid_cell[1] == self.goal[1] : continue;
-            tmp_pose = PoseStamped()
             waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
+            tmp_pose = PoseStamped()
             tmp_pose.pose.position.x = waypoint_x
             tmp_pose.pose.position.y = waypoint_y
             tmp_pose.pose.orientation.w = 1.0
             self.global_path_msg.poses.insert(collision_point + cnt, tmp_pose)
             cnt += 1
 
-
-        self.dijkstra = False
     def timer_callback(self):
-        if self.is_odom and self.is_path ==True and self.dijkstra == False:
+        if self.is_odom and self.is_path == True :
             local_path_msg = Path()
             local_path_msg.header.frame_id = '/map'
             
             x=self.odom_msg.pose.pose.position.x
             y=self.odom_msg.pose.pose.position.y
+
             current_waypoint = -1
 
             min_dis= float('inf')
@@ -196,7 +193,7 @@ class astarLocalpath(Node):
                     current_waypoint = i
             
             self.last_current_point = current_waypoint
-
+            print(current_waypoint)
             '''
             로직 5. local_path 예외 처리
             '''
@@ -209,8 +206,9 @@ class astarLocalpath(Node):
                         tmp_pose.pose.orientation.w = 1.0
                         temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
                         if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                            self.local_path_pub.publish(local_path_msg)
                             self.findLocalPath(current_waypoint, num)
-                            return;
+                            return
                         local_path_msg.poses.append(tmp_pose)
 
                 else :
@@ -220,9 +218,15 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
+                        temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                            self.local_path_pub.publish(local_path_msg)
+                            self.findLocalPath(current_waypoint, num)
+                            return
                         local_path_msg.poses.append(tmp_pose)    
 
             self.local_path_pub.publish(local_path_msg)
+
 
         
     def pose_to_grid_cell(self, x, y):

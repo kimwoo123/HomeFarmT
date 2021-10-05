@@ -32,12 +32,11 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-        self.collision_publisher = self.create_publisher(Bool, '/collision', 10)
+        self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         time_period=0.05 
         self.is_odom = False
         self.is_path = False
         self.is_status = False
-        self.collision = False
 
         self.odom_msg = Odometry()            
         self.path_msg = Path()
@@ -103,7 +102,7 @@ class followTheCarrot(Node):
                 print("no found forward point")
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
-
+            print('출발~ : ', self.cmd_msg.linear.x)
             self.cmd_pub.publish(self.cmd_msg)
 
 
@@ -118,7 +117,6 @@ class followTheCarrot(Node):
         self.robot_yaw = q.to_euler()[2]
     
     def path_callback(self, msg):
-        self.collision = False
         self.is_path = True
         self.path_msg = msg
 
