@@ -24,6 +24,7 @@
 <script>
 import Navbar from '@/components/common/Navbar.vue'
 import gql from 'graphql-tag'
+import axios from 'axios'
 
 export default {
   name: 'Login',
@@ -37,6 +38,17 @@ export default {
     }
   },
   methods: {
+    done() {
+      axios.get('http://localhost:3000/map1')
+      .then(response => {
+        console.log(response)
+        console.log('done')
+      })
+      .catch(mapData => {
+        console.log(mapData)
+        console.log('not done')
+      })
+    },
     requestLogin() {
       this.$apollo.mutate({
         mutation: gql`mutation ($email: String!, $password: String!) {
