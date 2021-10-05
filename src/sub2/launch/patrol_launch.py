@@ -21,5 +21,12 @@ def generate_launch_description():
             node_executable='patrol_client',
             node_name='patrol_client'
         ),
+
+        Node(
+            package='sub2',
+            node_executable='make_path',
+            node_name='make_path'
+        ),
+
         
     ])

@@ -14,9 +14,9 @@
       <div v-if="title==='감시하기'" class="box">
         <p class="title">경로 선택</p>
         <div class="path shadows">
-          <font-awesome-icon icon="chevron-left"/>
-          <span>1번 경로</span>
-          <font-awesome-icon icon="chevron-right"/>
+          <font-awesome-icon @click="routeIndex -= 1" icon="chevron-left"/>
+          <span id="selectRoute">{{ route[routeIndex % 3] }}</span>
+          <font-awesome-icon @click="routeIndex +=1" icon="chevron-right"/>
         </div>
       </div>
 
@@ -46,6 +46,7 @@
 import Navbar from '@/components/common/Navbar.vue'
 import gql from 'graphql-tag'
 
+
 export default {
   name: 'ScheduleNew',
   components: {
@@ -57,27 +58,48 @@ export default {
       title: '',
       description: '',
       status: true,
+      route: ['1번 경로', '2번 경로', '3번 경로'],
+      routeIndex: 99,
+      selectRoute: ''
     }
   },
   methods: {
     setSchedule() {
     this.$apollo.mutate({
-      mutation: gql`mutation ($schedule_time: String!) {
-        createSchedule(schedule_time: $schedule_time) {
-          schedule_time
+      mutation: gql`mutation ($createScheduleScheduleTime: String!, $createScheduleScheduleTitle: String, $createScheduleScheduleDesc: String, $createScheduleScheduleStatus: String) {
+        createSchedule(
+          schedule_time: $createScheduleScheduleTime, 
+          schedule_title: $createScheduleScheduleTitle, 
+          schedule_desc: $createScheduleScheduleDesc, 
+          schedule_status: $createScheduleScheduleStatus
+          ) {
+            scheduleid
+            schedule_time
+            schedule_title
+            schedule_desc
+            schedule_status
+          }
         }
-      }`, 
+      `, 
       variables: {
-        schedule_time: this.dateTime
+        createScheduleScheduleTime: this.dateTime,
+        createScheduleScheduleTitle: this.title,
+        createScheduleScheduleDesc: this.selectRoute,
+        createScheduleScheduleStatus: "ON"
       }
       })
       .then((res) => {
         console.log(res, 'done')
-        window.location.reload()
+        // window.location.reload()
       })
       .catch((err) => {
         console.log(err, 'no')
       })
+    }
+  },
+  watch: {
+    routeIndex() {
+      return this.selectRoute = this.route[this.routeIndex % 3]
     }
   }
 }

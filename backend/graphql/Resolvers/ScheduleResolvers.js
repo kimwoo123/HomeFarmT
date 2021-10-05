@@ -38,10 +38,10 @@ module.exports = {
       const user = await User.findOne({ where: { email: context.hashedEmail }})
       const userid = user.dataValues.userid
       const newSchedule = await Schedule.create({ 
-        // schedule_time: schedule_time,
-        // schedule_title: schedule_title,
-        // schedule_desc: schedule_desc,
-        // schedule_status: schedule_status,
+        schedule_time: schedule_time,
+        schedule_title: schedule_title,
+        schedule_desc: schedule_desc,
+        schedule_status: schedule_status,
         userid: userid
        })
       return newSchedule
