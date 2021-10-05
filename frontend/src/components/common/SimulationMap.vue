@@ -9,6 +9,7 @@
   @import './SimulationMap.scss';
 </style>
 <script>
+import axios from 'axios'
 export default {
   name: 'SimulationMap',
   props: {
@@ -77,43 +78,38 @@ export default {
       console.log(message,'path')
     })
 
-    fetch('http://localhost:3000/map1', {
-      method: 'GET',
-    })
-      // .then(response => {
-      //   fs.
-      // })
-      // .then(res => {
-      //   console.log(res)
-      // })
+    axios('http://localhost:3000/map1', { method: 'GET'})
+      .then(res => {
+        const grid = res.data.split(' ')
+        for (let i = 0; i < w * h; i++) {
+            const idx = i * 4
+            if (grid[i] === 50) {
+              imageData.data[idx + 0] = 128 
+              imageData.data[idx + 1] = 128 
+              imageData.data[idx + 2] = 128 
+              imageData.data[idx + 3] = 127 
+            } else if (grid[i] > 100) {
+              imageData.data[idx + 0] = 0 
+              imageData.data[idx + 1] = 128 
+              imageData.data[idx + 2] = 0 
+              imageData.data[idx + 3] = 127 
+            } else if (grid[i] >= 30) {
+              imageData.data[idx + 0] = 0 
+              imageData.data[idx + 1] = 0
+              imageData.data[idx + 2] = 0 
+              imageData.data[idx + 3] = 255 
+            } else {
+              imageData.data[idx + 0] = 240 
+              imageData.data[idx + 1] = 240
+              imageData.data[idx + 2] = 240
+              imageData.data[idx + 3] = 128 
+            }
+        }
+        context.putImageData(imageData, 0, 0)
+        this.isMapUpdated = true
+      })
 
-      // const grid = JSON.parse(message.map)
-      // for (let i = 0; i < w * h; i++) {
-      //     const idx = i * 4
-      //     if (grid[i] === 50) {
-      //       imageData.data[idx + 0] = 128 
-      //       imageData.data[idx + 1] = 128 
-      //       imageData.data[idx + 2] = 128 
-      //       imageData.data[idx + 3] = 127 
-      //     } else if (grid[i] > 100) {
-      //       imageData.data[idx + 0] = 0 
-      //       imageData.data[idx + 1] = 128 
-      //       imageData.data[idx + 2] = 0 
-      //       imageData.data[idx + 3] = 127 
-      //     } else if (grid[i] >= 30) {
-      //       imageData.data[idx + 0] = 0 
-      //       imageData.data[idx + 1] = 0
-      //       imageData.data[idx + 2] = 0 
-      //       imageData.data[idx + 3] = 255 
-      //     } else {
-      //       imageData.data[idx + 0] = 240 
-      //       imageData.data[idx + 1] = 240
-      //       imageData.data[idx + 2] = 240
-      //       imageData.data[idx + 3] = 128 
-      //     }
-      // }
-      // context.putImageData(imageData, 0, 0)
-      // this.isMapUpdated = true
+
   },
   methods: {
     async clickMap (event) {
