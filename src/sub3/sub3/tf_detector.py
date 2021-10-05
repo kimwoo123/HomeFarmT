@@ -15,6 +15,10 @@ from sub2.ex_calib import *
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
+import socketio
+import base64
+# from std_msgs.msg import Float32MultiArray
+
 # 설치한 tensorflow를 tf 로 import 하고,
 # object_detection api 내의 utils인 vis_util과 label_map_util도 import해서
 # ROS 통신으로 들어오는 이미지의 객체 인식 결과를 ROS message로 송신하는 노드입니다.
@@ -76,6 +80,14 @@ params_cam = {
 global img_bgr, xyz
 img_bgr = xyz = None
 
+sio = socketio.Client()
+
+object_distance = dict()
+# objects = []
+distances = []
+
+past_time = time.time()
+
 
 class detection_net_class():
     def __init__(self, sess, graph, category_index):
@@ -112,10 +124,30 @@ class detection_net_class():
         image_process = np.copy(image_np)
 
         idx_detect = np.arange(scores.shape[1]).reshape(scores.shape)[np.where(scores>0.5)]
-
         boxes_detect = boxes[0, idx_detect, :]
-
         classes_pick = classes[:, idx_detect]
+
+
+        # remove noise (ex) background)
+        noise_box_info = []
+        for idx in idx_detect:
+            if classes[0][idx] in (7, 8):
+                y1, x1, y2, x2 = boxes_detect[idx]
+                if y1 < 0.05 and (0.45 < y2 < 0.61):
+                    noise_box_info.append(idx)
+            elif classes[0][idx] in (3,):
+                y1, x1, y2, x2 = boxes_detect[idx]
+                if y2 > 0.98 and (x1 < 0.4 or x2 > 0.92):
+                    noise_box_info.append(idx)
+        
+        noise_box_info.reverse()
+        for idx in noise_box_info:
+            scores[0][idx] = 0.0
+            boxes_detect = np.delete(boxes_detect, idx, 0)
+            classes_pick = np.delete(classes_pick, idx, 1)
+
+        # print(boxes_detect) # 감지 대상이 없으면 [], 있으면 [[y1, x1, y2, x2], [...]]
+
 
         vis_util.visualize_boxes_and_labels_on_image_array(image_process,
                 np.squeeze(boxes),
@@ -124,25 +156,41 @@ class detection_net_class():
                 self.category_index,
                 use_normalized_coordinates=True,
                 min_score_thresh=0.5,
-                line_thickness=8)
+                line_thickness=2) # box 테두리 두께 조절 (작을수록 얇음)
                 
         infer_time = time.time()-t_start
 
         return image_process, infer_time, boxes_detect, scores, classes_pick
 
-        
+
+# class ObjectDistanceNode(Node):
+
+#     def __init__(self):
+#         super().__init__(node_name='object_distance')
+#         self.publisher_object_distance = self.create_publisher(
+#             Float32MultiArray, 'object_distance', 5)
+#         self.timer_period = 1/60
+#         self.timer = self.create_timer(self.timer_period, self.timer_callback)
+
+
+#     def timer_callback(self):
+#         self.msg = Float32MultiArray()
+#         self.msg.data = distances
+#         self.publisher_object_distance.publish(self.msg)
+
+
 def visualize_images(image_out, t_cost):
 
     font = cv2.FONT_HERSHEY_SIMPLEX
     
-    cv2.putText(image_out,'SSD',(30,50), font, 1,(0,255,0), 2, 0)
+    # cv2.putText(image_out,'SSD',(30,50), font, 1,(0,255,0), 2, 0)
 
-    cv2.putText(image_out,'{:.4f}s'.format(t_cost),(30,150), font, 1,(0,255,0), 2, 0)
+    # cv2.putText(image_out,'{:.4f}s'.format(t_cost),(30,150), font, 1,(0,255,0), 2, 0)
     
-    winname = 'Vehicle Detection'
-    cv2.imshow(winname, cv2.resize(image_out, (2*image_out.shape[1], 2*image_out.shape[0])))
+    winname = 'Turtlebot Detection'
+    # cv2.imshow(winname, cv2.resize(image_out, (2*image_out.shape[1], 2*image_out.shape[0])))
+    cv2.imshow(winname, image_out)
     cv2.waitKey(1)
-
 
      
 def img_callback(msg):
@@ -169,6 +217,40 @@ def scan_callback(msg):
         z.reshape([-1, 1])
     ], axis=1)
    
+
+def obj_img_sender(classes_pick, custom_obj, crops, image_process, interval):
+    global past_time
+
+    for idx in classes_pick[0]:
+        if custom_obj[int(idx)-1] not in crops: break
+    else:
+        current_time = time.time()
+        if current_time - past_time > interval:
+            data = base64.b64encode(image_process)
+            sio.emit('objImg', data.decode('utf-8'))
+
+            past_time = time.time()
+
+
+def object_distance_mapping(classes_pick, custom_obj, ostate_list):
+    global object_distance, objects, distances
+
+    objects = []
+    distances = []
+
+    object_distance['object'] = []
+    for idx, obj in enumerate(classes_pick[0]):
+        find_obj = (custom_obj[int(obj)-1], ostate_list[idx][0])
+        object_distance['object'].append(find_obj)
+
+        # objects.append(custom_obj[int(obj)-1])
+        distances.append(ostate_list[idx][0])
+
+    
+    # print(object_distance)
+
+    return object_distance
+
 
 def main(args=None):
 
@@ -212,7 +294,6 @@ def main(args=None):
     # 로직 4. gpu configuration 정의
     # 현재 머신에 사용되는 GPU의 memory fraction 등을 설정합니다.
     # gpu의 memory fraction 이 너무 높으면 사용 도중 out of memory 등이 발생할 수 있습니다.
-
     config = tf.ConfigProto()
     config = tf.ConfigProto(device_count={'GPU': 1})
     config.gpu_options.per_process_gpu_memory_fraction = 0.3
@@ -237,6 +318,9 @@ def main(args=None):
     global g_node
 
     rclpy.init(args=args)
+    # 요기
+    # obj_dist_parser = ObjectDistanceNode()
+    # rclpy.spin(obj_dist_parser)
 
     g_node = rclpy.create_node('tf_detector')
 
@@ -259,6 +343,10 @@ def main(args=None):
                   'pumkinyet', 'pepperdone', 'box', 'pepperyet', 'bananayet',
                   'bananadone', 'kettle', 'venv', 'Jenkinsfile', 'pumkindone',
                   'dog']
+
+    crops = ['corn', 'eggplant', 'cabbage', 'weed', 'pumkinyet',
+             'pepperdone', 'pepperyet', 'bananayet', 'bananadone','pumkindone']
+
     while rclpy.ok():
 
         time.sleep(0.05)
@@ -276,7 +364,6 @@ def main(args=None):
             # sub2 에서 ex_calib 에 했던 대로 라이다 포인트들을
             # 이미지 프레임 안에 정사영시킵니다.
             if xyz is not None:
-                # xyz_p = xyz[np.where(xyz[:, 0]>=0)] #
                 xyz_p = np.concatenate([xyz[:90, :], xyz[270:, :]], axis=0)
             
                 xyz_c = np.transpose(l2c_trans.transform_lidar2cam(xyz_p))
@@ -285,7 +372,6 @@ def main(args=None):
 
                 xyii = np.concatenate([xy_i, xyz_p], axis=1)
                 
-                # print(xyz) # (360, 3) 라이다 정보 (x좌표, y좌표, 0)
                 """
                 # 로직 12. bounding box 결과 좌표 뽑기
                 ## boxes_detect 안에 들어가 있는 bounding box 결과들을
@@ -343,22 +429,20 @@ def main(args=None):
                         if not np.isnan(ostate[0]):
                             ostate_list.append(ostate)
 
-                    # capture
-                    detected = dict()
-                    detected['image'] = [img_bgr]
-                    detected['object'] = []
-                    for idx, obj in enumerate(classes_pick[0]):
-                        find_obj = (custom_obj[int(obj)-1], ostate_list[idx][0])
-                        detected['object'].append(find_obj)
-                    print(detected)
+                    # object detected image send by soketio
+                    obj_img_sender(classes_pick, custom_obj, crops, image_process, interval=1.0)
 
-                    image_process = draw_pts_img(image_process, xy_i[:, 0].astype(np.int32),
-                                                    xy_i[:, 1].astype(np.int32))
+                    # object & distance mapping
+                    object_distance_mapping(classes_pick, custom_obj, ostate_list)
+                    
+                    # image_process = draw_pts_img(image_process, xy_i[:, 0].astype(np.int32), xy_i[:, 1].astype(np.int32))
 
                     # print(ostate_list)
                 
                 visualize_images(image_process, infer_time)
 
+    # 요기
+    # obj_dist_parser.destroy_node()
     g_node.destroy_node()
     rclpy.shutdown()
 
