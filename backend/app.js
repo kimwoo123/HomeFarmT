@@ -12,13 +12,15 @@ const http = require('http');
 var indexRouter = require('./routes/index');
 const UsertypeDefs = require('./graphql/Schema/UserSchema');
 const ScheduletypeDefs = require('./graphql/Schema/ScheduleSchema');
+const HistorytypeDefs = require('./graphql/Schema/HistorySchema');
 const UserResolvers = require('./graphql/Resolvers/UserResolvers');
 const ScheduleResolvers = require('./graphql/Resolvers/ScheduleResolvers');
+const HistoryResolvers = require('./graphql/Resolvers/HistoryResolvers');
 const _ = require('lodash');
 const socketIo = require('socket.io')
 
-const typeDefs = [UsertypeDefs, ScheduletypeDefs]
-const resolvers = _.merge({}, UserResolvers, ScheduleResolvers)
+const typeDefs = [UsertypeDefs, ScheduletypeDefs, HistorytypeDefs]
+const resolvers = _.merge({}, UserResolvers, ScheduleResolvers, HistoryResolvers)
 require('dotenv').config()
 
 // const { sequelize } = require('./models')
