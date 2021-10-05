@@ -23,15 +23,15 @@ const typeDefs = [UsertypeDefs, ScheduletypeDefs, HistorytypeDefs]
 const resolvers = _.merge({}, UserResolvers, ScheduleResolvers, HistoryResolvers)
 require('dotenv').config()
 
-// const { sequelize } = require('./models')
+const { sequelize } = require('./models')
 
-// sequelize.sync({force: false})
-// .then(()=>{
-//     console.log('데이터베이스 연결 성공');
-// })
-// .catch((err)=>{
-//     console.error(err);
-// });
+sequelize.sync({force: false})
+.then(()=>{
+    console.log('데이터베이스 연결 성공');
+})
+.catch((err)=>{
+    console.error(err);
+});
 
 async function startApolloServer(typeDefs, resolvers) {
   const app = express();
