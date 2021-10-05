@@ -1,5 +1,5 @@
 <template>
-  <div class="map-conatiner">
+  <div class="map-conatiner" :style="{ width: size + 'px', height: size + 'px'}">
     <canvas class="map-canvas-path" id="map-path" @click="clickMap" width="350" height="350"></canvas>
     <canvas class="map-canvas-pos" id="map-pos" width="350" height="350"></canvas>
     <canvas class="map-canvas-grid" id="map-grid" width="350" height="350"></canvas>
@@ -11,6 +11,16 @@
 <script>
 export default {
   name: 'SimulationMap',
+  props: {
+    clickEnable: {
+      type: Boolean,
+      default: true,
+    },
+    size: {
+      type: String,
+      default: '150',
+    }
+  },
   data() {
     return {
       isClicked: false,
@@ -99,7 +109,7 @@ export default {
   },
   methods: {
     async clickMap (event) {
-      if (this.isProcessing) return
+      if (this.isProcessing || !this.clickEnable) return
       const posContext = document.querySelector('#map-path').getContext('2d')
       const widthRatio = 350 / event.target.scrollWidth
       const heightRatio = 350 / event.target.scrollHeight

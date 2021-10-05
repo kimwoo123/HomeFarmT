@@ -73,7 +73,7 @@ export default {
       console.log('iot-control');
       let data = '0 1';
       this.$socket.emit('iot-control', data);
-      item.status
+      item.status = true
     },
     turnOff(item) {
       console.log(item);
