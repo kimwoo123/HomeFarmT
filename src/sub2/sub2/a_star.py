@@ -154,6 +154,7 @@ class a_star(Node):
 
                 for grid_cell in reversed(self.final_path) :
                     tmp_pose = PoseStamped()
+                    print(grid_cell)
                     waypoint_x, waypoint_y=self.grid_cell_to_pose(grid_cell)
                     tmp_pose.pose.position.x = waypoint_x
                     tmp_pose.pose.position.y = waypoint_y

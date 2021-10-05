@@ -155,7 +155,7 @@ class followTheCarrot(Node):
             for waypoint in self.path_msg.poses :
                 for lidar_point in pcd_msg.points :
                     distance = sqrt(pow(waypoint.pose.position.x - lidar_point.x, 2) + pow(waypoint.pose.position.y - lidar_point.y, 2))
-                    if distance < 0.2:
+                    if distance < 0.2 :
                         print('충돌발생!!!! 씨@발')
                         self.collision = True
                         self.bool_msg.data = self.collision;

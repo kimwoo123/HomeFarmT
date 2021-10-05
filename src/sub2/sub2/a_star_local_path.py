@@ -33,8 +33,7 @@ class astarLocalpath(Node):
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
         
         self.temp_map_pub = self.create_publisher(OccupancyGrid, '/temp_map', 1)
-        self.map_msg = OccupancyGrid()
-        self.map_msg.header.frame_id="map"
+        
         self.map_size_x = 350 
         self.map_size_y = 350
         self.map_resolution = 0.05
@@ -42,13 +41,14 @@ class astarLocalpath(Node):
         self.map_offset_x = -50 - 8.75 #-8 - 8.75
         self.map_offset_y = -50 - 8.75 # -4 - 8.75
         self.map_data = [0 for i in range(self.map_size_x * self.map_size_y)]
+
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
         self.last_current_point = 0
         self.collision = False
         self.loadLocalMap = False
-        self.global_path_msg=Path()
+        self.global_path_msg = Path()
 
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period=0.05 
@@ -64,17 +64,6 @@ class astarLocalpath(Node):
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
 
-
-        m = MapMetaData()
-        m.resolution = self.map_resolution
-        m.width = self.map_size_x
-        m.height = self.map_size_y
-        m.origin = Pose()
-        m.origin.position.x = self.map_offset_x
-        m.origin.position.y = self.map_offset_y
-
-        self.map_meta_data = m
-        self.map_msg.info = self.map_meta_data
 
     def local_map_callback(self, msg) :
 
@@ -98,9 +87,9 @@ class astarLocalpath(Node):
         # 아래는 publish 용
         np_map_data = self.grid.reshape(1, 350 * 350) 
         list_map_data = np_map_data.tolist()
-        self.map_msg.data = list_map_data[0]
-        self.map_msg.header.stamp = rclpy.clock.Clock().now().to_msg()
-        self.temp_map_pub.publish(self.map_msg)
+        msg.data = list_map_data[0]
+        msg.header.stamp = rclpy.clock.Clock().now().to_msg()
+        self.temp_map_pub.publish(msg)
         self.loadLocalMap = True
 
     def collision_callback(self, msg) :
@@ -124,9 +113,8 @@ class astarLocalpath(Node):
         
     def timer_callback(self):
         if self.is_odom and self.is_path ==True and self.collision == False:
-            
-            local_path_msg=Path()
-            local_path_msg.header.frame_id='/map'
+            local_path_msg = Path()
+            local_path_msg.header.frame_id = '/map'
             
             x=self.odom_msg.pose.pose.position.x
             y=self.odom_msg.pose.pose.position.y
@@ -173,22 +161,23 @@ class astarLocalpath(Node):
             y = self.odom_msg.pose.pose.position.y
             min_dis= float('inf')
             # global_path 중 local_cost_map과 안겹치는 부분 찾아내서 self.goal에 저장
-            print('start : ', self.pose_to_grid_cell(x, y))
+            is_collision_area = False
             for i, waypoint in enumerate(self.global_path_msg.poses):
                 if not (self.last_current_point - 30 <= i): continue
                 print(i , ' : ', self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y))
-                distance = sqrt(pow(x - waypoint.pose.position.x, 2) + pow(y - waypoint.pose.position.y, 2))
-                local_destination = self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y)
-                print('distance : ', distance)
-                print('local_destination : ', local_destination)
-                if distance < 0.2 or self.grid[local_destination[0]][local_destination[1]] > 50 : continue
-                self.goal = [local_destination[0], local_destination[1]]
-                current_waypoint = i
-                print(self.goal)
-                break
-            if current_waypoint == -1 :
-                print('local_path goal 찾을 수 없음')
-                return;
+                global_path_grid = self.pose_to_grid_cell(waypoint.pose.position.x, waypoint.pose.position.y)
+                if is_collision_area == False and self.grid[global_path_grid[0]][global_path_grid[1]] >= 100 :
+                    print('is_collision_area : ', global_path_grid)
+                    is_collision_area = True
+                
+                if is_collision_area == True and self.grid[global_path_grid[0]][global_path_grid[1]] <= 50 :
+                    self.goal = [global_path_grid[0], global_path_grid[1]];
+                    current_waypoint = i
+                    break;
+            if current_waypoint == -1 : 
+                print('찾을 수 없다')
+                return
+
             self.last_current_point = current_waypoint 
             # 다익스트라로 local_path 생성
             self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
@@ -196,12 +185,15 @@ class astarLocalpath(Node):
             self.final_path=[]
             Q = deque()
             start = self.pose_to_grid_cell(x, y)
+            print('start : ', start)
+            print('goal : ', self.goal)
             Q.append(start)
             self.cost[start[0]][start[1]] = 1
             found = False
             cnt = 0
             visited = dict()
             visited[(start[0], start[1])] = True
+
             while Q : # while Q:
                 current = Q.popleft()
                 cnt += 1
