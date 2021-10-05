@@ -1,10 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var path = require('path');
+var fs = require('fs');
+
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.sendfile(path.join(__dirname+'/../public/index.html'))
+router.get('/map1', function(req, res) {
+  fs.readFile("./public/maps/map1.txt", "utf8", function(err, html) {
+    res.send(html);
+  })
 });
 
 module.exports = router;
