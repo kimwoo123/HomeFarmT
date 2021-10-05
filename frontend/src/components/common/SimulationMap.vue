@@ -86,7 +86,7 @@ export default {
             imageData.data[idx + 1] = 128 
             imageData.data[idx + 2] = 128 
             imageData.data[idx + 3] = 127 
-          } else if (grid[i] === 127) {
+          } else if (grid[i] > 100) {
             imageData.data[idx + 0] = 0 
             imageData.data[idx + 1] = 128 
             imageData.data[idx + 2] = 0 
