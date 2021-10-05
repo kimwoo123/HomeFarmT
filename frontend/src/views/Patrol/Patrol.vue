@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'감시'" :left_icon="true" :right_text="''"/>
+    <Navbar :title="'감시'" :left_icon="true" :right_text="''" :left_push="'Home'" :right_push="''"/>
     <PatrolCam style="margin-bottom: 25px;"/>
     <div class="patrol-container">
       <PatrolPath style="margin-bottom: 22px;"/>

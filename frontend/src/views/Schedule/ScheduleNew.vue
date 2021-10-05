@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="''"/>
+    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="''" :left_push="'Schedule'" :right_push="''" />
     <div class="ScheduleNew-container">
       <b-form-input v-model="dateTime" type="datetime-local"></b-form-input>
       <p>{{ dateTime }}</p>

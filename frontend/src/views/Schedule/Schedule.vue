@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="'추가'"/>
+    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'ScheduleNew'" />
     <div class="schedule-container">
       <ScheduleCalendar/>
       <ScheduleCard/>

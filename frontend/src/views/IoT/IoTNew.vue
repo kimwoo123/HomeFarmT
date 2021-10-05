@@ -2,7 +2,7 @@
   <div>
     
     <div v-if="!deviceAround">
-      <Navbar :title="'기기 추가'" :left_icon="true" :right_text="''"/>
+      <Navbar :title="'기기 추가'" :left_icon="true" :right_text="''" :left_push="'IoT'" :right_push="''"/>
       <div>
         <div class="move_device">
           <img src="@/assets/icons/new_device.svg" alt="move_device">
