@@ -12,6 +12,7 @@ def generate_launch_description():
             package='sub2',
             node_executable='load_map',
             node_name='load_map',
+            output='screen',
         ),
         Node(
             package='sub2',
@@ -23,6 +24,7 @@ def generate_launch_description():
             package='sub2',
             node_executable='path_tracking',
             node_name='path_tracking',
+            output='screen',
         ),
         Node(
             package='sub2',
@@ -39,6 +41,11 @@ def generate_launch_description():
             node_executable='a_star',
             node_name='a_star',
             output='screen',
+        ),
+        Node(
+            package='sub2',
+            node_executable='local_map_pub',
+            node_name='local_map_pub',
         ),
     ])
 
