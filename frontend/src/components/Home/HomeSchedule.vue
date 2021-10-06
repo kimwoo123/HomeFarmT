@@ -2,14 +2,14 @@
   <div class="home-schedule shadows">
     <div class="top-align">
       <span>오늘의 일정</span>
-      <img src="@/assets/icons/alarm.svg" alt="alarm">
+      <img src="@/assets/icons/alarm.svg" alt="alarm" class="alarm">
     </div>
     <div class="schedule-box">
-      <font-awesome-icon icon="chevron-left" />
+      <font-awesome-icon icon="chevron-left" class="icon"/>
       <div class="schedule-content">
         감시하기
       </div>
-      <font-awesome-icon icon="chevron-right"/>
+      <font-awesome-icon icon="chevron-right" class="icon"/>
     </div>
   </div>
 </template>

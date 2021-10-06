@@ -22,6 +22,10 @@
   border-bottom: 2px solid #ffffff;
   font-size: 14px;
   color: $darkgray;
+  cursor: pointer;
+  &:active {
+    color: $primary;
+  }
 }
 
 .position-active {

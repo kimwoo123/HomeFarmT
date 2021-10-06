@@ -15,6 +15,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  &:hover {
+    background-color: $primary;
+    color: white;
+    cursor: pointer;
+  }
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
 }
 
 img {

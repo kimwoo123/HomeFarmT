@@ -97,4 +97,11 @@ body {
   color: white;
   margin: 0px auto;
   border: 0px;
+  cursor: pointer;
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+  
 }

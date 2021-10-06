@@ -32,6 +32,7 @@ setup(
             'lidar_trans = sub2.lidar_trans:main',
             'make_path = sub2.make_path:main',
             'patrol_client = sub2.patrol_client:main',
+            'local_map_pub = sub2.local_map_pub:main',
         ],
     },
 )
