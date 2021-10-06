@@ -34,7 +34,7 @@ class followTheCarrot(Node):
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
 
-        time_period = 0.2
+        time_period = 0.05
         self.timer = self.create_timer(time_period, self.timer_callback)
 
         self.is_odom = False
@@ -51,9 +51,9 @@ class followTheCarrot(Node):
         self.lfd=0.1
         self.min_lfd=0.1
         self.max_lfd=1.0
-        thread = threading.Thread(target=self.timer_callback)
-        thread.daemon = True 
-        thread.start()
+        # thread = threading.Thread(target=self.timer_callback)
+        # thread.daemon = True 
+        # thread.start()
 
     def timer_callback(self):
 
@@ -112,9 +112,9 @@ class followTheCarrot(Node):
                 self.cnt += 1
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
-                if self.cnt >= 10:
-                    self.cnt = 0
-                    self.is_path = False
+                # if self.cnt >= 10:
+                #     self.cnt = 0
+                #     self.is_path = False
 
             self.cmd_pub.publish(self.cmd_msg)
 
@@ -141,12 +141,8 @@ class followTheCarrot(Node):
         
 def main(args=None):
     rclpy.init(args=args)
-
     path_tracker = followTheCarrot()
-
     rclpy.spin(path_tracker)
-
-
     path_tracker.destroy_node()
     rclpy.shutdown()
 
