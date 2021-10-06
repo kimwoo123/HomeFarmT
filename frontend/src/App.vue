@@ -9,7 +9,6 @@ export default {
   name: 'App',
 }
 </script>
-
 <style lang="scss">
   #app {
     font-family: 'Pretendard-Medium';

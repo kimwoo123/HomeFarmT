@@ -45,7 +45,6 @@ export default {
       this.degreeLeft = 180
       this.degreeRight = (180 / 50) * (this.batteryPercentage - 50)
     }
-    console.log(this.degreeLeft, this.degreeRight)
   },
 }
 </script>

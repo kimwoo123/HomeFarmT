@@ -92,6 +92,7 @@ export default {
         const grid = res.data.split(' ')
         for (let i = 0; i < w * h; i++) {
             const idx = i * 4
+            console.log(parseInt(grid[i]))
             if (parseInt(grid[i]) === 50) {
               imageData.data[idx + 0] = 128 
               imageData.data[idx + 1] = 128 

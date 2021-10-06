@@ -48,9 +48,9 @@ class odom(Node):
         self.y = -50  #9.75
         self.theta = 0.0
 
-        # self.x = -50 #9.3
-        # self.y = -50  #9.75
-        # self.theta = 0
+        self.x = -50 #9.3
+        self.y = -50  #9.75
+        self.theta = 0
         # imu_offset은 초기 로봇의 orientation을 저장할 변수 입니다.
         self.imu_offset = 0
         self.prev_time = 0
