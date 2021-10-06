@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'경로 편집'" :left_icon="true" :right_text="'편집'" :left_push="'Patrol'" :right_push="''"/>
+    <Navbar :title="'경로 편집'" :left_icon="true" :right_text="''" :left_push="'Patrol'" :right_push="''"/>
     <div v-if="!isPathDrawing">
       <PatrolCam style="margin-bottom: 4px"/>
       <div class="paths">
