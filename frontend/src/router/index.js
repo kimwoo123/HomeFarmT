@@ -4,7 +4,7 @@ import Signup from '../views/user/Signup.vue'
 import Login from '../views/user/Login.vue'
 import My from '../views/user/My.vue'
 import Home from '../views/Home.vue'
-import Test from '../views/Test.vue'
+import History from '../views/History.vue'
 
 Vue.use(VueRouter)
 
@@ -76,10 +76,11 @@ const routes = [
     name: 'Control',
     component: () => import('../views/Control/Control.vue')
   },
+  // history
   {
-    path: '/test',
-    name: 'Test',
-    component: Test
+    path: '/history',
+    name: 'History',
+    component: History
   },
 ]
 

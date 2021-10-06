@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'기기 제어'" :left_icon="true" :type="'control'" :right_text="'추가'" :left_push="'Home'" :right_push="'IoTNew'"/>
+    <Navbar :title="'기기 제어'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'IoTNew'"/>
     
     <div class="position-container">
       <span v-for="(position, idx) in positions" :key="idx" @click="changePosition(position)"
