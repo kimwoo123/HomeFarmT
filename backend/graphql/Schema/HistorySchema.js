@@ -2,7 +2,7 @@ const { gql } = require('apollo-server');
 
 const HistorySchema = gql`
   type Query {
-    getHistory: History
+    getHistory: [History]
   }
 
   type Mutation {
@@ -10,9 +10,9 @@ const HistorySchema = gql`
       event_time: String,
       event_title: String,
       event_desc: String,
-      event_img: String,
+      event_img: String
       ): History
-    deleteHistory(email: String, password: String): Token
+    deleteHistory(historyid: Int): History
   }
 
   type History {
