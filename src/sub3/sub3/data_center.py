@@ -19,8 +19,9 @@ class DataCenter(Node):
 
     def __init__(self) -> None:
         super().__init__('data_center')
-        self.cnt = 0
-        self.cam_sub = self.create_subscription(CompressedImage, '/image_jpeg/compressed', self.img_callback, 1)
+        self.cam_cnt = 0
+        self.pos_cnt = 0
+        self.cam_sub = self.create_subscription(CompressedImage, '/image_jpeg/compressed/front', self.img_callback, 1)
         self.map_sub = self.create_subscription(OccupancyGrid, '/global_map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry, 'odom', self.odom_callback, 1)
         self.turtlebot_grid_pos_sub = self.create_subscription(Point, 'turtlebot_grid_pos', self.turtlebot_grid_pos_callback, 1)
@@ -47,9 +48,9 @@ class DataCenter(Node):
 
         @sio.on('iot-control')
         def send_iot_control(data):
-            iot_control_msg = String()
+            iot_control_msg = String() 
             iot_control_msg.data = data
-            self.iot_control_pub.publish(iot_control_msg)
+            self.iot_control_pub.publish(iot_control_msg) # 제어 메시지
 
         @sio.on('requestPathToRos')
         def send_path(data):
@@ -115,9 +116,11 @@ class DataCenter(Node):
         
         
     def img_callback(self, msg):
-        data = base64.b64encode(msg.data)
-        sio.emit('cam', data.decode('utf-8'))
-
+        if self.cam_cnt % 3 == 0:
+            self.cam_cnt %= 3
+            data = base64.b64encode(msg.data)
+            sio.emit('cam', data.decode('utf-8'))
+        self.cam_cnt += 1
 
     def map_callback(self, msg):
         map_to_grid = np.array(msg.data)
@@ -125,13 +128,15 @@ class DataCenter(Node):
     
 
     def turtlebot_grid_pos_callback(self, msg):
-        data = {
-            'x': int(msg.x),
-            'y': int(msg.y),
-            'z': int(msg.z),
-        }
-        sio.emit('turtle_pos_response', json.dumps(data))
-
+        if self.pos_cnt % 3 == 0:
+            self.pos_cnt %= 3
+            data = {
+                'x': int(msg.x),
+                'y': int(msg.y),
+                'z': int(msg.z),
+            }
+            sio.emit('turtle_pos_response', json.dumps(data))
+        self.pos_cnt += 1
 
     def a_star(self, start: list, end: list, path_type: str) -> bool:
         start_time = time.time()
@@ -140,8 +145,6 @@ class DataCenter(Node):
         cnt = 0
         found = False
         heappush(openlist, [0, start[0], start[1]])
-        print(openlist)
-        print(self.grid[start[0]][start[1]], '시작점의 값')
         while openlist:
             current = heappop(openlist)
             cnt += 1

@@ -93,8 +93,7 @@ class odom(Node):
             # self.theta = imu_q[2] - pi / 2 - self.imu_offset 
 
     
-    def listener_callback(self, msg):
-        print('linear_vel : {}  angular_vel : {}'.format(msg.twist.linear.x,-msg.twist.angular.z))        
+    def listener_callback(self, msg):      
         if self.is_status == False :
             self.is_status = True
             self.prev_time=rclpy.clock.Clock().now()

@@ -69,10 +69,10 @@ class PatrolCtrlFromServer(Node):
         super().__init__('Patrol_client')
 
         self.cmd_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
-        self.cmd_msg = Twist()
-
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.path_sub = self.create_subscription(Path, '/global_path', self.path_callback, 10)
+
+        self.cmd_msg = Twist()
 
         self.timer_period = 0.05
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
