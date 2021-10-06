@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div :key="componentKey">
     <Navbar :title="'알림'" :left_icon="true" :right_text="''" :left_push="'Home'" :right_push="''"/>
     <div class="history-container">
-      <HistoryDayCard/>
-      <button @click="createHistory()">실험</button>
-
+      <div v-for="(date, index) in allDate" :key="index">
+        <HistoryDayCard :history="allHistory" :date="date"/>
+      </div>
     </div>
   </div>
 </template>
@@ -22,29 +22,9 @@ export default {
   },
   data() {
     return {
-      data: [
-        {
-          data: '날짜시간형식',
-          time: '10: 30',
-          title: '침입자 감지',
-          description: 'OO방에서 침입자를 감지했습니다.',
-          pic: require('@/assets/images/cam.png')
-        },
-        {
-          data: '날짜시간형식',
-          time: '9: 30',
-          title: '침입자 감지',
-          description: 'OO방에서 침입자를 감지했습니다.',
-          pic: require('@/assets/images/cam.png')
-        },
-        {
-          data: '날짜시간형식',
-          time: '11: 30',
-          title: '침입자 감지',
-          description: 'OO방에서 침입자를 감지했습니다.',
-          pic: ''
-        }
-      ]
+      allHistory: [],
+      allDate: new Set(),
+      componentKey: 0,
     }
   },
   apollo: {
@@ -60,7 +40,11 @@ export default {
           }
         }`,
         update(data) {
-          console.log(data)
+          this.allHistory = data.getHistory
+          data.getHistory.forEach(element => {
+              this.allDate.add(element.event_time)
+          });
+          this.componentKey += 1
         },
     }
   },
@@ -79,9 +63,9 @@ export default {
           }
         }`,
         variables: {
-          time: '되니',
-          title: '될거야',
-          desc: '됩니다',
+          time: '2021-10-16T10:10',
+          title: '침입자 감지',
+          desc: '침입자를 감지했습니다',
           event_img: '이사진'
         }
         })
