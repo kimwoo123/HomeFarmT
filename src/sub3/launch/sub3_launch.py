@@ -8,5 +8,15 @@ def generate_launch_description():
             node_executable='iot_udp',
             node_name='client',
         ),
+        Node(
+            package='sub3',
+            node_executable='data_center',
+            node_name='data_center',
+        ),
+        Node(
+            package='sub3',
+            node_executable='tf_detector',
+            node_name='client',
+        ),
     ])
 

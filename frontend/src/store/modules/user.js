@@ -29,7 +29,7 @@ const actions = {
         commit
         const url = `api/v1/user/${userId}`
         return axios.get(url)
-    }
+    },
 }
 
 export default {
