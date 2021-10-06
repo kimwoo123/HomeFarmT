@@ -90,7 +90,7 @@ class Mapping:
         self.map_resolution = params_map["MAP_RESOLUTION"]
         self.map_size = np.array(params_map["MAP_SIZE"]) / self.map_resolution
         self.map_center = params_map["MAP_CENTER"]
-        self.map = np.ones((self.map_size[0].astype(np.int), self.map_size[1].astype(np.int)))*0.5
+        self.map = np.ones((self.map_size[0].astype(np.int), self.map_size[1].astype(np.int))) * 50
         self.occu_up = params_map["OCCUPANCY_UP"]
         self.occu_down = params_map["OCCUPANCY_DOWN"]
 
@@ -100,6 +100,7 @@ class Mapping:
         self.T_r_l = np.array([[0,-1,0],[1,0,0],[0,0,1]])
 
     def update(self, pose, laser):
+        self.map = np.ones((self.map_size[0].astype(np.int), self.map_size[1].astype(np.int))) * 50
 
         pose_mat = utils.xyh2mat2D(pose)
         n_points = laser.shape[1]
@@ -153,7 +154,7 @@ class Mapper(Node):
         
         # 로직 1 : publisher, subscriber, msg 생성
         self.subscription = self.create_subscription(LaserScan, '/scan',self.scan_callback,10)
-        self.map_sub = self.create_subscription(OccupancyGrid,'global_map', self.global_map_callback, 1)
+        # self.map_sub = self.create_subscription(OccupancyGrid,'global_map', self.global_map_callback, 1)
         self.map_pub = self.create_publisher(OccupancyGrid, '/local_map', 1)
         
         self.map_msg = OccupancyGrid()
@@ -179,14 +180,14 @@ class Mapper(Node):
         # 로직 2 : mapping 클래스 생성
         self.mapping = Mapping(params_map)
         
-    def global_map_callback(self, msg):
-        self.is_map = True
-        map_to_grid = np.array(msg.data)
-        grid = map_to_grid.reshape(350, 350)
-        self.mapping.map = grid
+    # def global_map_callback(self, msg):
+    #     self.is_map = True
+    #     map_to_grid = np.array(msg.data)
+    #     grid = map_to_grid.reshape(350, 350)
+    #     self.mapping.map = grid
 
     def scan_callback(self,msg):
-        if self.is_map == False : return
+        # if self.is_map == False : return
         pose_x = msg.range_min;
         pose_y = msg.scan_time;
         heading = msg.time_increment;
@@ -210,8 +211,7 @@ class Mapper(Node):
                             if 0 <= nx < 350 and 0 <= ny < 350 and self.mapping.map[nx][ny] < 80:
                                 self.mapping.map[nx][ny] = 110
 
-                                
-        np_map_data = self.mapping.map.reshape(1, self.map_size) 
+        np_map_data = self.mapping.map.reshape(1, self.map_size).astype(np.int)
         list_map_data = np_map_data.tolist()
 
         self.map_msg.header.stamp =rclpy.clock.Clock().now().to_msg()

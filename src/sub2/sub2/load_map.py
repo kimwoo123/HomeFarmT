@@ -73,6 +73,7 @@ class loadMap(Node):
         self.map_msg.data = list_map_data[0]
 
 
+
     def timer_callback(self):
         self.map_msg.header.stamp = rclpy.clock.Clock().now().to_msg()
         self.map_pub.publish(self.map_msg)

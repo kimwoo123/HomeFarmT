@@ -260,10 +260,10 @@ class Mapper(Node):
             list_map_data[0][i]=100-int(list_map_data[0][i]*100)
             if list_map_data[0][i] >100 :
                 list_map_data[0][i]=100
- 
+
             if list_map_data[0][i] <0 :
                 list_map_data[0][i]=0
-  
+
 
         self.map_msg.header.stamp =rclpy.clock.Clock().now().to_msg()
         self.map_msg.data=list_map_data[0]
