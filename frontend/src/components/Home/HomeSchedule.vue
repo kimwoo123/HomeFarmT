@@ -2,7 +2,7 @@
   <div class="home-schedule shadows">
     <div class="top-align">
       <span>오늘의 일정</span>
-      <img src="@/assets/icons/alarm.svg" alt="alarm" class="alarm">
+      <img src="@/assets/icons/history.svg" alt="history" class="history" @click="$router.push({ name: 'History' })">
     </div>
     <div class="schedule-box">
       <font-awesome-icon icon="chevron-left" class="icon"/>

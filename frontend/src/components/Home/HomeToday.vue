@@ -59,7 +59,7 @@ export default {
     axios.get(baseURL)
     .then(res => {
       const today = new Date(res.data.dt * 1000)
-      this.todayDate = today.getFullYear() + '년' + (today.getMonth() + 1) + '월' + today.getDate() + '일'
+      this.todayDate = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일 '
       this.temp = parseInt(res.data.main.temp - 273.15)
       this.humidity = res.data.main.humidity
       this.windSpeed = res.data.wind.speed
