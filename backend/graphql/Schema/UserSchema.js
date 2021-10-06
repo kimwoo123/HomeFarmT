@@ -33,9 +33,8 @@ const UserSchema = gql`
 
   type Token {
     email: String!
-    password: String!
     token: String
-    message: String
+    region: String
   }
 
 `;

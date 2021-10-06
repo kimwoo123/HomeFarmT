@@ -59,8 +59,7 @@ module.exports = {
       let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '100m'})
       const result = ({ 
         email: hashedEmail,
-        password: hashedPassword,
-        message: 'token!',
+        region: userCheck.region,
         token: token
       })
       return result;
