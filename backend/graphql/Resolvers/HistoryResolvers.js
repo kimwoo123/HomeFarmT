@@ -33,8 +33,13 @@ module.exports = {
        })
       return newHistory
     },
-    deleteSchedule: async (_, { historyid }) => {
-      await Schedule.destroy({ where: { historyid }})
+    deleteSchedule: async (_, { historyid }, context) => {
+      if (!context) {
+        throw new Error('로그인이 필요합니다')
+      }
+      const user = await User.findOne({ where: { email: context.hashedEmail }})
+      const userid = user.dataValues.userid
+      await Schedule.destroy({ where: { userid, historyid }})
     }
   }
 };
