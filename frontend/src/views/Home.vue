@@ -7,7 +7,7 @@
       <HomeMenus style="margin-bottom: 30px"/>
       <div class="stt-container">
         <img src="@/assets/icons/mic.svg" alt="mic">
-        <span class="text-darkgray font-400">터틀봇이 이야기를 감지중입니다.</span>
+        <span class="font-400 listening">터틀봇이 이야기를 감지중입니다.</span>
       </div>
     </div>
 

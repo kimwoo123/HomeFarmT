@@ -15,3 +15,23 @@
     margin-right: 5px;
   }
 }
+
+
+.listening {
+	color:$darkgray;
+	animation: txtE 2s infinite;
+}
+
+@keyframes txtE {
+	20% {
+		color:$darkgray;
+	}
+
+	30% {
+		color:$lightgray;
+	}
+
+	100% {
+		color:$darkgray;
+	}
+}

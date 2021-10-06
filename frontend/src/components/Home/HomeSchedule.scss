@@ -22,11 +22,15 @@
 
 .icon {
   width: 30px;
-  height: 80px;
+  height: 50px;
   padding: 10px;
   cursor: pointer;
   
   &:active {
     color: $primary;
   }
+}
+
+.alarm {
+  cursor: pointer;
 }

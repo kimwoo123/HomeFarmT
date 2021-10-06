@@ -2,7 +2,7 @@
   <div class="patrol-history shadows">
     <div class="top-align">
       <span class="patrol-history-title">감시 히스토리</span>
-      <img src="@/assets/icons/alarm.svg" alt="alarm">
+      <img src="@/assets/icons/alarm.svg" alt="alarm" class="alarm">
     </div>
     <div class="history-box">
       <font-awesome-icon icon="chevron-left" class="icon"/>
