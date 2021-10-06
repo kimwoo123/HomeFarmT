@@ -1,21 +1,19 @@
 <template>
   <div>
-    <Navbar :title="'알림'" :left_icon="true" :right_text="''" :left_push="'Home'" :right_push="''"/>
-    <div class="history-container">
-      <HistoryDayCard/>
+    <div class="date-bar font-400">{{ date }} 2021년 10월 10일</div>
+    <div class="card-container">
+      <HistoryCard/>
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from '@/components/common/Navbar.vue'
-import HistoryDayCard from '@/components/History/HistoryDayCard.vue'
+import HistoryCard from '@/components/History/HistoryCard.vue'
 
 export default {
-  name: 'History',
+  name: 'HistoryDayCard',
   components: {
-    Navbar,
-    HistoryDayCard
+    HistoryCard
   },
   data() {
     return {
@@ -48,5 +46,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "./History.scss";
+  @import './HistoryDayCard.scss';
 </style>

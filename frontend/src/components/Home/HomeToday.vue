@@ -4,8 +4,8 @@
     <div class="today-weather">
       <img :src="this.iconURL" alt="">
       <div class="text-box">
-        <span class="today-date">{{ todayDate }}</span>
-        <span class="weather-text">{{ region }} | {{ weather }}</span>
+        <span class="today-date">{{ todayDate }} | {{ region }}</span>
+        <span class="weather-text">{{ weather }}</span>
       </div>
     </div>
 
