@@ -10,8 +10,8 @@ from math import pi, cos, sin, sqrt, atan2
 
 sio = socketio.Client()
 
-global auto_switch, m_control_cmd
-auto_switch,m_control_cmd = 0, 0
+global auto_switch, m_control_cmd, is_open_map
+auto_switch,m_control_cmd, is_open_map = 0, 0, 0
 
 @sio.event
 def connect():
@@ -51,8 +51,13 @@ def patrol_off(data):
     global auto_switch
     auto_switch = data
 
+@sio.on('isMapOpen')
+def is_map_open(data):
+    global is_open_map
+    is_open_map = data
+
 def get_global_var():
-    return m_control_cmd, auto_switch
+    return m_control_cmd, auto_switch, is_open_map
 
 def reset_global_var():
     global m_control_cmd
@@ -139,7 +144,9 @@ class PatrolCtrlFromServer(Node):
         self.check_1_wp = True
         
     def timer_callback(self):
-        ctrl_cmd, auto_switch = get_global_var()
+        ctrl_cmd, auto_switch, open_map = get_global_var()
+    
+        if open_map: return
 
         # auto patrol mode off
         if auto_switch == 0:
