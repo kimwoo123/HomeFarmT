@@ -36,6 +36,11 @@ def turn_right(data):
     global m_control_cmd
     m_control_cmd = data
 
+@sio.on('goback')
+def go_back(data):
+    global m_control_cmd
+    m_control_cmd = data
+
 @sio.on('patrolOn')
 def patrol_on(data):
     global auto_switch
@@ -88,8 +93,13 @@ class PatrolCtrlFromServer(Node):
         self.is_path = True
         self.path_msg = msg
 
+    # 이동제어
     def turtlebot_go(self):
         self.cmd_msg.linear.x = 0.5
+        self.cmd_msg.angular.z = 0.0
+
+    def turtlebot_back(self):
+        self.cmd_msg.linear.x = -0.5
         self.cmd_msg.angular.z = 0.0
 
     def turtlebot_stop(self):
@@ -143,6 +153,9 @@ class PatrolCtrlFromServer(Node):
             # turn right
             elif ctrl_cmd == 3:
                 self.turtlebot_cw_rot()
+            # go back
+            elif ctrl_cmd == 4:
+                self.turtlebot_back()
             # stop
             else:
                 self.turtlebot_stop()
