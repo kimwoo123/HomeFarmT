@@ -22,16 +22,11 @@ module.exports = {
       for (let schedule of userSchedule) {
         scheduleList.push(schedule.dataValues)
       }
-      // console.log(scheduleList)
-      // const result = {
-      //   schedule_time: scheduleList
-      // }
       return scheduleList
     }
   },
   Mutation: {
     createSchedule: async (_, { schedule_time, schedule_title, schedule_desc, schedule_status }, context) => {
-      console.log('----------------------------')
       if (!context) {
         throw new Error('인증된 유저가 아닙니다')
       }
