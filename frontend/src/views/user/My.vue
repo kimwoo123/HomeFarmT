@@ -10,11 +10,12 @@
         </div>
         <div class="item">
           <span>비밀번호</span>
-          <input type="password" v-model="password" @keyup.enter="requestLogin" placeholder="비밀번호">
+          <input type="password" v-model="password" placeholder="수정할 비밀번호">
         </div>
         <div class="item">
           <span>비밀번호 재입력</span>
           <input type="password" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="비밀번호 재입력">
+          <span>{{ errorMessage }}</span>
         </div>
       </div>
 
@@ -31,7 +32,8 @@
         </div>
       </div>
 
-      <button class="my-btn" style="margin-top: 30px" @click="updateUserInfo()">확인</button>
+      <button class="my-btn" v-if="check" style="margin-top: 30px" @click="updateUserInfo()">확인</button>
+      <button class="my-btn" v-else style="margin-top: 30px">불가</button>
 
     </div>
   </div>
@@ -53,6 +55,8 @@ export default {
       passwordConfirmation: '',
       turtlebotName: '',
       region: '',
+      errorMessage: '',
+      check: true,
     }
   },
   apollo: {
@@ -79,9 +83,6 @@ export default {
         },
     }
   },
-  // created() {
-  //   this.$apollo.queries.getUserInfo.refresh()
-  // },
   methods: {
     updateUserInfo() {
       this.$apollo.mutate({
@@ -105,7 +106,23 @@ export default {
           console.log(err, 'no')
         })
     },
-  }
+  },
+  watch: {
+    passwordConfirmation() {
+      if (this.passwordConfirmation && (this.password === this.passwordConfirmation)) {
+        this.errorMessage = '비밀번호가 일치합니다'
+      } else {
+        this.errorMessage = '비밀번호가 일치하지 않습니다' 
+      }
+      if (this.password === this.passwordConfirmation) {
+        this.check = true
+      } else if (this.password === '' && this.passwordConfirmation === '') {
+          this.check = true
+      } else {
+         this.check = false
+      }
+    },
+  },
 }
 </script>
 

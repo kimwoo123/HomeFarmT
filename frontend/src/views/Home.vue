@@ -27,7 +27,7 @@ export default {
     HomeMenus,
     HomeSchedule,
     HomeToday
-  }
+  },
 }
 </script>
 
