@@ -73,6 +73,17 @@ io.on('connection', socket => {
         socket.to(roomName).emit('turnright', data);
     });
 
+    socket.on('gobackToServer', (data) => {
+      socket.to(roomName).emit('goback', data);
+    });
+
+    socket.on('pickupToServer', (data) => {
+      socket.to(roomName).emit('pickup', data);
+    });
+
+    socket.on('putdownToServer', (data) => {
+      socket.to(roomName).emit('putdown', data);
+    });
     // patrol 주행
     socket.on('PatrolOnToServer', (data) => {
       socket.to(roomName).emit('patrolOn', data);

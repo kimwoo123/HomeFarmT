@@ -13,7 +13,10 @@
     </ModalView>
 
     <ControlCam style="margin-bottom: 30px;"/>
-    <div class="my-btn">물건 들기</div>
+    <div class="btn-group">
+      <div class="my-small-btn" @click="btn_pick_up">물건 들기</div>
+      <div class="my-small-btn" @click="btn_put_down">물건 놓기</div>
+    </div>
 
   <Controller style="margin-top: -230px;" />
   </div>
@@ -41,6 +44,16 @@ export default {
       isClickedMap: false,
     }
   },
+  methods: {
+    btn_pick_up() {
+      let data = 1;
+      this.$socket.emit('pickupToServer', data);
+    },
+    btn_put_down() {
+      let data = 2;
+      this.$socket.emit('putdownToServer', data);
+    },
+  }
 }
 </script>
 
