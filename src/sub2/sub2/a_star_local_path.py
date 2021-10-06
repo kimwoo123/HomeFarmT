@@ -25,16 +25,16 @@ class astarLocalpath(Node):
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
         self.subscription = self.create_subscription(Path,'/global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
-        self.odom_msg=Odometry()
-        self.is_odom=False
-        self.is_path=False
+        self.odom_msg = Odometry()
+        self.is_odom = False
+        self.is_path = False
         self.last_current_point = 0
 
         self.global_path_msg=Path()
 
 
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
-        time_period=0.05 
+        time_period = 0.05 
         self.timer = self.create_timer(time_period, self.timer_callback)
         self.local_path_size = 15
         self.count = 0
