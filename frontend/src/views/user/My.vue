@@ -29,6 +29,36 @@
         <div class="item">
           <span>위치</span>
           <input type="text" v-model="region" placeholder="위치">
+          <button type="button" class="dropdown-toggle">
+            캠퍼스를 선택해주세요
+          </button>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item">
+              <button type="button" value="대전" class="dropdown-option">
+                대전
+              </button>
+            </li>
+            <li class="dropdown-item">
+              <button type="button" value="서울" class="dropdown-option">
+                서울
+              </button>
+            </li>
+            <li class="dropdown-item">
+              <button type="button" value="광주" class="dropdown-option">
+                광주
+              </button>
+            </li>
+            <li class="dropdown-item">
+              <button type="button" value="구미" class="dropdown-option">
+                구미
+              </button>
+            </li>
+            <li class="dropdown-item">
+              <button type="button" value="부산" class="dropdown-option">
+                부산
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
 
