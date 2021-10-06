@@ -188,11 +188,11 @@ class Mapper(Node):
 
     def scan_callback(self,msg):
         # if self.is_map == False : return
-        pose_x = msg.range_min;
-        pose_y = msg.scan_time;
-        heading = msg.time_increment;
+        pose_x = msg.range_min
+        pose_y = msg.scan_time
+        heading = msg.time_increment
 
-        Distance = np.array(msg.ranges);
+        Distance = np.array(msg.ranges)
         x = Distance * np.cos(np.linspace(0, 2 * np.pi, 360))
         y = Distance * np.sin(np.linspace(0, 2 * np.pi, 360))
         laser = np.array([x, y])
@@ -200,16 +200,6 @@ class Mapper(Node):
         # 로직 6 : map 업데이트 실행(4,5번이 완성되면 바로 주석처리된 것을 해제하고 쓰시면 됩니다.)
         pose = np.array([[pose_x],[pose_y],[heading]])
         self.mapping.update(pose, laser)
-
-        for y in range(350):
-            for x in range(350):
-                if self.mapping.map[x][y] == 100 :
-                    for dx in range(-5, 6):
-                        for dy in range(-5, 6):
-                            nx = x + dx
-                            ny = y + dy 
-                            if 0 <= nx < 350 and 0 <= ny < 350 and self.mapping.map[nx][ny] < 80:
-                                self.mapping.map[nx][ny] = 110
 
         np_map_data = self.mapping.map.reshape(1, self.map_size).astype(np.int)
         list_map_data = np_map_data.tolist()

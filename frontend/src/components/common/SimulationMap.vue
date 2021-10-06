@@ -42,7 +42,7 @@ export default {
     const posImageData = posContext.createImageData(350, 350)
     const w = 350
     const h = 350
-
+    
     this.$socket.on('turtleBotPos', message => {
       if (!this.isMapUpdated) return
       const data = JSON.parse(message)
@@ -92,7 +92,6 @@ export default {
         const grid = res.data.split(' ')
         for (let i = 0; i < w * h; i++) {
             const idx = i * 4
-            console.log(parseInt(grid[i]))
             if (parseInt(grid[i]) === 50) {
               imageData.data[idx + 0] = 128 
               imageData.data[idx + 1] = 128 
@@ -118,8 +117,6 @@ export default {
         context.putImageData(imageData, 0, 0)
         this.isMapUpdated = true
       })
-
-
   },
   methods: {
     async clickMap (event) {

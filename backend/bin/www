@@ -79,10 +79,6 @@ io.on('connection', socket => {
       console.log('Patrol On!');
     });
 
-    socket.on('cam', (message) => {
-      socket.to(roomName).emit('cam-streaming', message)
-    })
-
     socket.on('PatrolOffToServer', (data) => {
       socket.to(roomName).emit('patrolOff', data);
     });
