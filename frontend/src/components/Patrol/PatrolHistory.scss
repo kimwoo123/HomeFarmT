@@ -1,0 +1,68 @@
+.patrol-history {
+  border-radius: 8px;
+  background-color: white;
+  width: 328px;
+  height: 172px;
+  padding: 16px;
+}
+
+.history-box {
+  width: 300px;
+  height: 100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-align {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.patrol-history-title {
+  font-size: 14px;
+}
+
+.history-content {
+  display: flex;
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.date {
+  font-size: 12px;
+  color: $darkgray;
+}
+
+.anormal-text {
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.history-img {
+  width: 90px;
+  height: 90px;
+  margin-right: 20px;
+  border-radius: 12px;
+}
+
+.icon {
+  width: 30px;
+  height: 80px;
+  padding: 10px;
+  cursor: pointer;
+  
+  &:active {
+    color: $primary;
+  }
+}
+
+.alarm {
+  cursor: pointer;
+}

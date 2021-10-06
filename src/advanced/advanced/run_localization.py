@@ -456,7 +456,7 @@ class Localizer(Node):
 
     def init_pose_callback(self,msg):
         if msg.header.frame_id=='map' :
-       
+            
             q=Quaternion(msg.pose.pose.orientation.w,
                         msg.pose.pose.orientation.x,
                         msg.pose.pose.orientation.y,

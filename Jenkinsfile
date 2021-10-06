@@ -6,8 +6,12 @@ pipeline {
 			agent any
 			steps {
 				dir ('frontend') {
+					sh 'cp /security/frontend/.env ./.env'
 					sh 'npm install --legacy-peer-deps .'
 					sh 'npm run build'
+				}
+				dir ('backend') {
+					sh 'cp /security/backend/.env ./.env'
 				}
 			}
 		}

@@ -1,0 +1,30 @@
+.patrol-path {
+  border-radius: 8px;
+  background-color: white;
+  width: 328px;
+  height: 70px;
+  padding: 16px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.target-path {
+  color: $primary;
+}
+
+.status {
+  font-size: 11px;
+  color: $darkgray;
+}
+
+.switch-align {
+  display: flex;
+  align-items: center;
+}

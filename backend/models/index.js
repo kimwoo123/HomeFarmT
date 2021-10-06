@@ -5,8 +5,7 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-// const config = require(__dirname + '/../config/config.json')[env];
-const config = require('../config')[env];
+const config = require(__dirname + '/../config/index.js')[env];
 const db = {};
 
 let sequelize;
@@ -37,11 +36,12 @@ db.Sequelize = Sequelize;
 
 db.User = require("./users")(sequelize, Sequelize);
 db.Schedule = require("./schedule")(sequelize, Sequelize);
+db.History = require("./historys")(sequelize, Sequelize);
 
-db.User.hasMany(db.Schedule, { as: "Schedule" })
-db.Schedule.belongsTo(db.User, {
-  foreignKey: "user",
-  as: "users"
-})
+db.User.hasMany(db.Schedule, { foreignKey: 'userid', sourceKey: 'userid'})
+db.Schedule.belongsTo(db.User, { foreignKey: 'userid', targetKey: 'userid'})
+
+db.User.hasMany(db.History, { foreignKey: 'userid', sourceKey: 'userid'})
+db.History.belongsTo(db.User, { foreignKey: 'userid', targetKey: 'userid'})
 
 module.exports = db;

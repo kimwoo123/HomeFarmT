@@ -16,8 +16,6 @@ import socketio
 # 로직 1. 클라이언트 소켓 생성
 sio = socketio.Client()
 
-
-
 @sio.event
 def connect():
     print('connection established')
@@ -27,6 +25,7 @@ def connect():
 @sio.on('sendAirConOn')
 def aircon_on(data):
     print('message received with ', data)
+
 
 @sio.on('sendAirConOff')
 def aircon_off(data):
@@ -39,7 +38,7 @@ def disconnect():
 
 
 # 로직 3. 서버 연결
-sio.connect('http://ec2-3-34-134-166.ap-northeast-2.compute.amazonaws.com:12001/')
+sio.connect('http://localhost:30001')
 
 # 로직 4. 데이터 송신
 sio.emit('sendTime','TEST')
