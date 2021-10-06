@@ -47,7 +47,7 @@ def patrol_on(data):
     auto_switch = data
 
 @sio.on('patrolOff')
-def patrol_on(data):
+def patrol_off(data):
     global auto_switch
     auto_switch = data
 
