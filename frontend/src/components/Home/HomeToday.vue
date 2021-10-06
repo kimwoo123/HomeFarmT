@@ -58,7 +58,7 @@ export default {
   },
   created() {
     const cityname = this.regionTranslate[sessionStorage.getItem('region')] ||'Daejeon'
-    const APIkey = 'f76e5170ae05649ca6570a9acf9ee65f'
+    const APIkey = process.env.VUE_APP_WEATHER_API
     const baseURL = `http://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`
     axios.get(baseURL)
     .then(res => {
