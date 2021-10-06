@@ -2,14 +2,10 @@
   <div>
 
     <div class="today-weather">
-      <img src="@/assets/icons/weather/sun.svg" alt="iot">
+      <img :src="this.iconURL" alt="">
       <div class="text-box">
         <span class="today-date">{{ todayDate }}</span>
-        <span class="weather-text">{{ weather }}</span>
-      </div>
-      <div class="text-box">
-        <span class="d">{{ region }}</span>
-        <img :src="this.iconURL" alt="">
+        <span class="weather-text">{{ region }} | {{ weather }}</span>
       </div>
     </div>
 
