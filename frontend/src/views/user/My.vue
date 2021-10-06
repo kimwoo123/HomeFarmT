@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <button class="my-btn" style="margin-top: 30px" @click="submit()">확인</button>
+      <button class="my-btn" style="margin-top: 30px" @click="updateUserInfo()">확인</button>
 
     </div>
   </div>
@@ -39,6 +39,7 @@
 
 <script>
 import Navbar from '@/components/common/Navbar.vue'
+import gql from 'graphql-tag'
 
 export default {
   name: 'My',
@@ -54,10 +55,56 @@ export default {
       region: '',
     }
   },
-  methods: {
-    submit() {
-      
+  apollo: {
+    getUserInfo: {
+      query: gql`
+        query {
+          findUser{
+            email
+            password
+            hashid
+            map
+            route1
+            route2
+            route3
+            region
+            turtlebot
+            patrol
+          }
+        }`,
+        update(data) {
+          this.email = sessionStorage.getItem('email')
+          this.turtlebotName = data.findUser.turtlebot
+          this.region = data.findUser.region
+        },
     }
+  },
+  // created() {
+  //   this.$apollo.queries.getUserInfo.refresh()
+  // },
+  methods: {
+    updateUserInfo() {
+      this.$apollo.mutate({
+        mutation: gql`mutation ($password: String!, $turtlebot: String, $region: String) {
+          updateUser(password: $password, turtlebot: $turtlebot, region: $region) {
+            email
+            region
+            turtlebot
+          }
+        }`,
+        variables: {
+          password: this.password,
+          turtlebot: this.turtlebotName,
+          region: this.region
+        }
+        })
+        .then((res) => {
+          console.log(res.data)
+        })
+        .catch((err) => {
+          console.log(err, 'no')
+        })
+    },
   }
 }
 </script>

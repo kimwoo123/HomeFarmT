@@ -65,6 +65,7 @@ export default {
         .then((res) => {
           console.log(res.data)
           localStorage.setItem('token', res.data.login.token)
+          sessionStorage.setItem('email', this.email)
         })
         .catch((err) => {
           console.log(err, 'no')
