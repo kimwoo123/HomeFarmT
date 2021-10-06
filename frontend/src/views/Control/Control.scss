@@ -20,3 +20,28 @@
 .control-container {
   position: relative;
 }
+
+.my-small-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 156px;
+  height: 58px;
+  background-color: $primary;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  color: white;
+  border: 0px;
+  cursor: pointer;
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+  
+}
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 16px;
+}
