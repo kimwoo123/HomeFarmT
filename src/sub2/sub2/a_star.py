@@ -147,7 +147,7 @@ class a_star(Node):
                     self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
                     self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
                     # self.dijkstra(start_grid_cell)
-                    self.A_star_dam(start_grid_cell)
+                    self.A_star_dong(start_grid_cell)
 
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
@@ -326,51 +326,34 @@ class a_star(Node):
 
     # 동윤
     def A_star_dong(self, start):
-        # [F, G, x, y]
-        path_point = [[282, 124], [85, 124], [self.goal[0], self.goal[1]]]
-        repeat = 1
-        if 275 < start[0] < 332 and 133 < start[1] < 202 and 26 < self.goal[0] < 114 and 136 < self.goal[1] < 220:
-            print('이 위치다')
-            repeat = 3
-
         start_time = time.time()
-        
+        cost_so_far = { (start[0], start[1]): 0, }
         openlist = []
         cnt = 0
         found = False
         cost_so_far = dict()
         heappush(openlist, [0, start[0], start[1]])
-        for i in range(repeat):
+        while openlist:
+            current = heappop(openlist)
+            cnt += 1
+            if current[1] == self.goal[0] and current[2] == self.goal[1]:
+                found = True
+                break
 
-            if repeat == 3:
-                self.goal[0], self.goal[1] = path_point[i][0], path_point[i][1]
-
-            while openlist:
-                current = heappop(openlist)
-                cnt += 1
-                    
-                if current[1] == self.goal[0] and current[2] == self.goal[1]:
-                    print('들어왔니?', i, '번')
-                    print('목표: ', self.goal)
-                    found = True
-                    openlist = []
-                    cost_so_far = { (current[0], current[1]): 0, }
-                    heappush(openlist, [0, current[0], current[1]])
-                    break
-
-                for i in range(8):
-                    nx = current[1] + self.dx[i]
-                    ny = current[2] + self.dy[i]
-                    if 0 <= nx < self.GRIDSIZE and 0 <= ny < self.GRIDSIZE and self.grid[nx][ny] == 0:
+            for i in range(8):
+                nx = current[1] + self.dx[i]
+                ny = current[2] + self.dy[i]
+                if 0 <= nx < self.GRIDSIZE and 0 <= ny < self.GRIDSIZE and self.grid[nx][ny] == 0:
+                    heuristic = int(sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))) * 2
+                    cur_cost = cost_so_far[(current[1], current[2])]
+                    new_cost = cur_cost + self.dCost[i]
+                    new_f = new_cost + heuristic
+                    next = (nx, ny)
+                    if next not in cost_so_far or new_cost < cost_so_far[next]:
+                        cost_so_far[next] = new_cost
                         heuristic = int(sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))) * 2
-                        cur_cost = cost_so_far[(current[1], current[2])]
-                        new_cost = cur_cost + self.dCost[i]
-                        new_f = new_cost + heuristic
-                        next = (nx, ny)
-                        if next not in cost_so_far or new_cost < cost_so_far[next]:
-                            cost_so_far[next] = new_cost
-                            self.path[nx][ny] = [current[1], current[2]]
-                            heappush(openlist, [new_f, nx, ny])
+                        self.path[nx][ny] = [current[1], current[2]]
+                        heappush(openlist, [new_f, nx, ny])
 
         node = [self.goal[0], self.goal[1]]
         while found:
@@ -380,9 +363,11 @@ class a_star(Node):
             if node[0] == start[0] and node[1] == start[1]:
                 break
         
-        print(cnt)
-        print('finalpath',self.final_path)
+        self.final_path = self.final_path[::-1] + self.final_path
+        print("time :", time.time() - start_time)
+        print('finalpath', self.final_path)
         print("time :", time.time() - start_time) 
+
 
 def main(args=None):
     rclpy.init(args=args)

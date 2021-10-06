@@ -67,6 +67,7 @@ export default {
           }
         }`,
         update(data) {
+          console.log(data)
           const todayDateTmp = new Date(this.date - timezoneOffset).toISOString().substring(0, 10)
           for (let schedule of data.getSchedule) {
             this.userSchedule.push(schedule.schedule_time)

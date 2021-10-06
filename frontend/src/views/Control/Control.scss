@@ -1,0 +1,22 @@
+.map-text {
+  font-size: 12px;
+  margin-bottom: 35px;
+}
+
+.my-modal-content {
+  width: 290px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.minimap {
+  position: absolute;
+  right: 0px;
+}
+
+.control-container {
+  position: relative;
+}

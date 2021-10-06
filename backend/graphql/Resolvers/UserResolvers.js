@@ -13,9 +13,13 @@ module.exports = {
       const getUsers = await User.findAll();
       return getUsers;
     },
-    findUser: async (_, { email }) => {
-      const oneUser = await User.findOne({ where: {email: email}});
-      return oneUser
+    findUser: async (_, args, context) => {
+      if (!context) {
+        throw new Error('로그인이 필요합니다')
+      }
+      const user = await User.findOne({ where: { email: context.hashedEmail }})
+      console.log(user)
+      return user
     }
 },
   Mutation: {
@@ -60,6 +64,34 @@ module.exports = {
         token: token
       })
       return result;
+    },
+    updateUser: async(_, { email, password, turtlebot, region }, context) => {
+      if (!context) {
+        throw new Error('로그인이 필요합니다')
+      }
+      let hashedPassword
+      let salt
+      if (password) {
+        salt = crypto.randomBytes(26).toString('base64');
+        const scryptPassword = crypto.scryptSync(password, salt, 26)
+        hashedPassword = scryptPassword.toString('hex')
+      } else {
+        const user = await User.findOne({ where: { email: context.hashedEmail }})
+        salt = user.hashid
+        hashedPassword = user.password
+      }
+      const userInfo = await User.update({password: hashedPassword, hashid: salt, turtlebot, region },
+        { where: { 
+          email: context.hashedEmail 
+        }
+      })
+      .then(res => {
+        console.log(res, 'done')
+      })
+      .catch(err => {
+        console.log(err, 'no')
+      })
+      return userInfo
     },
     deleteUser: async (_, { email }) => {
       const oldUser = await User.delete({ where: { email: email }})

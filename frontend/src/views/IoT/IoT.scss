@@ -1,0 +1,35 @@
+.home-container {
+  width: 360px;
+  height: 623px;
+  padding: 0px 16px;
+}
+
+.position-container {
+  padding: 0px 16px 0px 16px;
+  margin-bottom: 20px;
+  width: 360px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  overflow: auto;
+}
+
+.position {
+  text-align: center;
+  width: 60px;
+  height: 30px;
+  margin: 0px 5px;
+  border-bottom: 2px solid #ffffff;
+  font-size: 14px;
+  color: $darkgray;
+  cursor: pointer;
+  &:active {
+    color: $primary;
+  }
+}
+
+.position-active {
+  border-bottom: 3px solid $primary;
+  color: $primary;
+  font-family: 'Pretendard-SemiBold';
+}

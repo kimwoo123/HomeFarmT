@@ -178,14 +178,14 @@ class PatrolCtrlFromServer(Node):
                 theta = atan2(rotated_point.y, rotated_point.x)
 
                 dis = sqrt(pow(rotated_point.x, 2) + pow(rotated_point.y, 2))
-                self.cmd_msg.linear.x = 0.5
-                self.cmd_msg.angular.z = theta 
-                # if abs(theta) < pi/10:
-                #     self.cmd_msg.linear.x = dis*2
-                #     self.cmd_msg.angular.z = -theta*0.3
-                # else:
-                #     self.cmd_msg.linear.x = 0.0
-                #     self.cmd_msg.angular.z = -theta*0.3
+                # self.cmd_msg.linear.x = 0.5
+                # self.cmd_msg.angular.z = theta 
+                if abs(theta) < pi/10:
+                    self.cmd_msg.linear.x = 0.5
+                    self.cmd_msg.angular.z = -theta*0.3
+                else:
+                    self.cmd_msg.linear.x = 0.0
+                    self.cmd_msg.angular.z = -theta*0.3
                     
                 if dis <= self.lfd and  self.idx_wp < self.len_wp-1:
                     self.idx_wp += 1

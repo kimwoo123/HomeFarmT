@@ -23,13 +23,27 @@ export default {
   methods: {
     setSchedule() {
     this.$apollo.mutate({
-      mutation: gql`mutation ($schedule_time: String!) {
-        createSchedule(schedule_time: $schedule_time) {
-          schedule_time
+      mutation: gql`
+        mutation ($createScheduleScheduleTime: String!, $createScheduleScheduleTitle: String, $createScheduleScheduleDesc: String, $createScheduleScheduleStatus: String) {
+                createSchedule(
+                  schedule_time: $createScheduleScheduleTime, 
+                  schedule_title: $createScheduleScheduleTitle, 
+                  schedule_desc: $createScheduleScheduleDesc, 
+                  schedule_status: $createScheduleScheduleStatus
+                  ) {
+                    scheduleid
+                    schedule_time
+                    schedule_title
+                    schedule_desc
+                    schedule_status
+          }
         }
-      }`, 
+      `, 
       variables: {
-        schedule_time: this.dateTime
+        createScheduleScheduleTime: "19960221",
+        createScheduleScheduleTitle: "물 주기",
+        createScheduleScheduleDesc: "물물",
+        createScheduleScheduleStatus: "ON"
       }
       })
       .then((res) => {
@@ -46,4 +60,33 @@ export default {
 
 <style>
 
-</style>
+</style>      
+// mutation (
+//         $schedule_time: String!,
+//         $schedule_title: String,
+//         $schedule_desc: String,
+//         $schedule_status: String,
+//         ) 
+//         {
+//         createSchedule(
+//           schedule_time: $schedule_time,
+//           schedule_title: $schedule_title,
+//           schedule_desc: $schedule_desc,
+//           schedule_status: $schedule_status, 
+//           ) 
+//           {
+//           schedule_time
+//           schedule_title
+//           schedule_desc
+//           schedule_status
+//         }
+//       }
+        // mutation ($createScheduleScheduleTime: String!, $createScheduleScheduleTitle: String, $createScheduleScheduleDesc: String, $createScheduleScheduleStatus: String) {
+        // schedule_title: $createScheduleScheduleTitle, 
+        // schedule_desc: $createScheduleScheduleDesc, 
+        // schedule_status: $createScheduleScheduleStatus
+
+                  //         schedule_time
+                  // schedule_title
+                  // schedule_desc
+                  // schedule_status

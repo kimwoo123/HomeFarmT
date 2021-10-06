@@ -86,25 +86,11 @@ class iot_udp(Node):
 
         self.is_recv_data = False
 
-        # os.system('cls') # 콘솔 클리어
-        # while True:
-        #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ]')
-
-        #     if menu == '0':
-        #         self.scan()
-        #     elif menu == '1':
-        #         self.connect()
-        #     elif menu == '2':
-        #         self.control()
-        #     elif menu == '3':
-        #         self.disconnect()
-        #     elif menu == '4':
-        #         self.all_procedures()
-        # while True:
-        #     menu = input('Select Menu [0: scan, 1: connect, 2:control, 3:disconnect, 4:all_procedures ] : ')
-
     
     def iot_control_callback(self, msg) -> None:
+        if not self.is_recv_data:
+            return
+
         print('iot 컨트롤 메시지 도착', msg)
         application_type, control_type = msg.data.split()
 
@@ -135,7 +121,6 @@ class iot_udp(Node):
 
         '''
         로직 3. 수신 데이터 파싱
-
         '''
         if header == "#Appliances-Status$" and data_length[0] == 20:
             uid_pack = raw_data[35:51]
@@ -200,15 +185,20 @@ class iot_udp(Node):
             주변에 들어오는 iot 데이터(uid,network status, device status)를 출력하세요.
             => 종료 키 변경
         '''
-        while True:
-            uid, network_status, device_status = self.recv_data
-            print('uid: ', uid)
-            print('network_status: ',  network_status)
-            print('device_status: ',  device_status)
-            time.sleep(1)
-            txt = input("종료를 원하면 q, 재출력은 아무키나 누르세요.")
-            if txt == 'q':
-                break
+        uid, network_status, device_status = self.recv_data
+        print('uid: ', uid)
+        print('network_status: ',  network_status)
+        print('device_status: ',  device_status)
+
+        # while True:
+        #     uid, network_status, device_status = self.recv_data
+        #     print('uid: ', uid)
+        #     print('network_status: ',  network_status)
+        #     print('device_status: ',  device_status)
+        #     time.sleep(1)
+        #     txt = input("종료를 원하면 q, 재출력은 아무키나 누르세요.")
+        #     if txt == 'q':
+        #         break
                    
 
     def connect(self):
@@ -219,7 +209,7 @@ class iot_udp(Node):
             나머지 상태일 때는 TRY_TO_CONNECT 명령을 보내서 iot에 접속하세요. => 요청 한 번으로 안 돼서 반복문
         '''
         uid, network_status, device_status = self.recv_data
-        
+
         old_status = network_status
         while network_status == old_status:
             if network_status == 'CONNECTION_LOST':
@@ -227,6 +217,8 @@ class iot_udp(Node):
             else:
                 self.send_data(uid, params_control_cmd["TRY_TO_CONNECT"])
             network_status = self.recv_data[1]
+        
+        return network_status
 
     
     def control(self):
@@ -238,7 +230,10 @@ class iot_udp(Node):
             현재 상태를 토글시켜주세요. => 요청 한 번으로 반영이 안 돼서 반복문
         '''
         uid, network_status, device_status = self.recv_data
+        while network_status != 'CONNECTION':
+            network_status = self.connect()
 
+        uid, network_status, device_status = self.recv_data
         old_status = device_status
         while device_status == old_status:
             if device_status == 'ON':

@@ -1,18 +1,27 @@
 <template>
-  <div class="navbar-container">
-    <div>
-      <span>Make</span>
-      <span>Your Farm</span>
+  <div>
+    <div class="navbar-container">
+      <font-awesome-icon v-if="left_icon" icon="chevron-left" @click="$router.push({ name: left_push })" class="icon"/>
+      <span class="right-text" @click="$router.push({ name: right_push })">{{ right_text }}</span>
     </div>
-    <div>♟</div>
+    <p class="title">{{ title }}</p>
   </div>
 </template>
+
 <style lang="scss" scoped>
-  @import url('./Navbar.scss');
+  @import './Navbar.scss';
 </style>
+
 <script>
 export default {  
   name: 'Navbar',
+  props: {
+    title: String,
+    left_icon: Boolean,
+    left_push: String,
+    right_text: String,
+    right_push: String,
+  },
 }
 </script>
 
