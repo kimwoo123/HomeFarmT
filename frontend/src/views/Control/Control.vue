@@ -2,10 +2,10 @@
   <div class="control-container">
     <Navbar :title="'터틀봇 조작'" :left_icon="true" :right_text="'제어'" :left_push="'Home'" :right_push="'IoT'"/>
     
-    <div class="minimap" @click="isModalViewed=true">
+    <div class="minimap" @click="modalOpen()">
       <SimulationMap :clickEnable="false" :size="'150'" v-if="!isModalViewed"/>
     </div>
-    <ModalView @close-modal="isModalViewed=false" v-if="isModalViewed">
+    <ModalView @close-modal="modalOff()" v-if="isModalViewed">
       <div class="my-modal-content">
         <span class="map-text">맵을 터치해 해당 위치로 이동하세요.</span>
         <SimulationMap :clickEnable="true" :size="'300'"/>
@@ -52,6 +52,14 @@ export default {
     btn_put_down() {
       let data = 2;
       this.$socket.emit('putdownToServer', data);
+    },
+    modalOpen() {
+      this.isModalViewed = true
+      this.$socket.emit('ismapopenToServer', 1);
+    },
+    modalOff() {
+      this.isModalViewed = false
+      this.$socket.emit('ismapopenToServer', 0);
     },
   }
 }
