@@ -52,11 +52,7 @@ class loadMap(Node):
         self.map_meta_data = m
         self.map_msg.info = self.map_meta_data
         
-<<<<<<< HEAD
         f = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3\\map\\map.txt'
-=======
-        f = 'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2\\map\\map_1.txt'
->>>>>>> 20583643d5aa38a3871975e54a2cb1d7864e0163
         self.f = open(f, 'r')
 
         line = self.f.readlines()
