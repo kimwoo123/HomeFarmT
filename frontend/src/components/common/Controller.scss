@@ -12,15 +12,14 @@
   background-color: white;
   border-radius: 50%;
   margin: 8px 15px;
-}
-
-.item:hover {
-  background-color: $primary;
-  color: white;
-  cursor: pointer;
-}
-
-.item:active {
-  transition: box-shadow 0.3s;
-  box-shadow: none;
+  &:hover {
+    background-color: $primary;
+    color: white;
+    cursor: pointer;
+  }
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
 }

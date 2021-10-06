@@ -19,3 +19,14 @@
   display: flex;
   justify-content: space-between;
 }
+
+.icon {
+  width: 30px;
+  height: 80px;
+  padding: 10px;
+  cursor: pointer;
+  
+  &:active {
+    color: $primary;
+  }
+}

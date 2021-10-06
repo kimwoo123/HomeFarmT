@@ -5,7 +5,7 @@
       <img src="@/assets/icons/alarm.svg" alt="alarm">
     </div>
     <div class="history-box">
-      <font-awesome-icon icon="chevron-left" />
+      <font-awesome-icon icon="chevron-left" class="icon"/>
       <div class="history-content">
         <img src="@/assets/images/patrol.png" alt="anormal image" class="history-img">
         <div class="text-content">
@@ -14,7 +14,7 @@
           <span class="anormal-text">침입자 발견</span>
         </div> 
       </div>
-      <font-awesome-icon icon="chevron-right"/>
+      <font-awesome-icon icon="chevron-right" class="icon"/>
     </div>
   </div>
 </template>

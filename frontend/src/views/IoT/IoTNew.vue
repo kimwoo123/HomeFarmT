@@ -18,7 +18,7 @@
 
 
     <div v-else>
-      <Navbar :title="'기기 추가'" :left_icon="true" :right_text="'완료'"/>
+      <Navbar :title="'기기 추가'" :left_icon="true" :right_text="'완료'" :left_push="'IoT'" :right_push="''"/>
       <div>
         <div class="find-device">
           <span>기기를 찾았습니다.</span>

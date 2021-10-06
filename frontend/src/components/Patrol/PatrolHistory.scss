@@ -51,3 +51,14 @@
   margin-right: 20px;
   border-radius: 12px;
 }
+
+.icon {
+  width: 30px;
+  height: 80px;
+  padding: 10px;
+  cursor: pointer;
+  
+  &:active {
+    color: $primary;
+  }
+}

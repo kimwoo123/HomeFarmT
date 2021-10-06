@@ -14,10 +14,18 @@
       height: 30px;
       margin: 6px;
       border-radius: 50%;
+      cursor: pointer;
+      &:hover {
+        background-color: $lightgray;
+      }
+      &:active {
+        background-color: white;
+        color: $primary;
+      }
     }
     .day-active {
-      background-color: $primary;
-      color: white;
+      background-color: $primary !important;  
+      color: white !important;
     } 
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'Home'" :left_icon="false" :right_text="''"/>
+    <Navbar :title="'메인'" :left_icon="false" :right_text="''"/>
     <div class="home-container">
       <HomeToday style="margin-bottom: 30px"/>
       <HomeSchedule style="margin-bottom: 30px"/>

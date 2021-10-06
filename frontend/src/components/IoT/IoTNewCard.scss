@@ -6,6 +6,12 @@
   border-radius: 10px;
   background-color: white;
   margin-bottom: 25px;
+  cursor: pointer;
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
 }
 
 .edit-group {
