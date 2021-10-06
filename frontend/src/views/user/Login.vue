@@ -53,7 +53,7 @@ export default {
       this.$apollo.mutate({
         mutation: gql`mutation ($email: String!, $password: String!) {
           login(email: $email , password: $password) {
-            email
+            region
             token
           }
         }`,
@@ -66,6 +66,7 @@ export default {
           console.log(res.data)
           localStorage.setItem('token', res.data.login.token)
           sessionStorage.setItem('email', this.email)
+          sessionStorage.setItem('region', res.data.login.region)
         })
         .catch((err) => {
           console.log(err, 'no')
