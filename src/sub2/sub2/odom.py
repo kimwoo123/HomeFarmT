@@ -44,8 +44,8 @@ class odom(Node):
         self.is_calc_theta = False
         # x,y,theta는 추정한 로봇의 위치를 저장할 변수 입니다.        
         # 로봇의 초기위치를 맵 상에서 로봇의 위치와 맞춰줘야 합니다. 
-        self.x = -9.5 #9.3
-        self.y = -7.65  #9.75
+        self.x = -50 #9.3
+        self.y = -50  #9.75
         self.theta = 0.0
 
         # self.x = -50 #9.3
@@ -57,8 +57,8 @@ class odom(Node):
         self.is_imu = False
 
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 - 8
-        self.map_offset_y = -8.75 - 4
+        self.map_offset_x = -50 - 8.75
+        self.map_offset_y = -50 - 8.75
         
         self.odom_msg.header.frame_id = 'map'
         self.odom_msg.child_frame_id = 'base_link'
