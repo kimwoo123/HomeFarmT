@@ -70,25 +70,20 @@ def compute_relative_pose(pose_i, pose_j):
     T_j = xyh2mat2D(pose_j)
 
     """
-    T_i = utils.xyh2mat2D(pose_i)
-    T_j = utils.xyh2mat2D(pose_j)
-
+    
     """
     로직 2 : Rot 행렬, trans 백터 추출
     R_i = 
     t_i = 
 
     """
-    R_i = np.transpose(T_i[:2, :2])
-    t_i = -R_i.dot(T_i[:2, 2])
+
     """
     로직 3 : pose i 기준 pose j에 대한 Rot 행렬, trans 백터 계산
     R_ij = 
     t_ij = 
     
     """
-    R_ij = np.matmul(R_i, T_j[:2, :2])
-    t_ij = R_i.dot(T_j[:2, 2]) + t_i
 
     """
     로직 4 : 위의 Rot 행렬, trans 백터로 pose_ij를 계산
@@ -98,9 +93,7 @@ def compute_relative_pose(pose_i, pose_j):
     pose_ij[2] = 
 
     """
-    pose_ij = np.array([0.0, 0.0, 0.0])
-    pose_ij[:2] = t_ij[:]
-    pose_ij[2] = np.arctan2(R_ij[1,0], R_ij[0,0]) * 180.0 / np.pi
+
     """
     테스트
 
@@ -173,7 +166,7 @@ class Localization:
 
         # 로직 4. 저장된 맵을 불러옵니다.
         pkg_path =os.getcwd()
-        back_folder='C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub2'
+        back_folder='..'
         folder_name='map'
         file_name='map.txt'
         full_path=os.path.join(pkg_path,back_folder,folder_name,file_name)
@@ -181,6 +174,7 @@ class Localization:
 
         line=f.readlines()
         line_data=line[0].split()
+        f.close()
 
         map_data = [0 for i in range(int(self.map_size[0]*self.map_size[1]))]
 
@@ -195,10 +189,10 @@ class Localization:
         
         self.map_bgr = cv2.cvtColor(self.map, cv2.COLOR_GRAY2BGR)
         self.map_bgr = self.map_bgr.copy()
-        self.map = self.map * 1.0/256
+        self.map = self.map*1.0/256
 
 
-    def initialize_particles(self, pose = None, factor = None):
+    def initialize_particles(self, pose=None, factor=None):
 
         # 로직 9. particles 초기화
         # 파티클을 x, y, theta, score로 이루어진 array로 랜덤하게 생성시켜 초기화 시키는 단계를 말합니다.
@@ -294,7 +288,7 @@ class Localization:
         if gt_pose is not None:
             pose_x = (gt_pose[0] - self.map_center[0] + (self.map_size[0] * self.map_resolution) / 2) / self.map_resolution
             pose_y = (gt_pose[1] - self.map_center[1] + (self.map_size[1] * self.map_resolution) / 2) / self.map_resolution
-
+           
             center = (int(pose_x),int(pose_y))
             cv2.circle(map_bgr_with_particle, center, 2, (255,0,255), -1)
 
@@ -351,40 +345,7 @@ class Localization:
             self.particles[:3, i] = utils.mat2D2xyh(T_j)
 
         """
-        delta_dist = np.sqrt(np.square(diff_pose[:2]).sum())
 
-        delta_angle1 = np.arctan2(diff_pose[1], diff_pose[0])
-        delta_angle2 = diff_pose[2]*np.pi/180.0 - delta_angle1
-        
-        odom_cov = [self.odom_translation_cov, self.odom_translation_cov, self.odom_heading_cov]
-
-        delta_angle1 = utils.limit_angular_range(delta_angle1)
-
-        dist_noise_coeff = odom_cov[0]*np.fabs(delta_dist) + odom_cov[2]*np.fabs(delta_angle1 + delta_angle2)
-        angle1_noise_coeff = odom_cov[2]*np.fabs(delta_angle1) + odom_cov[0]*np.fabs(delta_dist)
-        angle2_noise_coeff = odom_cov[2]*np.fabs(delta_angle2) + odom_cov[0]*np.fabs(delta_dist)
-
-        score_sum = 0
-
-        for i in range(self.num_particle):
-
-            delta_dist = delta_dist + np.random.normal(0,1)*dist_noise_coeff
-            delta_angle1 = delta_angle1 + np.random.normal(0,1)*angle1_noise_coeff
-            delta_angle2 = delta_angle2 + np.random.normal(0,1)*angle2_noise_coeff
-
-            x = delta_dist * np.cos(delta_angle1) + np.random.normal(0,1)*odom_cov[0]
-            y = delta_dist * np.sin(delta_angle1) + np.random.normal(0,1)*odom_cov[1]
-            h = delta_angle1 + delta_angle2 + np.random.normal(0,1)*odom_cov[2]
-
-            diff_odom_noise = np.array([x, y, h*180.0/np.pi])
-            diff_odom_T = utils.xyh2mat2D(diff_odom_noise)
-
-            xyh_i = self.particles[:3, i]
-            T_i = utils.xyh2mat2D(xyh_i)
-            T_j = np.matmul(T_i, diff_odom_T)
-
-            score_sum += self.particles[3, i]
-            self.particles[:3, i] = utils.mat2D2xyh(T_j)
         self.particles[3, :] = self.particles[3, :] #/ score_sum위 코드를 완성한 후 주석을 해제해 주세요
 
     def _points_in_map(self, x_list, y_list):
@@ -423,7 +384,7 @@ class Localization:
             particle_pose_x, particle_pose_y = self._points_in_map(particle_pose[0], particle_pose[1])
 
             # 파티클이 맵 안에 있는 경우
-            is_pose_valid = (particle_pose_x > 0) * (particle_pose_y > 0) * (particle_pose_x < cols) * (particle_pose_y < rows)
+            is_pose_valid = (particle_pose_x>0) * (particle_pose_y>0) * (particle_pose_x<cols) * (particle_pose_y<rows)
             if not is_pose_valid:
                 self.particles[3, i] = 0
                 continue
@@ -463,19 +424,7 @@ class Localization:
             score_sum += self.particles[3, i]
 
             """
-            valid_idx = (points_global_x>0) * (points_global_y>0) * (points_global_x<cols) * (points_global_y<rows)
-            valid_x = points_global_x[valid_idx]
-            valid_y = points_global_y[valid_idx]
-            vals = self.map[valid_y.astype(np.int), valid_x.astype(np.int)]
-            walls = vals < 0.25
-            empty = (vals > 0.25)
-            weight = np.sum(walls)
-            penalty = np.sum(empty)*0.0
-            weight = weight - penalty
-            weights[i] = weight
 
-            self.particles[3, i] += weight / transformed_points.shape[1]
-            score_sum += self.particles[3, i]
             if max_score < self.particles[3, i]:
                 self.max_prob_particle = self.particles[:,i]
                 max_score = self.particles[3, i]
@@ -517,11 +466,6 @@ class Localization:
             selected_particles[:, i] = self.particles[:, darted_idx]
 
         """
-        for i in range(n_particles):
-            darted_score = np.random.uniform(0, score_basline, 1)
-            darted_idx = np.abs(particle_scores-darted_score).argmin().astype(np.int)
-            
-            selected_particles[:, i] = self.particles[:, darted_idx]
 
         self.particles = selected_particles.copy()
 
@@ -541,22 +485,20 @@ class Localization:
             return
 
 
-        """
-        diff_pose =
-        """ 
-        diff_pose = compute_relative_pose(self.odom_before, pose)
+        """diff_pose =""" 
+        diff_pose = np.array([[0],[0],[0]])
 
         """
         diff_dist = 
         diff_angle = 
         """
-        diff_dist = np.sqrt(np.square(diff_pose[:2]).sum())
-        diff_angle = diff_pose[2]
+        diff_dist = 0.1
+        diff_angle = 0
 
 
         if diff_dist > 1 :
             print('reset')
-            self.is_init = False
+            self.is_init=False
             return
 
         if diff_dist > self.min_odom_dist or np.abs(diff_angle) > self.min_odom_angle:
@@ -633,13 +575,13 @@ class Localizer(Node):
         
     def imu_callback(self,msg):
 
-        if self.is_imu == False :    
-            self.is_imu = True
-            imu_q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
-            self.imu_offset = imu_q.to_euler()
+        if self.is_imu ==False :    
+            self.is_imu=True
+            imu_q= Quaternion(msg.orientation.w,msg.orientation.x,msg.orientation.y,msg.orientation.z)
+            self.imu_offset=imu_q.to_euler()
         else :
-            imu_q = Quaternion(msg.orientation.w, msg.orientation.x, msg.orientation.y, msg.orientation.z)
-            self.odom_theta = imu_q.to_euler()[2] + self.imu_offset[2]
+            imu_q= Quaternion(msg.orientation.w,msg.orientation.x,msg.orientation.y,msg.orientation.z)
+            self.odom_theta=imu_q.to_euler()[2]+self.imu_offset[2]
 
 
     def init_pose_callback(self,msg):
@@ -650,7 +592,7 @@ class Localizer(Node):
         # 들어오는 pose 메시지를 init_pose_callback() 안에서 처리합니다. 
 
         if msg.header.frame_id=='map' :
-
+       
             q=Quaternion(msg.pose.pose.orientation.w,
                         msg.pose.pose.orientation.x,
                         msg.pose.pose.orientation.y,
@@ -678,8 +620,8 @@ class Localizer(Node):
 
                 # 두번째 스텝부터 odom 정보 파싱
                 # 이전 스텝과 현재 스텝간의 시간 차이 계산
-                self.current_time = rclpy.clock.Clock().now()
-                self.period = (self.current_time-self.prev_time).nanoseconds/(1e+9)
+                self.current_time=rclpy.clock.Clock().now()
+                self.period=(self.current_time-self.prev_time).nanoseconds/(1e+9)
 
 
                 """
@@ -691,10 +633,7 @@ class Localizer(Node):
                 self.odom_x+=
                 self.odom_y+=
                 """
-                linear_x = msg.twist.linear.x
-                self.odom_x += linear_x * cos(self.odom_theta) * self.period
-                self.odom_y += linear_x * sin(self.odom_theta) * self.period
-                self.prev_time = self.current_time
+                self.prev_time=self.current_time
 
 
 
@@ -703,12 +642,12 @@ class Localizer(Node):
         if self.is_status==True :
 
             # turtlebot status 로부터 업데이트한 odom 정보    
-            pose_x = self.odom_x
-            pose_y = self.odom_y
-            heading = (self.odom_theta - pi / 2) * 180 / pi 
-            heading = heading % 360
+            pose_x=self.odom_x
+            pose_y=self.odom_y
+            heading=(self.odom_theta-pi/2)*180/pi 
+            heading=heading%360
             if heading > 180 :
-                heading = heading - 360
+                heading= heading-360
 
             pose = np.array([[pose_x],[pose_y],[heading]])
 
@@ -717,7 +656,7 @@ class Localizer(Node):
             # Range는 길이 360의 어레이 형태로 되어 있고 1도만큼 돌아가면서 거리를 측정된 값입니다.
             # 이를 가지고 포인트들을 x, y 좌표계로 변환할 수 있습니다.
 
-            Distance = np.array(msg.ranges)
+            Distance=np.array(msg.ranges)
             x = Distance * np.cos(np.linspace(0, 2 * np.pi, 360))
             y = Distance * np.sin(np.linspace(0, 2 * np.pi, 360))
             laser = np.vstack((x.reshape((1, -1)), y.reshape((1, -1))))
@@ -725,9 +664,10 @@ class Localizer(Node):
             # 로직 8
             # . localizer 실행
             # odometry 정보와 라이다 정보로 파티클 업데이트 
-            amcl_pose = self.localization.update(pose, laser)
+            amcl_pose=self.localization.update(pose, laser)
             if amcl_pose is None :
-                amcl_pose = self.prev_amcl_pose
+                amcl_pose=self.prev_amcl_pose
+
 
             # 라이다를 global 좌표로 변환해서 sending
             """            
@@ -753,25 +693,9 @@ class Localizer(Node):
             self.odom_msg.pose.pose.orientation.z =
             self.odom_msg.pose.pose.orientation.w =
             """
-            amcl_q = Quaternion.from_euler(0, 0, (amcl_pose[2]+90)/180*pi)
-            self.localizer_transform.header.stamp =rclpy.clock.Clock().now().to_msg()
-            self.localizer_transform.transform.translation.x = float(amcl_pose[0])
-            self.localizer_transform.transform.translation.y = float(amcl_pose[1])
-            self.localizer_transform.transform.rotation.x = amcl_q.x
-            self.localizer_transform.transform.rotation.y = amcl_q.y
-            self.localizer_transform.transform.rotation.z = amcl_q.z
-            self.localizer_transform.transform.rotation.w = amcl_q.w
-            self.broadcaster.sendTransform(self.localizer_transform)
 
-            # #odom
-            self.odom_msg.pose.pose.position.x=float(amcl_pose[0])
-            self.odom_msg.pose.pose.position.y=float(amcl_pose[1])
-            self.odom_msg.pose.pose.orientation.x=amcl_q.x
-            self.odom_msg.pose.pose.orientation.y=amcl_q.y
-            self.odom_msg.pose.pose.orientation.z=amcl_q.z
-            self.odom_msg.pose.pose.orientation.w=amcl_q.w
-            self.odom_publisher.publish(self.odom_msg)      
-            self.prev_amcl_pose = amcl_pose
+            self.odom_publisher.publish(self.odom_msg)        
+            self.prev_amcl_pose=amcl_pose
         
 def main(args=None):
     rclpy.init(args=args)
