@@ -18,6 +18,7 @@
 .path-active {
   background-color: $primary;
   color: white;
+  transition: 0.3s;
   span {
     color: white;
   }

@@ -17,11 +17,18 @@
   background-color: white;
   border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s;
+    
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
 }
 
 .iot-active {
   background-color: $primary;
   color: white;
+  transition: 0.3s;
 }
 
 .name {

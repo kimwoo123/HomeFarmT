@@ -15,17 +15,21 @@
       margin: 6px;
       border-radius: 50%;
       cursor: pointer;
+      transition: 0.1s;
       &:hover {
         background-color: $lightgray;
+        transition: 0.2s;
       }
       &:active {
         background-color: white;
         color: $primary;
+        transition: 0.2s;
       }
     }
     .day-active {
       background-color: $primary !important;  
       color: white !important;
+      transition: 0.3s;
     } 
   }
 }
