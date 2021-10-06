@@ -73,29 +73,17 @@ class astarLocalpath(Node):
                             ny = y + dy 
                             if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
                                 self.grid[nx][ny] = 110
-        np_map_data = self.grid.reshape(1, 350 * 350) 
-        list_map_data = np_map_data.tolist()
-        self.data = list_map_data[0]
-        self.msg.header.stamp = rclpy.clock.Clock().now().to_msg()
-        self.temp_map_pub.publish(self.msg)
+
+        # np_map_data = self.grid.reshape(1, 350 * 350) 
+        # list_map_data = np_map_data.tolist()
+        # self.data = list_map_data[0]
+        # self.msg.header.stamp = rclpy.clock.Clock().now().to_msg()
+        # self.temp_map_pub.publish(self.msg)
 
     def local_map_callback(self, msg) :
         m = np.array(msg.data)
         self.grid = m.reshape(350, 350, order = 'F')
-        self.msg = msg
-        # for y in range(350):
-        #     for x in range(350):
-        #         if self.grid[x][y] == 100 :
-        #             for dx in range(-5, 6):
-        #                 for dy in range(-5, 6):
-        #                     nx = x + dx
-        #                     ny = y + dy 
-        #                     if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
-        #                         self.grid[nx][ny] = 110
-
-
-        # 아래는 publish 용
-        
+        self.msg = msg        
         self.loadLocalMap = True
 
 
@@ -227,7 +215,7 @@ class astarLocalpath(Node):
             '''
             로직 5. local_path 예외 처리
             '''
-            if current_waypoint != -1 :
+            if current_waypoint != -1:
                 if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):
                     for num in range(current_waypoint, current_waypoint + self.local_path_size):
                         tmp_pose = PoseStamped()

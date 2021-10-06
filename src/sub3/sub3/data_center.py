@@ -21,7 +21,7 @@ class DataCenter(Node):
         super().__init__('data_center')
         self.cnt = 0
         self.cam_sub = self.create_subscription(CompressedImage, '/image_jpeg/compressed', self.img_callback, 1)
-        self.map_sub = self.create_subscription(OccupancyGrid, 'map', self.map_callback, 1)
+        self.map_sub = self.create_subscription(OccupancyGrid, '/global_map', self.map_callback, 1)
         self.odom_sub = self.create_subscription(Odometry, 'odom', self.odom_callback, 1)
         self.turtlebot_grid_pos_sub = self.create_subscription(Point, 'turtlebot_grid_pos', self.turtlebot_grid_pos_callback, 1)
         self.iot_control_pub = self.create_publisher(String, 'iot_control', 1)
@@ -35,8 +35,8 @@ class DataCenter(Node):
         self.map_size_x = 350
         self.map_size_y = 350
         self.map_resolution = 0.05
-        self.map_offset_x = -8.75 - 8
-        self.map_offset_y = -8.75 - 4
+        self.map_offset_x = -50 - 8.75
+        self.map_offset_y = -50 - 8.75
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
@@ -59,17 +59,16 @@ class DataCenter(Node):
             self.final_path = []
             self.start_path = []
             self.path = [[0 for _ in range(self.GRIDSIZE)] for _ in range(self.GRIDSIZE)]
-            print(self.cur_pos)
+            
             found = self.a_star(start, end, 'patrol')
             if found:
                 sio.emit('responsePath', json.dumps(self.final_path))
-                print(self.final_path)
                 self.path = [[0 for _ in range(self.GRIDSIZE)] for _ in range(self.GRIDSIZE)]
+                print(self.cur_pos)
                 local_found = self.a_star(self.cur_pos, start, 'start')
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
                 if local_found:
-                    print(self.start_path, self.final_path)
                     for grid_cell in reversed(self.start_path):
                         tmp_pose = PoseStamped()
                         waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
@@ -123,7 +122,6 @@ class DataCenter(Node):
     def map_callback(self, msg):
         map_to_grid = np.array(msg.data)
         self.grid = map_to_grid.reshape(350, 350, order = 'F')
-        print(self.grid)
     
 
     def turtlebot_grid_pos_callback(self, msg):
@@ -142,6 +140,8 @@ class DataCenter(Node):
         cnt = 0
         found = False
         heappush(openlist, [0, start[0], start[1]])
+        print(openlist)
+        print(self.grid[start[0]][start[1]], '시작점의 값')
         while openlist:
             current = heappop(openlist)
             cnt += 1

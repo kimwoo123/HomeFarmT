@@ -244,8 +244,8 @@ def main(args=None):
     CWD_PATH = os.getcwd()
     MODEL_NAME = 'ssd_mobilenet_v1_coco_2018_01_28'
 
-    PATH_TO_LABELS = f'{CWD_PATH}\\src\\sub3\\sub3\\model_weights\\data\\mscoco_label_map.pbtxt'
-    PATH_TO_WEIGHT = f'{CWD_PATH}\\src\\sub3\\sub3\\model_weights\\{MODEL_NAME}\\frozen_inference_graph.pb'
+    PATH_TO_LABELS = f'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3\\sub3\\model_weights\\data\\mscoco_label_map.pbtxt'
+    PATH_TO_WEIGHT = f'C:\\Users\\multicampus\\Desktop\\S05P21B201\\src\\sub3\\sub3\\model_weights\\{MODEL_NAME}\\frozen_inference_graph.pb'
 
     NUM_CLASSES = 90
 
