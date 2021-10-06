@@ -116,15 +116,14 @@ class DataCenter(Node):
         
         
     def img_callback(self, msg):
-        if self.cnt % 3 == 0:
-            self.cnt %= 3
-            data = base64.b64encode(msg.data)
-            sio.emit('cam', data.decode('utf-8'))
-        self.cnt += 1
+        data = base64.b64encode(msg.data)
+        sio.emit('cam', data.decode('utf-8'))
+
 
     def map_callback(self, msg):
         map_to_grid = np.array(msg.data)
         self.grid = map_to_grid.reshape(350, 350, order = 'F')
+        print(self.grid)
     
 
     def turtlebot_grid_pos_callback(self, msg):

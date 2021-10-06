@@ -27,17 +27,6 @@ class astarLocalpath(Node):
         super().__init__('a_star_local_path')
         # 로직 1. publisher, subscriber 만들기
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
-<<<<<<< HEAD
-        self.subscription = self.create_subscription(Path,'/global_path',self.path_callback,10)
-        self.subscription = self.create_subscription(Odometry,'/odom',self.listener_callback,10)
-        self.odom_msg = Odometry()
-        self.is_odom = False
-        self.is_path = False
-        self.last_current_point = 0
-
-        self.global_path_msg=Path()
-
-=======
         self.subscription = self.create_subscription(Path,'global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
@@ -56,7 +45,6 @@ class astarLocalpath(Node):
         self.is_path=False
         self.loadLocalMap = False
         self.global_path_msg = Path()
->>>>>>> 89dff1d93b16bc6680f31c5553f49030706c93a8
 
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period = 0.05 
@@ -149,7 +137,7 @@ class astarLocalpath(Node):
 
         if is_goal_cost == False or is_goal_dis == False or self.loadLocalMap == False: 
             print('더이상 갈 곳이 없다')
-            return;
+            return
 
 
         if is_goal_cost == True :
