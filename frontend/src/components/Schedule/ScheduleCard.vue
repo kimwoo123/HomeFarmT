@@ -8,7 +8,6 @@
       </div>
       <SwitchBtn class="switch-align" @is-checked="changeStatus" :defaultValue="schedule.status" :checkboxId="idx"/>
     </div>
-    <button @click="test()">여기다</button>
     <div class="time-box">
       <img src="@/assets/icons/calender.svg" alt="date" class="icon">
       <span class="date">{{ schedule.date }}</span>
@@ -33,11 +32,7 @@ export default {
     idx: Number
   },
   methods: {
-    test() {
-      console.log(this.schedule.id)
-    },
     changeStatus(isChecked) {
-      console.log(isChecked)
       this.$apollo.mutate({
         mutation: gql`mutation ($updateScheduleStatus: String $updateScheduleId: Int) {
           updateScheduleStatus(
@@ -55,8 +50,7 @@ export default {
         }
         })
         .then((res) => {
-          console.log(res, 'done')
-          // window.location.reload()
+          console.log(res.data.updateScheduleStatus.schedule_status)
         })
         .catch((err) => {
           console.log(err, 'no')
