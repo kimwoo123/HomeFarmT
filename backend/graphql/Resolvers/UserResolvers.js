@@ -18,7 +18,6 @@ module.exports = {
         throw new Error('로그인이 필요합니다')
       }
       const user = await User.findOne({ where: { email: context.hashedEmail }})
-      console.log(user)
       return user
     }
 },

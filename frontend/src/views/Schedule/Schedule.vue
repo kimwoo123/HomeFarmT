@@ -48,6 +48,7 @@ export default {
           }
         }`,
         update(data) {
+          console.log('update')
           let d, t, tmp, AP, s
 
           this.allSchedule = data.getSchedule
@@ -85,6 +86,7 @@ export default {
                 status: s
               }
               this.selectDaySchedule.push(tmp)
+              console.log(s, element.schedule_status)
             }
           });
         },
@@ -121,6 +123,7 @@ export default {
           }
 
           tmp = {
+            id: element.scheduleid,
             date: d[0] + '년 ' + d[1] + '월 ' + d[2] + '일',
             time: AP + t,
             title: element.schedule_title,

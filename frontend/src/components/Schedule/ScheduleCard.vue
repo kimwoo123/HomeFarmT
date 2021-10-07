@@ -53,6 +53,7 @@ export default {
           console.log(res.data.updateScheduleStatus.schedule_status)
         })
         .catch((err) => {
+          console.log(this.schedule)
           console.log(err, 'no')
         })
     }
