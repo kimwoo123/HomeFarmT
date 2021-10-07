@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       allHistory: [],
-      allDate: new Set(),
+      allDate: [],
       componentKey: 0,
     }
   },
@@ -45,9 +45,11 @@ export default {
         },
         update(data) {
           this.allHistory = data.getHistory
+          let temp = new Set()
           data.getHistory.forEach(element => {
-              this.allDate.add(element.event_time.substring(0, 10))
+              temp.add(element.event_time.substring(0, 10))
           });
+          this.allDate = (Array.from(temp)).sort()
           this.componentKey += 1
         },
     }
