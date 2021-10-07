@@ -2,8 +2,10 @@
   <div>
     <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="''" :left_push="'Schedule'" :right_push="''" />
     <div class="ScheduleNew-container">
-      <b-form-input v-model="dateTime" type="datetime-local"></b-form-input>
-      <p>{{ dateTime }}</p>
+      <p class="title">예약 일자</p>
+      <div class="date-time">
+        <b-form-input v-model="dateTime" type="datetime-local"></b-form-input>
+      </div>
 
       <p class="title">스케줄</p>
       <div class="schedule">

@@ -280,7 +280,7 @@ def save_map(node,file_path):
                             nx = x + dx
                             ny = y + dy 
                             if 0 <= nx < 350 and 0 <= ny < 350 and save_map[nx][ny] < 80:
-                                save_map[nx][ny] = 127
+                                save_map[nx][ny] = 110
     np_map_data = save_map.reshape(1, 350 * 350)
     list_map_data = np_map_data.tolist()
     node.map_msg.data = list_map_data[0]

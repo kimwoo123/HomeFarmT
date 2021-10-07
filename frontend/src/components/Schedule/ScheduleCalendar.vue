@@ -36,7 +36,6 @@ export default {
     setDate(date) {
       this.selectDay = date
       this.$emit('set-date', date)
-      console.log('asda')
     },
     scrollLeft() {
       let dayContainer = document.querySelector('#days')

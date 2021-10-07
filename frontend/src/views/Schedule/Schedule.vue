@@ -50,12 +50,14 @@ export default {
           let d, t, tmp, AP, s
 
           this.allSchedule = data.getSchedule
+          this.selectDaySchedule = []
 
           data.getSchedule.forEach(element => {
             let dt = element.schedule_time.split('T')
             d = dt[0].split('-')
             t = dt[1]
             
+            // 여기에 parseInt(d[1]) === this.selectMonth (몇월 선택했는지) 넣어주면 됨
             if (parseInt(d[2]) === this.selectDay) {
               let tt = parseInt(t.split(':')[0])
 
@@ -63,17 +65,16 @@ export default {
                 AP = '오후 '
               } else if (tt > 12) {
                 AP = '오후 '
-                t -= 12
+                tt -= 12
+                t = '0' + String(tt) + ':' + t.split(':')[1]
               } else {
                 AP = '오전 '
               }
-
               if (element.schedule_status === 'ON') {
                 s = 1
               } else {
                 s = 0
               }
-
               tmp = {
                 date: d[0] + '년 ' + d[1] + '월 ' + d[2] + '일',
                 time: AP + t,
@@ -83,8 +84,6 @@ export default {
               }
               this.selectDaySchedule.push(tmp)
             }
-            console.log(this.selectDaySchedule)
-
           });
         },
     }
@@ -92,7 +91,7 @@ export default {
   methods: {
     setDate(date) {
       this.selectDay = date
-      let d, t, tmp, AP
+      let d, t, tmp, AP, s
 
       this.selectDaySchedule = []
       this.allSchedule.forEach(element => {
@@ -107,9 +106,16 @@ export default {
             AP = '오후 '
           } else if (tt > 12) {
             AP = '오후 '
-            t -= 12
+            tt -= 12
+            t = '0' + String(tt) + ':' + t.split(':')[1]
           } else {
             AP = '오전 '
+          }
+
+          if (element.schedule_status === 'ON') {
+            s = 1
+          } else {
+            s = 0
           }
 
           tmp = {
@@ -117,7 +123,7 @@ export default {
             time: AP + t,
             title: element.schedule_title,
             desc: element.schedule_desc,
-            status: element.schedule_status
+            status: s
           }
           this.selectDaySchedule.push(tmp)
         }
