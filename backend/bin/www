@@ -40,7 +40,6 @@ io.on('connection', socket => {
         console.log(socket)
         socket.to(roomName).emit('sendSafetyStatus', message);
     });
-
     
     socket.on('PatrolStatus', (message) => {
       socket.to(roomName).emit('sendPatrolStatus', message);
@@ -71,6 +70,23 @@ io.on('connection', socket => {
 
     socket.on('turnrightToServer', (data) => {
         socket.to(roomName).emit('turnright', data);
+    });
+
+    socket.on('gobackToServer', (data) => {
+      socket.to(roomName).emit('goback', data);
+    });
+
+    socket.on('ismapopenToServer', (data) => {
+      socket.to(roomName).emit('isMapOpen', data);
+    });
+
+    // 물건 들기 놓기
+    socket.on('pickupToServer', (data) => {
+      socket.to(roomName).emit('pickup', data);
+    });
+
+    socket.on('putdownToServer', (data) => {
+      socket.to(roomName).emit('putdown', data);
     });
 
     // patrol 주행

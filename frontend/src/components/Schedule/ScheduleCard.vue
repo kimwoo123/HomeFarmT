@@ -3,34 +3,40 @@
 
     <div class="content-box">
       <div class="content">
-        <span class="title">{{ title }}</span>
-        <span class="description font-300">{{ description }}</span>
+        <span class="title">{{ schedule.title }}</span>
+        <span class="description font-300">{{ schedule.desc }}로 감시를 실행합니다.</span>
       </div>
-      <img src="@/assets/icons/switch.svg" alt="">
+      <SwitchBtn class="switch-align" @is-checked="changeStatus" :defaultValue="schedule.status" :checkboxId="idx"/>
     </div>
 
     <div class="time-box">
-      <img src="@/assets/icons/time.svg" alt="time" class="icon">
-      <span class="time">{{ time }}</span>
       <img src="@/assets/icons/calender.svg" alt="date" class="icon">
-      <span class="date">{{ date }}</span>
+      <span class="date">{{ schedule.date }}</span>
+      <img src="@/assets/icons/time.svg" alt="time" class="icon">
+      <span class="time">{{ schedule.time }}</span>
     </div>
 
   </div>
 </template>
 
 <script>
+import SwitchBtn from '@/components/common/SwitchBtn.vue'
+
 export default {
   name: 'ScheduleCard',
-  data() {
-    return {
-      title: '감시하기',
-      description: '1번 경로로 감시를 실행합니다',
-      time: '오전 9:00',
-      date: [
-        '월', '화', '수',
-      ],
-      status: true
+  components: {
+    SwitchBtn
+  },
+  props: {
+    schedule: Object,
+    idx: Number
+  },
+  methods: {
+    changeStatus(isChecked) {
+      // graphql update 로직 넣어야함
+      // 체크되었으면 true 아니면 false 반환 => db에 ON OFF로 넣어주면 됨
+      isChecked
+
     }
   }
 }

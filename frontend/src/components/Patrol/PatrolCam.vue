@@ -1,6 +1,6 @@
 <template>
   <div class="patrol-cam-container">
-    <img class="patrol-cam" src="@/assets/images/patrol.png">
+    <img class="patrol-cam">
   </div>
 </template>
 <script>

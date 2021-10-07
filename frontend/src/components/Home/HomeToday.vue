@@ -2,14 +2,10 @@
   <div>
 
     <div class="today-weather">
-      <img src="@/assets/icons/weather/sun.svg" alt="iot">
+      <img :src="this.iconURL" alt="">
       <div class="text-box">
-        <span class="today-date">{{ todayDate }}</span>
+        <span class="today-date">{{ todayDate }} | {{ region }}</span>
         <span class="weather-text">{{ weather }}</span>
-      </div>
-      <div class="text-box">
-        <span class="d">{{ region }}</span>
-        <img :src="this.iconURL" alt="">
       </div>
     </div>
 
@@ -59,11 +55,11 @@ export default {
   created() {
     const cityname = this.regionTranslate[sessionStorage.getItem('region')] ||'Daejeon'
     const APIkey = process.env.VUE_APP_WEATHER_API
-    const baseURL = `http://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`
+    const baseURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`
     axios.get(baseURL)
     .then(res => {
       const today = new Date(res.data.dt * 1000)
-      this.todayDate = today.getFullYear() + '년' + (today.getMonth() + 1) + '월' + today.getDate() + '일'
+      this.todayDate = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일 '
       this.temp = parseInt(res.data.main.temp - 273.15)
       this.humidity = res.data.main.humidity
       this.windSpeed = res.data.wind.speed

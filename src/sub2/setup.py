@@ -34,6 +34,7 @@ setup(
             'make_path_dong = sub2.make_path_dong:main',
             'patrol_client = sub2.patrol_client:main',
             'local_map_pub = sub2.local_map_pub:main',
+            'handcontrol = sub2.handcontrol:main',
         ],
     },
 )
