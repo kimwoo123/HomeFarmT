@@ -19,8 +19,8 @@ const UserSchema = gql`
   }
 
   type UserInfo {
-    email: String!
-    password: String!
+    email: String
+    password: String
     hashid: String
     map: String
     route1: String

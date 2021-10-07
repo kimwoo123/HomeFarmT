@@ -86,10 +86,16 @@ module.exports = {
       }
       const userInfo = await User.update({password: hashedPassword, hashid: salt, turtlebot, region },
         { where: { 
-          email: context.hashedEmail 
+          email: context.hashedEmail
         }
       })
-      return userInfo
+      const result = {
+        email: context.hashedEmail,
+        password: hashedPassword,
+        region: region,
+        turtlebot: turtlebot
+      }
+      return result
     },
     deleteUser: async (_, { email }) => {
       const oldUser = await User.delete({ where: { email: email }})
