@@ -14,10 +14,11 @@
         <div class="item">
           <span class="font-400">비밀번호 재입력</span>
           <input type="password" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="비밀번호 재입력">
+          <span>{{ errorMessage }}</span>
         </div>
       </div>
-
-      <button class="user-btn" @click="requestSignup()">회원가입</button>
+      <button class="user-btn" v-if="!error" @click="requestSignup()">회원가입</button>
+      <button class="user-btn-err" v-else>회원가입</button>
     </div>
   </div>
 </template>
@@ -37,11 +38,8 @@ export default {
       email: '',
       password: '',
       passwordConfirmation: '',
-      error: {
-				email: false,
-				password: false,
-				passwordConfirmation: false,
-			},
+      errorMessage: '비밀번호가 일치하지 않습니다',
+      error: true,
     }
   },
   methods:{
@@ -50,23 +48,37 @@ export default {
         mutation: gql`mutation ($email: String!, $password: String) {
           signUp(email: $email , password: $password) {
             email
-            password
+            token
           }
         }`, 
         variables: {
           email: this.email,
-          password: this.password
+          password: this.password,
         }
         })
         .then((res) => {
-          console.log(res, 'done')
+          sessionStorage.setItem('token', res.data.signUp.token)
+          sessionStorage.setItem('email', this.email)
+          this.$router.push({ name: 'Home' })
         })
         .catch((err) => {
-          console.log(err, 'no')
+          alert(err.message.split(':')[1])
         })
       },
-    },
+  },
+  watch: {
+    passwordConfirmation() {
+      if (this.passwordConfirmation && (this.password === this.passwordConfirmation)) {
+        this.errorMessage = ''
+        this.error = false
+      } else {
+        this.errorMessage = '비밀번호가 일치하지 않습니다'
+        this.error = true
+      }
+    }
   }
+  }
+
 </script>
 
 <style lang="scss" scoped>

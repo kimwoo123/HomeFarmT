@@ -7,7 +7,7 @@ const UserSchema = gql`
   }
 
   type Mutation {
-    signUp(email: String, password: String): User
+    signUp(email: String, password: String): Token
     login(email: String, password: String): Token
     updateUser(password: String, turtlebot: String, region: String): UserInfo
     deleteUser(email: String, password: String): User
