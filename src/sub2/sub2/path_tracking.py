@@ -113,7 +113,7 @@ class followTheCarrot(Node):
                     self.cmd_msg.angular.z = out_rad_vel
 
                     if self.collision == True :
-                        self.cmd_msg.linear.x = 0.3
+                        self.cmd_msg.linear.x = 0.2
 
             else :
                 self.cmd_msg.linear.x = 0.0
