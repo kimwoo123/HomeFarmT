@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="''" :left_push="'Schedule'" :right_push="''" />
+    <Navbar :title="nowMonth + '월 스케줄'" :left_icon="true" :right_text="''" :left_push="'Schedule'" :right_push="''" />
     <div class="ScheduleNew-container">
       <p class="title">예약 일자</p>
       <div class="date-time">
@@ -56,6 +56,7 @@ export default {
   },
   data() {
     return {
+      nowMonth: new Date().getMonth() + 1,
       dateTime: '',
       title: '',
       description: '',

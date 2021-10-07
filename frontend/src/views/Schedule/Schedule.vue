@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'ScheduleNew'" />
+    <Navbar :title="nowMonth + '월 스케줄'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'ScheduleNew'" />
     <div class="schedule-container">
       <ScheduleCalendar @set-date="setDate"/>
       <ScheduleCard v-for="(schedule, idx) in selectDaySchedule" :key="idx" :schedule="schedule" :idx="idx"/>
@@ -29,6 +29,7 @@ export default {
   },
   data() {
     return {
+      nowMonth: new Date().getMonth() + 1,
       allSchedule: [],
       selectDay: todayGetDate,
       selectDaySchedule: [],
@@ -76,6 +77,7 @@ export default {
                 s = 0
               }
               tmp = {
+                id: element.scheduleid,
                 date: d[0] + '년 ' + d[1] + '월 ' + d[2] + '일',
                 time: AP + t,
                 title: element.schedule_title,

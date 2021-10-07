@@ -8,7 +8,7 @@
       </div>
       <SwitchBtn class="switch-align" @is-checked="changeStatus" :defaultValue="schedule.status" :checkboxId="idx"/>
     </div>
-
+    <button @click="test()">여기다</button>
     <div class="time-box">
       <img src="@/assets/icons/calender.svg" alt="date" class="icon">
       <span class="date">{{ schedule.date }}</span>
@@ -21,6 +21,7 @@
 
 <script>
 import SwitchBtn from '@/components/common/SwitchBtn.vue'
+import gql from 'graphql-tag'
 
 export default {
   name: 'ScheduleCard',
@@ -32,11 +33,34 @@ export default {
     idx: Number
   },
   methods: {
+    test() {
+      console.log(this.schedule.id)
+    },
     changeStatus(isChecked) {
-      // graphql update 로직 넣어야함
-      // 체크되었으면 true 아니면 false 반환 => db에 ON OFF로 넣어주면 됨
-      isChecked
-
+      console.log(isChecked)
+      this.$apollo.mutate({
+        mutation: gql`mutation ($updateScheduleStatus: String $updateScheduleId: Int) {
+          updateScheduleStatus(
+            scheduleid: $updateScheduleId
+            schedule_status: $updateScheduleStatus
+            ) {
+              scheduleid
+              schedule_status
+            }
+          }
+        `, 
+        variables: {
+          updateScheduleId: this.schedule.id,
+          updateScheduleStatus: isChecked ? 'ON' : 'OFF'
+        }
+        })
+        .then((res) => {
+          console.log(res, 'done')
+          // window.location.reload()
+        })
+        .catch((err) => {
+          console.log(err, 'no')
+        })
     }
   }
 }

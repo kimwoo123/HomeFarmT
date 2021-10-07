@@ -8,7 +8,7 @@ const ScheduleSchema = gql`
 
   type Mutation {
     createSchedule(schedule_time: String, schedule_title: String, schedule_desc: String, schedule_status: String): Schedule
-    updateSchedule(schedule_time: String): Schedule
+    updateScheduleStatus(scheduleid: Int, schedule_status: String): Schedule
     deleteSchedule(schedule_time: String): Schedule
   }
   
