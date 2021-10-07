@@ -41,12 +41,17 @@ module.exports = {
        })
       return newSchedule
     },
-    updateSchedule: async (_, { scheduleid, schedule_time }) => {
-      await Schedule.update({ schedule_time: schedule_time }, {
+    updateScheduleStatus: async (_, { scheduleid, schedule_status }) => {
+      await Schedule.update({ schedule_status: schedule_status }, {
         where: {
           scheduleid: scheduleid
         }
       })
+      const result = {
+        scheduleid: scheduleid,
+        schedule_status: schedule_status
+      }
+      return result
     },
     deleteSchedule: async (_, { scheduleid }) => {
       await Schedule.destroy({ where: { scheduleid }})

@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <Navbar :title="'로그인'" :left_icon="false" :right_text="''" style="color: white;"/>
+    <Navbar :title="'로그인'" :left_icon="true" :right_text="''" style="color: white;"/>
     <div class="login-container">
       <div class="input-container">
         <div class="item">
@@ -56,20 +56,20 @@ export default {
             region
             token
           }
-        }`,
+        }`, 
         variables: {
           email: this.email,
           password: this.password
         }
         })
         .then((res) => {
-          console.log(res.data)
-          localStorage.setItem('token', res.data.login.token)
+          sessionStorage.setItem('token', res.data.login.token)
           sessionStorage.setItem('email', this.email)
           sessionStorage.setItem('region', res.data.login.region)
+          this.$router.push({ name: 'Home'})
         })
         .catch((err) => {
-          console.log(err, 'no')
+          alert(err.message.split(':')[1])
         })
       },
     },

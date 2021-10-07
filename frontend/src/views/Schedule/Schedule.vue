@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar :title="'10월 스케줄'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'ScheduleNew'" />
+    <Navbar :title="nowMonth + '월 스케줄'" :left_icon="true" :right_text="'추가'" :left_push="'Home'" :right_push="'ScheduleNew'" />
     <div class="schedule-container">
       <ScheduleCalendar @set-date="setDate"/>
       <ScheduleCard v-for="(schedule, idx) in selectDaySchedule" :key="idx" :schedule="schedule" :idx="idx"/>
@@ -29,6 +29,7 @@ export default {
   },
   data() {
     return {
+      nowMonth: new Date().getMonth() + 1,
       allSchedule: [],
       selectDay: todayGetDate,
       selectDaySchedule: [],
@@ -47,9 +48,11 @@ export default {
           }
         }`,
         update(data) {
+          console.log('update')
           let d, t, tmp, AP, s
 
           this.allSchedule = data.getSchedule
+          this.selectDaySchedule = []
 
           data.getSchedule.forEach(element => {
             let dt = element.schedule_time.split('T')
@@ -64,18 +67,18 @@ export default {
                 AP = '오후 '
               } else if (tt > 12) {
                 AP = '오후 '
-                t -= 12
+                tt -= 12
+                t = '0' + String(tt) + ':' + t.split(':')[1]
               } else {
                 AP = '오전 '
               }
-
               if (element.schedule_status === 'ON') {
                 s = 1
               } else {
                 s = 0
               }
-
               tmp = {
+                id: element.scheduleid,
                 date: d[0] + '년 ' + d[1] + '월 ' + d[2] + '일',
                 time: AP + t,
                 title: element.schedule_title,
@@ -83,9 +86,8 @@ export default {
                 status: s
               }
               this.selectDaySchedule.push(tmp)
+              console.log(s, element.schedule_status)
             }
-            console.log(this.selectDaySchedule)
-
           });
         },
     }
@@ -93,7 +95,7 @@ export default {
   methods: {
     setDate(date) {
       this.selectDay = date
-      let d, t, tmp, AP
+      let d, t, tmp, AP, s
 
       this.selectDaySchedule = []
       this.allSchedule.forEach(element => {
@@ -108,17 +110,25 @@ export default {
             AP = '오후 '
           } else if (tt > 12) {
             AP = '오후 '
-            t -= 12
+            tt -= 12
+            t = '0' + String(tt) + ':' + t.split(':')[1]
           } else {
             AP = '오전 '
           }
 
+          if (element.schedule_status === 'ON') {
+            s = 1
+          } else {
+            s = 0
+          }
+
           tmp = {
+            id: element.scheduleid,
             date: d[0] + '년 ' + d[1] + '월 ' + d[2] + '일',
             time: AP + t,
             title: element.schedule_title,
             desc: element.schedule_desc,
-            status: element.schedule_status
+            status: s
           }
           this.selectDaySchedule.push(tmp)
         }

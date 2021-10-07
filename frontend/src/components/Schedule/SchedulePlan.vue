@@ -66,6 +66,10 @@ export default {
             schedule_time
           }
         }`,
+        error() {
+          alert('로그인이 필요한 페이지입니다')
+          this.$router.push({ name: 'Login' })
+        },
         update(data) {
           console.log(data)
           const todayDateTmp = new Date(this.date - timezoneOffset).toISOString().substring(0, 10)

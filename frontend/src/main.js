@@ -42,7 +42,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
-let token = localStorage.getItem('token') || 'pro'
+let token = sessionStorage.getItem('token') || 'pro'
 const setAuthorizationLink = setContext(() => ({
   headers: {
     authorization: token

@@ -22,7 +22,7 @@ const routes = [
     name: 'Signup',
     component: Signup,
     meta: {
-      title: '으라차차 회원가입'
+      title: '홈팜티 | 회원가입'
     }
   },
   {
@@ -30,7 +30,15 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: {
-      title: '으라차차 로그인'
+      title: '홈팜티 | 로그인'
+    },
+    beforeEnter: (to, from, next) => {
+      if (sessionStorage.getItem('token')) {
+        alert('이미 로그인 된 유저입니다')
+        next("/home")
+      } else {
+        next()
+      }
     }
   },
   {
@@ -38,7 +46,15 @@ const routes = [
     name: 'My',
     component: My,
     meta: {
-      title: '으라차차 회원정보'
+      title: '홈팜티 | 회원정보'
+    },
+    beforeEnter: (to, from, next) => {
+      if (sessionStorage.getItem('token')) {
+        next()
+      } else {
+        alert('로그인이 필요합니다')
+        next("/login")
+      }
     }
   },
   {
@@ -46,7 +62,7 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      title: '으라차차!'
+      title: '홈팜티'
     }
   },
   // iot
@@ -55,7 +71,7 @@ const routes = [
     name: 'IoT',
     component: () => import('../views/IoT/IoT.vue'),
     meta: {
-      title: '으라차차 IoT'
+      title: '홈팜티 | 사물조작'
     }
   },
   {
@@ -63,7 +79,7 @@ const routes = [
     name: 'IoTNew',
     component: () => import('../views/IoT/IoTNew.vue'),
     meta: {
-      title: '으라차차 IoTNew'
+      title: '홈팜티 | 사물조작'
     }
   },
   // schedule
@@ -72,7 +88,15 @@ const routes = [
     name: 'Schedule',
     component: () => import('../views/Schedule/Schedule.vue'),
     meta: {
-      title: '으라차차 일정'
+      title: '홈팜티 | 일정'
+    },
+    beforeEnter: (to, from, next) => {
+      if (sessionStorage.getItem('token')) {
+        next()
+      } else {
+        alert('로그인이 필요합니다')
+        next("/login")
+      }
     }
   },
   {
@@ -80,7 +104,7 @@ const routes = [
     name: 'ScheduleNew',
     component: () => import('../views/Schedule/ScheduleNew.vue'),
     meta: {
-      title: '으라차차 일정'
+      title: '홈팜티 | 일정'
     }
   },
   // patrol
@@ -89,7 +113,7 @@ const routes = [
     name: 'Patrol',
     component: () => import('../views/Patrol/Patrol.vue'),
     meta: {
-      title: '으라차차 순찰'
+      title: '홈팜티 | 순찰'
     }
   },
   {
@@ -97,7 +121,7 @@ const routes = [
     name: 'PatrolSetting',
     component: () => import('../views/Patrol/PatrolSetting.vue'),
     meta: {
-      title: '으라차차 순찰'
+      title: '홈팜티 | 순찰'
     }
   },
   // control 
@@ -106,7 +130,7 @@ const routes = [
     name: 'Control',
     component: () => import('../views/Control/Control.vue'),
     meta: {
-      title: '으라차차 조작'
+      title: '홈팜티 | 조작'
     }
   },
   // history
@@ -115,7 +139,7 @@ const routes = [
     name: 'History',
     component: History,
     meta: {
-      title: '으라차차 감시'
+      title: '홈팜티 | 감시'
     }
   },
 ]
@@ -127,7 +151,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = to.meta.title || '으라차차!'
+  document.title = to.meta.title || '홈팜티'
   next()
 })
 
