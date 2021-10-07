@@ -3,7 +3,7 @@
     <font-awesome-icon icon="chevron-up" class="item shadows" @mousedown="btn_go_straight" @mouseup="stop_interval"/>
     <div class="group">
       <font-awesome-icon icon="chevron-left" class="item shadows" @mousedown="btn_turn_left" @mouseup="stop_interval"/>
-      <font-awesome-icon icon="chevron-down" class="item shadows"/>
+      <font-awesome-icon icon="chevron-down" class="item shadows" @mousedown="btn_back_straight" @mouseup="stop_interval"/>
       <font-awesome-icon icon="chevron-right" class="item shadows"  @mousedown="btn_turn_right" @mouseup="stop_interval"/>
     </div>
   </div>
@@ -43,6 +43,13 @@ export default {
       let data = 3;
       this.inter = setInterval(() => {
         this.$socket.emit('turnrightToServer', data);
+      }, 100)
+    },
+    btn_back_straight() {
+      console.log('btn_go_back');
+      let data = 4;
+      this.inter = setInterval(() => {
+        this.$socket.emit('gobackToServer', data);
       }, 100)
     },
     stop_interval() {

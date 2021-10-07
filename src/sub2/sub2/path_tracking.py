@@ -118,7 +118,6 @@ class followTheCarrot(Node):
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
 
-
             self.cmd_pub.publish(self.cmd_msg)
 
     def odom_callback(self, msg):
@@ -144,12 +143,8 @@ class followTheCarrot(Node):
         
 def main(args=None):
     rclpy.init(args=args)
-
     path_tracker = followTheCarrot()
-
     rclpy.spin(path_tracker)
-
-
     path_tracker.destroy_node()
     rclpy.shutdown()
 

@@ -23,6 +23,7 @@
   font-size: 14px;
   color: $darkgray;
   cursor: pointer;
+  transition: 0.2s;
   &:active {
     color: $primary;
   }
@@ -32,4 +33,5 @@
   border-bottom: 3px solid $primary;
   color: $primary;
   font-family: 'Pretendard-SemiBold';
+  transition: 0.3s;
 }

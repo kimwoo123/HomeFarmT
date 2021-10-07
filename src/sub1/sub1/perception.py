@@ -30,7 +30,7 @@ class IMGParser(Node):
 
         self.subscription = self.create_subscription(
             CompressedImage,
-            '/image_jpeg/compressed',
+            '/image_jpeg/compressed/right',
             self.img_callback,
             10)
         

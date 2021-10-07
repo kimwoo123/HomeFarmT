@@ -5,7 +5,6 @@ import os
 from geometry_msgs.msg import Pose,PoseStamped
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,OccupancyGrid,MapMetaData,Path
-from sub2.grid_node import grid_node
 from collections import deque
 from queue import PriorityQueue
 import time
@@ -62,7 +61,6 @@ class a_star(Node):
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
 
 
-        print(self.grid_cell_to_pose((150, 100)))
     def grid_update(self):
         self.is_grid_update = True
         '''
@@ -111,7 +109,6 @@ class a_star(Node):
         
 
     def goal_callback(self, msg):
-        print(msg)
         if msg.header.frame_id == 'map':
             '''
             로직 6. goal_pose 메시지 수신하여 목표 위치 설정
@@ -331,7 +328,6 @@ class a_star(Node):
         openlist = []
         cnt = 0
         found = False
-        cost_so_far = dict()
         heappush(openlist, [0, start[0], start[1]])
         while openlist:
             current = heappop(openlist)

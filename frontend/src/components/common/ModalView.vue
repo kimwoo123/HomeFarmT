@@ -36,7 +36,6 @@
   font-size: 18px;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 16px;
   color: $gray;
   cursor: pointer
 }

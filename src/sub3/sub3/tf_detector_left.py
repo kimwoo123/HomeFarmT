@@ -68,15 +68,16 @@ params_cam = {
     "HEIGHT": 240, # image height
     "FOV": 60, # Field of view
     "localIP": "127.0.0.1",
-    "localPort": 1232,
+    "localPort": 1332,
     "Block_SIZE": int(65000),
     "X": 0, # meter
     "Y": 0,
     "Z": 0.23,
-    "YAW": 0, # deg
+    "YAW": 90, # deg
     "PITCH": 0,
     "ROLL": 0
 }
+
 
 
 global img_bgr, xyz
@@ -301,11 +302,11 @@ def main(args=None):
 
     g_node = rclpy.create_node('tf_detector')
 
-    subscription_img = g_node.create_subscription(CompressedImage, '/image_jpeg/compressed/front', img_callback, 3)
+    subscription_img = g_node.create_subscription(CompressedImage, '/image_jpeg/compressed/left', img_callback, 3)
 
     subscription_scan = g_node.create_subscription(LaserScan, '/scan', scan_callback, 3)
 
-    publisher_object_distance = g_node.create_publisher(String, '/object_distance/front', 5)
+    publisher_object_distance = g_node.create_publisher(String, '/object_distance/left', 5)
 
     # subscription_scan
 

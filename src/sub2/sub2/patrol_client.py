@@ -10,8 +10,8 @@ from math import pi, cos, sin, sqrt, atan2
 
 sio = socketio.Client()
 
-global auto_switch, m_control_cmd
-auto_switch,m_control_cmd = 0, 0
+global auto_switch, m_control_cmd, is_open_map
+auto_switch,m_control_cmd, is_open_map = 0, 0, 0
 
 @sio.event
 def connect():
@@ -36,18 +36,28 @@ def turn_right(data):
     global m_control_cmd
     m_control_cmd = data
 
+@sio.on('goback')
+def go_back(data):
+    global m_control_cmd
+    m_control_cmd = data
+
 @sio.on('patrolOn')
 def patrol_on(data):
     global auto_switch
     auto_switch = data
 
 @sio.on('patrolOff')
-def patrol_on(data):
+def patrol_off(data):
     global auto_switch
     auto_switch = data
 
+@sio.on('isMapOpen')
+def is_map_open(data):
+    global is_open_map
+    is_open_map = data
+
 def get_global_var():
-    return m_control_cmd, auto_switch
+    return m_control_cmd, auto_switch, is_open_map
 
 def reset_global_var():
     global m_control_cmd
@@ -59,10 +69,10 @@ class PatrolCtrlFromServer(Node):
         super().__init__('Patrol_client')
 
         self.cmd_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
-        self.cmd_msg = Twist()
-
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.path_sub = self.create_subscription(Path, '/global_path', self.path_callback, 10)
+
+        self.cmd_msg = Twist()
 
         self.timer_period = 0.05
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
@@ -88,8 +98,13 @@ class PatrolCtrlFromServer(Node):
         self.is_path = True
         self.path_msg = msg
 
+    # 이동제어
     def turtlebot_go(self):
         self.cmd_msg.linear.x = 0.5
+        self.cmd_msg.angular.z = 0.0
+
+    def turtlebot_back(self):
+        self.cmd_msg.linear.x = -0.5
         self.cmd_msg.angular.z = 0.0
 
     def turtlebot_stop(self):
@@ -129,7 +144,9 @@ class PatrolCtrlFromServer(Node):
         self.check_1_wp = True
         
     def timer_callback(self):
-        ctrl_cmd, auto_switch = get_global_var()
+        ctrl_cmd, auto_switch, open_map = get_global_var()
+    
+        if open_map: return
 
         # auto patrol mode off
         if auto_switch == 0:
@@ -143,6 +160,9 @@ class PatrolCtrlFromServer(Node):
             # turn right
             elif ctrl_cmd == 3:
                 self.turtlebot_cw_rot()
+            # go back
+            elif ctrl_cmd == 4:
+                self.turtlebot_back()
             # stop
             else:
                 self.turtlebot_stop()
