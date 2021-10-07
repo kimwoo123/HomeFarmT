@@ -8,7 +8,7 @@
 
     <div class="history-card shadows">
       
-      <div v-if="pic && !picBig" @click="picBig=true" class="small-card">
+      <div v-if="history.event_img && !picBig" @click="picBig=true" class="small-card">
         <div>
           <p class="title">{{ history.event_title }}</p>
           <p class="description">{{ history.event_desc }}</p>   
@@ -16,7 +16,7 @@
         <img :src="`${ history.event_img }`" alt="" class="small-pic">
       </div>
       
-      <div v-else-if="pic && picBig" @click="picBig=false" class="big-card">
+      <div v-else-if="history.event_img && picBig" @click="picBig=false" class="big-card">
         <div>
           <p class="title">{{ history.event_title }}</p>
           <p class="description">{{ history.event_desc }}</p>  
