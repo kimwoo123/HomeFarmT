@@ -3,7 +3,7 @@
     <font-awesome-icon icon="chevron-left" class="icon" @click="scrollLeft"/>
     <div class="calendar">
       <div class="day-container" id="days">
-        <div v-for="(day, index) in 31" :key="index" @click="setDate(day)">
+        <div v-for="(day, index) in lastDate" :key="index" @click="setDate(day)">
           <div class="day font-400" :class="{'day-active' : selectDay === day}">
             {{ day }}
           </div>
@@ -19,13 +19,15 @@
 <script>
 
 let today = new Date()
+let nextDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 let todayGetDate = today.getDate()
 export default {
   name: 'ScheduleCalendar',
   data() {
     return {
       todayDay: todayGetDate,
-      selectDay: todayGetDate
+      selectDay: todayGetDate,
+      lastDate: nextDate.getDate()
     }
   },
   mounted() {

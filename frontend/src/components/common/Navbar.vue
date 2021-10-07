@@ -22,6 +22,9 @@ export default {
     right_text: String,
     right_push: String,
   },
+  data() {
+    return {}
+  }
 }
 </script>
 

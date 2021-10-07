@@ -56,7 +56,7 @@ export default {
             region
             token
           }
-        }`,
+        }`, 
         variables: {
           email: this.email,
           password: this.password
