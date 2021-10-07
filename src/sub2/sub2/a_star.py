@@ -147,7 +147,7 @@ class a_star(Node):
                     self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
                     self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
                     # self.dijkstra(start_grid_cell)
-                    self.A_star_dong(start_grid_cell)
+                    self.A_star_dam(start_grid_cell)
 
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
