@@ -56,6 +56,7 @@ export default {
             d = dt[0].split('-')
             t = dt[1]
             
+            // 여기에 parseInt(d[1]) === this.selectMonth (몇월 선택했는지) 넣어주면 됨
             if (parseInt(d[2]) === this.selectDay) {
               let tt = parseInt(t.split(':')[0])
 
