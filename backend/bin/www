@@ -36,8 +36,6 @@ io.on('connection', socket => {
 
     // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
     socket.on('safety_status', (message) => {
-        console.log(message)
-        console.log(socket)
         socket.to(roomName).emit('sendSafetyStatus', message);
     });
     

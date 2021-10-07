@@ -3,6 +3,7 @@
     <canvas class="map-canvas-path" id="map-path" @click="clickMap" width="350" height="350"></canvas>
     <canvas class="map-canvas-pos" id="map-pos" width="350" height="350"></canvas>
     <canvas class="map-canvas-grid" id="map-grid" width="350" height="350"></canvas>
+    <canvas class="map-canvas-application" width="350" height="350"></canvas>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -20,7 +21,11 @@ export default {
     size: {
       type: String,
       default: '150',
-    }
+    },
+    isPatrol: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -28,21 +33,36 @@ export default {
       isProcessing: false,
       isTaken: false,
       isMapUpdated: false,
+      start: [-1, -1],
+      end: [-1, -1],
       pastX: null,
       pastY: null,
       mapData: null,
+      appPos: {
+        tv: [155, 129],
+        air: [232, 97] 
+      }
     }
   },
   mounted() {
     const canvasTag = document.querySelector('#map-grid')
     const posCanvasTag = document.querySelector('#map-pos')
+    const appCanvasTag = document.querySelector('.map-canvas-application')
     const context = canvasTag.getContext('2d')
     const posContext = posCanvasTag.getContext('2d')
+    const appContext = appCanvasTag.getContext('2d')
     const imageData = context.createImageData(350, 350)
     const posImageData = posContext.createImageData(350, 350)
     const w = 350
     const h = 350
-    
+
+    for (let app in this.appPos) {
+      const [x, y] = this.appPos[app]
+      appContext.font = 'bold 20px serif'
+      appContext.fillStyle = 'black'
+      appContext.fillText(app, x, y)
+    }
+
     this.$socket.on('turtleBotPos', message => {
       if (!this.isMapUpdated) return
       const data = JSON.parse(message)
@@ -127,26 +147,26 @@ export default {
       const x = Math.round(event.layerX * widthRatio)
       const y = Math.round(event.layerY * heightRatio)
       
-      if (!this.isClicked) {
+      if (!this.isClicked && this.isPatrol) {
         this.start = [x, y]
         this.isClicked = true
         posContext.font = '20px serif bold'
         posContext.fillStyle = 'green'
         posContext.fillText('START', x - 5, y - 5)
         posContext.fillRect(x, y, 5, 5)
-      } else if (this.isClicked) {
+      } else if (this.isClicked || !this.isPatrol) {
         this.isProcessing = true
         this.end = [x, y]
         posContext.font = '20px serif bold'
         posContext.fillStyle = 'black'
         posContext.fillText('END', x - 5, y - 5)
         posContext.fillRect(x, y, 5, 5)
-        this.$socket.emit('requestPath',{
-          data: {
+        const data = {
             start: this.start,
             end: this.end,
-          }
-        })
+            patrol: this.isPatrol,
+        }
+        this.$socket.emit('requestPath', data)
       }
     },
   },

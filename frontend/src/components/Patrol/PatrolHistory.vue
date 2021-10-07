@@ -7,10 +7,10 @@
     <div class="history-box">
       <font-awesome-icon icon="chevron-left" class="icon"/>
       <div class="history-content">
-        <img src="@/assets/images/patrol.png" alt="anormal image" class="history-img">
+        <img src="@/assets/anormal/anormal.jpg" :onload="imageLoad()" alt="anormal image" class="history-img">
         <div class="text-content">
-          <span class="date font-300">2021년 3월 7일</span>
-          <span class="date font-300">11시 20분</span>
+          <span class="date font-300">{{ date }}</span>
+          <span class="date font-300">{{ time }}</span>
           <span class="anormal-text">침입자 발견</span>
         </div> 
       </div>
@@ -21,7 +21,22 @@
 
 <script>
 export default {
-
+  name: 'PatrolHistory',
+  data() {
+    return {
+      date: '',
+      time: '',
+    }
+  },
+  methods: {
+    imageLoad() {
+      const now = new Date()
+      const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000
+      const todayDateTmp = new Date(now - timezoneOffset).toISOString().substring(0, 10)
+      this.date = todayDateTmp
+      this.time = now.getHours() + '시 ' + now.getMinutes() + '분'
+    }
+  }
 }
 </script>
 
