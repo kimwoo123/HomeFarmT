@@ -3,17 +3,17 @@
 
     <div class="content-box">
       <div class="content">
-        <span class="title">{{ title }}</span>
-        <span class="description font-300">{{ description }}</span>
+        <span class="title">{{ schedule.title }}</span>
+        <span class="description font-300">{{ schedule.desc }}로 감시를 실행합니다.</span>
       </div>
-      <SwitchBtn class="switch-align"/>
+      <SwitchBtn class="switch-align" @is-checked="changeStatus" :defaultValue="schedule.status" :checkboxId="idx"/>
     </div>
 
     <div class="time-box">
       <img src="@/assets/icons/calender.svg" alt="date" class="icon">
-      <span class="date">{{ date }}</span>
+      <span class="date">{{ schedule.date }}</span>
       <img src="@/assets/icons/time.svg" alt="time" class="icon">
-      <span class="time">{{ time }}</span>
+      <span class="time">{{ schedule.time }}</span>
     </div>
 
   </div>
@@ -27,13 +27,13 @@ export default {
   components: {
     SwitchBtn
   },
-  data() {
-    return {
-      title: '감시하기',
-      description: '1번 경로로 감시를 실행합니다',
-      time: '오전 9:00',
-      date: '2021년 10월 7일',
-      status: true
+  props: {
+    schedule: Object,
+    idx: Number
+  },
+  methods: {
+    changeStatus() {
+      // graphql update 로직 넣어야함
     }
   }
 }
