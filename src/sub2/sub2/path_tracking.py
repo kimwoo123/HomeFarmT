@@ -33,6 +33,7 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
+        self.collision_sub = self.create_subscription(Bool,'/collision', self.collision_callback,10)
 
         time_period = 0.05
         self.timer = self.create_timer(time_period, self.timer_callback)
@@ -41,7 +42,7 @@ class followTheCarrot(Node):
         self.is_path = False
         self.is_status = False
         self.cnt = 0
-
+        self.collision = False
         self.odom_msg = Odometry()            
         self.path_msg = Path()
         self.cmd_msg = Twist()
@@ -54,12 +55,15 @@ class followTheCarrot(Node):
         # thread = threading.Thread(target=self.timer_callback)
         # thread.daemon = True 
         # thread.start()
+    def collision_callback (self, msg) : 
+        self.collision = msg.data
 
     def timer_callback(self):
+        
 
         if self.is_status and self.is_odom == True and self.is_path == True:
 
-
+            
             if len(self.path_msg.poses)> 1:
                 self.cnt = 0
                 self.is_look_forward_point= False
@@ -106,15 +110,14 @@ class followTheCarrot(Node):
                     out_rad_vel = theta
 
                     self.cmd_msg.linear.x = out_vel
-                    self.cmd_msg.angular.z = out_rad_vel                    
+                    self.cmd_msg.angular.z = out_rad_vel
+
+                    if self.collision == True :
+                        self.cmd_msg.linear.x = 0.15
 
             else :
-                self.cnt += 1
                 self.cmd_msg.linear.x = 0.0
                 self.cmd_msg.angular.z = 0.0
-                # if self.cnt >= 10:
-                #     self.cnt = 0
-                #     self.is_path = False
 
             self.cmd_pub.publish(self.cmd_msg)
 
