@@ -302,7 +302,7 @@ def main(args=None):
 
     subscription_scan = g_node.create_subscription(LaserScan, '/scan', scan_callback, 3)
 
-    publisher_object_distance = g_node.create_publisher(String, '/object_distance/front', 5)
+    publisher_object_distance = g_node.create_publisher(String, '/object_distance', 5)
 
     # subscription_scan
 
@@ -418,8 +418,9 @@ def main(args=None):
                     image_process = draw_pts_img(image_process, xy_i[:, 0].astype(np.int32), xy_i[:, 1].astype(np.int32))
 
                     # print(ostate_list)
-
-                    
+                    # x, y
+                    # 잡초고 제일 짧은애
+                    # (x, y)좌표
                     for k, vlist in object_distance.items():
                         obj_dist += str(k)
                         for v in vlist:

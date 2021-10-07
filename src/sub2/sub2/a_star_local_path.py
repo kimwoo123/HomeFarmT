@@ -4,11 +4,12 @@ from geometry_msgs.msg import PoseStamped, Pose
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from nav_msgs.msg import Odometry,Path,OccupancyGrid,MapMetaData
 import numpy as np
 from collections import deque
 import threading
+from heapq import heappop, heappush
 # a_star_local_path 노드는 a_star 노드에서 나오는 전역경로(/global_path)를 받아서, 로봇이 실제 주행하는 지역경로(/local_path)를 publish 하는 노드입니다.
 # path_pub 노드와 하는 역할은 비슷하나, path_pub은 텍스트를 읽어서 global_path를 지역경로를 생성하는 반면, a_star_local_path는 global_path를 다른 노드(a_star)에서 받아서 지역경로를 생성합니다.
 
@@ -31,6 +32,8 @@ class astarLocalpath(Node):
         self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
         self.collision_pub = self.create_publisher(Bool, 'collision', 10)
+
+        self.subscription = self.create_subscription(String,'object_distance', self.weed_callback, 10)
 
         self.map_size_x = 350 
         self.map_size_y = 350
@@ -56,6 +59,18 @@ class astarLocalpath(Node):
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
+    def weed_callback (self, msg) :
+        object_list = msg.data.split('/')
+        if object_list:
+            detection = []
+            for obj in object_list:
+                info = obj.split('-')
+                if info[0] == 'weed':
+                    for dist in info[1:]:
+                        detection.append([float(dist), info[0]])
+
+            detection.sort()
+            print(detection)
 
     def local_map_callback(self, msg) :
         m = np.array(msg.data)
@@ -116,60 +131,115 @@ class astarLocalpath(Node):
         # else :
         #     self.goal = self.pose_to_grid_cell(self.global_path_msg.poses[lenth - 1].pose.position.x, self.global_path_msg.poses[lenth - 1].pose.position.y)
 
+        
 
+        # print('로컬패스 생성!!! 다익스트라!!! 빠크')
+        # local_path_msg = Path()
+        # local_path_msg.header.frame_id='/map'
+        # self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+        # self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        # self.final_path=[]
+        # x = self.odom_msg.pose.pose.position.x
+        # y = self.odom_msg.pose.pose.position.y
+        # start = self.pose_to_grid_cell(x, y)
+        # Q = deque()
+        # print('start : ', start)
+        # print('goal : ', self.goal)
+        # Q.append(start)
+        # self.cost[start[0]][start[1]] = 1
+        # found = False
+        # cnt = 0
+        # visited = dict()
+        # visited[(start[0], start[1])] = True
 
-        print('로컬패스 생성!!! 다익스트라!!! 빠크')
-        local_path_msg = Path()
-        local_path_msg.header.frame_id='/map'
-        self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
-        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
-        self.final_path=[]
+        # while Q : # while Q:
+        #     current = Q.popleft()
+        #     cnt += 1
+        #     if found :
+        #         break
+        #     for i in range(8) :
+        #         next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+        #         if visited.get((next[0], next[1]), False) : 
+        #             continue
+        #         if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+        #             if self.grid[next[0]][next[1]] < 100 :
+        #                 if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+        #                     Q.append(next)
+        #                     self.path[next[0]][next[1]] = current
+        #                     self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+        #                     visited[(next[0], next[1])] = True
+        #                     if next[0] == self.goal[0] and next[1] == self.goal[1]:
+        #                         found = True
+            
+        # print(found)
+        # if found == False :
+        #     print('들어왔다고 펄스!')
+        #     print(self.grid[self.goal[0]][self.goal[1]])
+        #     return
+        # node = self.goal
+        
+        # while node != start :
+        #     nextNode = node
+        #     self.final_path.append(nextNode)
+        #     node = self.path[nextNode[0]][nextNode[1]]
+        # print('다익스트라 cnt : ', cnt)
+
+        # cnt = 0
+        # local_path_msg = Path()
+        # local_path_msg.header.frame_id = '/map'
+        # size = 0
+        # for grid_cell in reversed(self.final_path) :
+        #     waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
+        #     tmp_pose = PoseStamped()
+        #     tmp_pose.pose.position.x = waypoint_x
+        #     tmp_pose.pose.position.y = waypoint_y
+        #     tmp_pose.pose.orientation.w = 1.0
+        #     local_path_msg.poses.append(tmp_pose)
+
+        # self.collision_msg.data = False
+        # self.collision_pub.publish(self.collision_msg)
+        # self.local_path_pub.publish(local_path_msg)
+
         x = self.odom_msg.pose.pose.position.x
         y = self.odom_msg.pose.pose.position.y
         start = self.pose_to_grid_cell(x, y)
-        Q = deque()
-        print('start : ', start)
-        print('goal : ', self.goal)
-        Q.append(start)
-        self.cost[start[0]][start[1]] = 1
-        found = False
+        cost_so_far = { (start[0], start[1]): 0, }
+        self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+        self.final_path=[]
+        openlist = []
         cnt = 0
-        visited = dict()
-        visited[(start[0], start[1])] = True
-
-        while Q : # while Q:
-            current = Q.popleft()
+        found = False
+        heappush(openlist, [0, start[0], start[1]])
+        while openlist:
+            current = heappop(openlist)
             cnt += 1
-            if found :
+            if current[1] == self.goal[0] and current[2] == self.goal[1]:
+                found = True
                 break
-            for i in range(8) :
-                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-                if visited.get((next[0], next[1]), False) : 
-                    continue
-                if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                    if self.grid[next[0]][next[1]] < 100 :
-                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
-                            Q.append(next)
-                            self.path[next[0]][next[1]] = current
-                            self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
-                            visited[(next[0], next[1])] = True
-                            if next[0] == self.goal[0] and next[1] == self.goal[1]:
-                                found = True
-            
-        print(found)
-        if found == False :
-            print('들어왔다고 펄스!')
-            print(self.grid[self.goal[0]][self.goal[1]])
-            return
-        node = self.goal
-        
+
+            for i in range(8):
+                nx = current[1] + self.dx[i]
+                ny = current[2] + self.dy[i]
+
+                if 0 <= nx < self.GRIDSIZE and 0 <= ny < self.GRIDSIZE and self.grid[nx][ny] < 100:
+                    heuristic = int(sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))) * 2
+                    cur_cost = cost_so_far[(current[1], current[2])]
+                    new_cost = cur_cost + self.dCost[i]
+                    new_f = new_cost + heuristic
+                    next = (nx, ny)
+                    if next not in cost_so_far or new_cost < cost_so_far[next]:
+                        cost_so_far[next] = new_cost
+                        heuristic = int(sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))) * 2
+                        self.path[nx][ny] = [current[1], current[2]]
+                        heappush(openlist, [new_f, nx, ny])
+
+        node = [self.goal[0], self.goal[1]]
         while node != start :
             nextNode = node
             self.final_path.append(nextNode)
             node = self.path[nextNode[0]][nextNode[1]]
-        print('다익스트라 cnt : ', cnt)
 
-        cnt = 0
+
         local_path_msg = Path()
         local_path_msg.header.frame_id = '/map'
         size = 0
@@ -180,12 +250,15 @@ class astarLocalpath(Node):
             tmp_pose.pose.position.y = waypoint_y
             tmp_pose.pose.orientation.w = 1.0
             local_path_msg.poses.append(tmp_pose)
+
         self.collision_msg.data = False
         self.collision_pub.publish(self.collision_msg)
         self.local_path_pub.publish(local_path_msg)
-
-
     def timer_callback(self):
+        if self.loadLocalMap == False: 
+            print('더이상 갈 곳이 없다')
+            return
+
         if self.is_odom and self.is_path == True :
             local_path_msg = Path()
             local_path_msg.header.frame_id = '/map'
