@@ -30,16 +30,21 @@ module.exports = {
       const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
       const userCheck = await User.findOne({ where: { email: hashedEmail }})
       if (userCheck && userCheck.email === hashedEmail) {
-        throw new Error('email already exist')
+        throw new Error('이미 존재하는 이메일입니다.')
       }
 
     const salt = crypto.randomBytes(26).toString('base64');
     const scryptPassword = crypto.scryptSync(password, salt, 26)
     const hashedPassword = scryptPassword.toString('hex')
-    const result = await User.create({ 
+    await User.create({ 
       email: hashedEmail,
       password: hashedPassword,
       hashid: salt
+    })
+    let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '100m'})
+    const result = ({ 
+      email: hashedEmail,
+      token: token
     })
       return result
     },
@@ -47,14 +52,14 @@ module.exports = {
       const hashedEmail = crypto.createHash('sha512').update(email).digest('base64')
       const userCheck = await User.findOne({ where: { email: hashedEmail }})
       if (!userCheck) {
-        throw new Error('user not exist')
+        throw new Error('계정이 등록되어 있지 않습니다')
       }
       const salt = await userCheck.hashid.toString('base64')
       const scryptPassword = crypto.scryptSync(password, salt, 26)
       const hashedPassword = scryptPassword.toString('hex')
 
       if (userCheck.password !== hashedPassword) {
-        throw new Error('Password Error')
+        throw new Error('비밀번호가 다릅니다')
       }
       let token = jwt.sign({ hashedEmail, hashedPassword }, process.env.SECRET_KEY, { expiresIn: '100m'})
       const result = ({ 
@@ -83,12 +88,6 @@ module.exports = {
         { where: { 
           email: context.hashedEmail 
         }
-      })
-      .then(res => {
-        console.log(res, 'done')
-      })
-      .catch(err => {
-        console.log(err, 'no')
       })
       return userInfo
     },

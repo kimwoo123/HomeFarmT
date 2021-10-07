@@ -28,37 +28,7 @@
         </div>
         <div class="item">
           <span>위치</span>
-          <input type="text" v-model="region" placeholder="위치">
-          <button type="button" class="dropdown-toggle">
-            캠퍼스를 선택해주세요
-          </button>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item">
-              <button type="button" value="대전" class="dropdown-option">
-                대전
-              </button>
-            </li>
-            <li class="dropdown-item">
-              <button type="button" value="서울" class="dropdown-option">
-                서울
-              </button>
-            </li>
-            <li class="dropdown-item">
-              <button type="button" value="광주" class="dropdown-option">
-                광주
-              </button>
-            </li>
-            <li class="dropdown-item">
-              <button type="button" value="구미" class="dropdown-option">
-                구미
-              </button>
-            </li>
-            <li class="dropdown-item">
-              <button type="button" value="부산" class="dropdown-option">
-                부산
-              </button>
-            </li>
-          </ul>
+          <b-form-select class="select-form" v-model="region" :options="selectRegion"></b-form-select>
         </div>
       </div>
 
@@ -84,9 +54,16 @@ export default {
       password: '',
       passwordConfirmation: '',
       turtlebotName: '',
-      region: '',
+      region: '대전',
       errorMessage: '',
       check: true,
+      selectRegion: [
+        { value : '대전', text: '대전' },
+        { value : '서울', text: '서울' },
+        { value : '광주', text: '광주' },
+        { value : '구미', text: '구미' },
+        { value : '부산', text: '부산' },
+      ]
     }
   },
   apollo: {
@@ -105,10 +82,7 @@ export default {
             turtlebot
             patrol
           }
-        }`, error() {
-          alert('로그인이 필요한 페이지입니다')
-          this.$router.push({ name: 'Login' })
-        },
+        }`, 
         update(data) {
           this.email = sessionStorage.getItem('email')
           this.turtlebotName = data.findUser.turtlebot

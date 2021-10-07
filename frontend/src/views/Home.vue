@@ -34,9 +34,10 @@ export default {
   },
   methods: {
     test() {
-      console.log(localStorage.getItem('token'))
+      console.log(this.$router.history.index)
+      console.log(this.$router.history.stack)
     }
-  }
+  },
 }
 </script>
 
