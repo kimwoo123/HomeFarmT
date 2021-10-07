@@ -32,8 +32,6 @@ class astarLocalpath(Node):
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
         self.collision_pub = self.create_publisher(Bool, 'collision', 10)
 
-        self.temp_map_pub = self.create_publisher(OccupancyGrid, '/temp_map', 1)
-
         self.map_size_x = 350 
         self.map_size_y = 350
         self.map_resolution = 0.05
@@ -48,7 +46,7 @@ class astarLocalpath(Node):
         self.global_path_msg = Path()
 
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
-        time_period = 0.50
+        time_period = 0.05
         self.timer = self.create_timer(time_period, self.timer_callback)
         self.local_path_size = 25
         self.map_resolution = 0.05
@@ -58,28 +56,6 @@ class astarLocalpath(Node):
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
-
-
-    #     thread = threading.Thread(target=self.thread_callback)
-    #     thread.daemon = True 
-    #     thread.start()
-    # def thread_callback(self) :
-    #     if self.loadLocalMap == False : return
-    #     for y in range(350):
-    #         for x in range(350):
-    #             if self.grid[x][y] == 100 :
-    #                 for dx in range(-5, 6):
-    #                     for dy in range(-5, 6):
-    #                         nx = x + dx
-    #                         ny = y + dy 
-    #                         if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
-    #                             self.grid[nx][ny] = 110
-
-        # np_map_data = self.grid.reshape(1, 350 * 350) 
-        # list_map_data = np_map_data.tolist()
-        # self.data = list_map_data[0]
-        # self.msg.header.stamp = rclpy.clock.Clock().now().to_msg()
-        # self.temp_map_pub.publish(self.msg)
 
     def local_map_callback(self, msg) :
         m = np.array(msg.data)
@@ -101,29 +77,30 @@ class astarLocalpath(Node):
     def findLocalPath(self, current_waypoint, collision_point) :
         self.collision_msg.data = True
         self.collision_pub.publish(self.collision_msg)
-        is_goal_dis = False
-        is_goal_cost = False
+        is_dis_num = 0
+        is_cost_num = 0
         min_dis = float('inf')
         min_cost = float('inf')
+        is_goal_cost = False
         lenth = len(self.global_path_msg.poses)
         for num in range(collision_point, len(self.global_path_msg.poses)):
             next_x = self.global_path_msg.poses[num].pose.position.x
             next_y = self.global_path_msg.poses[num].pose.position.y
             pose_to_grid = self.pose_to_grid_cell(next_x, next_y)
             cost = self.grid[pose_to_grid[0]][pose_to_grid[1]]
-            if cost < 100 :
+            if cost < 50 :
                 if cost < min_cost :
                     min_cost = cost
                     self.goal_cost = pose_to_grid
                     is_goal_cost = True
-            if cost <  100:
-                x = self.odom_msg.pose.pose.position.x
-                y = self.odom_msg.pose.pose.position.y
-                dis = sqrt(pow(next_x - x, 2) + pow(next_y - y, 2))
-                if dis < min_dis:
-                    min_dis = dis
-                    self.goal_dis = pose_to_grid
-                    is_goal_dis = True
+            # if cost <  100:
+            #     x = self.odom_msg.pose.pose.position.x
+            #     y = self.odom_msg.pose.pose.position.y
+            #     dis = sqrt(pow(next_x - x, 2) + pow(next_y - y, 2))
+            #     if dis < min_dis:
+            #         min_dis = dis
+            #         self.goal_dis = pose_to_grid
+            #         is_goal_dis = True
 
         if self.loadLocalMap == False: 
             print('더이상 갈 곳이 없다')
@@ -132,8 +109,8 @@ class astarLocalpath(Node):
 
         if is_goal_cost == True :
             self.goal = self.goal_cost
-        elif is_goal_dis == True:
-            self.goal = self.goal_dis
+        # elif is_goal_dis == True :
+        #     self.goal = self.goal_dis
         else :
             self.goal = self.pose_to_grid_cell(self.global_path_msg.poses[lenth - 1].pose.position.x, self.global_path_msg.poses[lenth - 1].pose.position.y)
 
@@ -145,8 +122,8 @@ class astarLocalpath(Node):
         self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
         self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
         self.final_path=[]
-        x = self.global_path_msg.poses[current_waypoint].pose.position.x
-        y = self.global_path_msg.poses[current_waypoint].pose.position.y
+        x = self.odom_msg.pose.pose.position.x
+        y = self.odom_msg.pose.pose.position.y
         start = self.pose_to_grid_cell(x, y)
         Q = deque()
         print('start : ', start)
@@ -168,7 +145,7 @@ class astarLocalpath(Node):
                 if visited.get((next[0], next[1]), False) : 
                     continue
                 if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-                    if self.grid[next[0]][next[1]] <= 50 :
+                    if self.grid[next[0]][next[1]] < 100 :
                         if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
                             Q.append(next)
                             self.path[next[0]][next[1]] = current
@@ -178,9 +155,12 @@ class astarLocalpath(Node):
                                 found = True
             
         print(found)
-        if(found == False) :
+        if found == False :
+            print('들어왔다고 펄스!')
+            print(self.grid[self.goal[0]][self.goal[1]])
             return
         node = self.goal
+        
         while node != start :
             nextNode = node
             self.final_path.append(nextNode)
@@ -190,6 +170,7 @@ class astarLocalpath(Node):
         cnt = 0
         local_path_msg = Path()
         local_path_msg.header.frame_id = '/map'
+        size = 0
         for grid_cell in reversed(self.final_path) :
             waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
             tmp_pose = PoseStamped()
@@ -210,7 +191,7 @@ class astarLocalpath(Node):
             y=self.odom_msg.pose.pose.position.y
 
             current_waypoint = -1
-
+            print('self.last_current_point = num : ', self.last_current_point)
             min_dis= float('inf')
             for i, waypoint in enumerate(self.global_path_msg.poses):
                 if not (self.last_current_point <= i <= self.last_current_point + 30): continue
@@ -230,6 +211,7 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
                         temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
+                        
                         if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
                             self.findLocalPath(current_waypoint, num)
                             return

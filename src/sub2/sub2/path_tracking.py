@@ -57,6 +57,7 @@ class followTheCarrot(Node):
         # thread.start()
     def collision_callback (self, msg) : 
         self.collision = msg.data
+
     def timer_callback(self):
         
 

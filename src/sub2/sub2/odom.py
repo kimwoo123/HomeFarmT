@@ -90,7 +90,7 @@ class odom(Node):
             imu_q = q.to_euler()
             self.theta = imu_q[2]
             #  + self.imu_offset + pi / 2
-            # self.theta = imu_q[2] - pi / 2 - self.imu_offset 
+            self.theta = imu_q[2] - pi / 2 - self.imu_offset 
 
     
     def listener_callback(self, msg):      
