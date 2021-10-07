@@ -20,6 +20,7 @@ export default {
         {
           name: '에어컨',
           status: false,
+          grid: [220, 98],
           position: '거실',
           picName: 'aircon',
           pic: require('@/assets/icons/devices/aircon.svg')
@@ -27,6 +28,7 @@ export default {
         {
           name: 'TV',
           status: false,
+          grid: [155, 129],
           position: '거실',
           picName: 'tv',
           pic: require('@/assets/icons/devices/tv.svg')
@@ -37,14 +39,15 @@ export default {
   methods: {
     turnOn(item) {
       console.log('iot-control');
-      let data = '0 2';
+      let data = '2' + ' ' + String(item.grid[0]) + ' ' + String(item.grid[1])
       this.$socket.emit('iot-control', data);
       item.status = true
+      console.log(data)
       this.activeImg(item.picName)
     },
     turnOff(item) {
       console.log(item);
-      let data = '0 2';
+      let data = '2' + ' ' + String(item.grid[0]) + ' ' + String(item.grid[1])
       this.$socket.emit('iot-control', data);
       item.status = false
       this.originImg(item.picName)

@@ -14,7 +14,7 @@ from sub2.ex_calib import *
 
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
-
+import sub3.utils as utils
 import socketio
 import base64
 from std_msgs.msg import String
@@ -56,30 +56,32 @@ params_lidar = {
     "Block_SIZE": int(1206),
     "X": 0, # meter
     "Y": 0,
-    "Z": 0.3 + 0.1,
+    "Z": 0.5 + 0.1,
     "YAW": 0, # deg
     "PITCH": 0,
     "ROLL": 0
 }
+
 
 params_cam = {
     "WIDTH": 320, # image width
     "HEIGHT": 240, # image height
     "FOV": 60, # Field of view
     "localIP": "127.0.0.1",
-    "localPort": 1432,
+    "localPort": 1332,
     "Block_SIZE": int(65000),
     "X": 0, # meter
     "Y": 0,
-    "Z": 0.3,
-    "YAW": 270, # deg
+    "Z": 0.5,
+    "YAW": 90, # deg
     "PITCH": 0,
-    "ROLL": 0,
+    "ROLL": 0
 }
 
 
-global img_bgr, xyz
-img_bgr = xyz = None
+
+global img_bgr, xyz, laser_global_x, laser_global_y
+img_bgr = xyz = laser_global_x = laser_global_y = None
 
 sio = socketio.Client()
 
@@ -96,7 +98,7 @@ class detection_net_class():
         # graph와 라벨정보를 받아서 ROS2 topic 통신으로 들어온 이미지를 inference 하고
         # bounding box를 내놓는 역할을 합니다. 
         # TF object detection API 튜토리얼 코드를 참고했습니다.
-                 
+
         #session and dir
         self.sess = sess
         self.detection_graph = graph
@@ -108,7 +110,7 @@ class detection_net_class():
         self.scores = self.detection_graph.get_tensor_by_name('detection_scores:0')
         self.classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
         self.num_detections = \
-             self.detection_graph.get_tensor_by_name('num_detections:0')
+        self.detection_graph.get_tensor_by_name('num_detections:0')
 
     def inference(self, image_np):
         image_np_expanded = np.expand_dims(image_np, axis=0)
@@ -175,7 +177,7 @@ def visualize_images(image_out, t_cost):
     cv2.imshow(winname, image_out)
     cv2.waitKey(1)
 
-     
+
 def img_callback(msg):
 
     global img_bgr
@@ -186,10 +188,10 @@ def img_callback(msg):
 
 def scan_callback(msg):
 
-    global xyz
+    global xyz, laser_global_x, laser_global_y
 
     R = np.array(msg.ranges)
-
+    
     x = R*np.cos(np.linspace(0, 2*np.pi, 360))
     y = R*np.sin(np.linspace(0, 2*np.pi, 360))
     z = np.zeros_like(x)
@@ -199,7 +201,43 @@ def scan_callback(msg):
         y.reshape([-1, 1]),
         z.reshape([-1, 1])
     ], axis=1)
-   
+
+
+    pose_x=msg.range_min
+    pose_y=msg.scan_time
+    heading=msg.time_increment
+    Distance = np.array(msg.ranges)
+    x = Distance * np.cos(np.linspace(0, 2 * np.pi, 360)) # 360
+    y = Distance * np.sin(np.linspace(0, 2 * np.pi, 360)) # 360
+    T_r_l = np.array([[0,-1,0],[1,0,0],[0,0,1]])
+    laser = np.vstack((x.reshape((1, -1)), y.reshape((1, -1))))
+
+    pose = np.array([[pose_x],[pose_y],[heading]])
+    
+    n_points = laser.shape[1]
+    pose_mat = utils.xyh2mat2D(pose)
+        
+    pose_mat = np.matmul(pose_mat, T_r_l)
+    laser_mat = np.ones((3, n_points))
+    laser_mat[:2, :] = laser
+
+    laser_global = np.matmul(pose_mat, laser_mat)
+    map_center = [-50, -50]
+    map_resolution = 0.05
+    map_size = [17.5/map_resolution, 17.5/map_resolution]
+    pose_x = (pose[0] - map_center[0] + (map_size[0]* map_resolution)/2) / map_resolution
+    pose_y = (pose[1] - map_center[1] + (map_size[1]* map_resolution)/2) / map_resolution
+    laser_global_x = (laser_global[0, :] - map_center[0] + (map_size[0]*map_resolution)/2) / map_resolution
+    laser_global_y =  (laser_global[1, :] - map_center[1] + (map_size[1]*map_resolution)/2) / map_resolution
+
+
+    # print('laser_global_x : ', len(laser_global_x), laser_global_x.shape)
+    # print('laser_global_x : ', np.min(laser_global_x), np.max(laser_global_x))
+    # print('laser_global_y : ', np.min(laser_global_y), np.max(laser_global_y))
+    # print('pose : ', pose_x, pose_y)
+    # print('laser_global_y : ', len(laser_global_y), laser_global_y.shape)
+
+
 
 def obj_img_sender(classes_pick, custom_obj, crops, image_process, interval):
     global past_time
@@ -215,15 +253,15 @@ def obj_img_sender(classes_pick, custom_obj, crops, image_process, interval):
             past_time = time.time()
 
 
-def object_distance_mapping(classes_pick, custom_obj, ostate_list):
+def object_distance_mapping(classes_pick, custom_obj, ostate_list, deg_list):
     global object_distance
 
     object_distance = dict()
     for idx, obj in enumerate(classes_pick[0]):
         if object_distance.get(custom_obj[int(obj)-1]):
-            object_distance[custom_obj[int(obj)-1]].append(ostate_list[idx][0])
+            object_distance[custom_obj[int(obj)-1]].append((ostate_list[idx][0], deg_list[idx]))
         else:
-            object_distance[custom_obj[int(obj)-1]] = [ostate_list[idx][0]]
+            object_distance[custom_obj[int(obj)-1]] = [(ostate_list[idx][0], deg_list[idx])]
 
     
     # print(object_distance)
@@ -300,11 +338,11 @@ def main(args=None):
 
     g_node = rclpy.create_node('tf_detector')
 
-    subscription_img = g_node.create_subscription(CompressedImage, '/image_jpeg/compressed/right', img_callback, 3)
+    subscription_img = g_node.create_subscription(CompressedImage, '/image_jpeg/compressed/left', img_callback, 3)
 
     subscription_scan = g_node.create_subscription(LaserScan, '/scan', scan_callback, 3)
 
-    publisher_object_distance = g_node.create_publisher(String, '/object_distance/right', 5)
+    publisher_object_distance = g_node.create_publisher(String, '/object_distance/left', 5)
 
     # subscription_scan
 
@@ -335,7 +373,7 @@ def main(args=None):
 
             rclpy.spin_once(g_node)
 
-        obj_dist = ''
+        
         msg = String()
 
         if img_bgr is not None:
@@ -387,6 +425,7 @@ def main(args=None):
                     ## 그걸로 물체의 거리를 추정할 수 있습니다.
                     """
                     ostate_list = []
+                    deg_list = []
                     for i in range(bbox.shape[0]): # 인식된 대상 개수 만큼 반복
                         x = int(bbox[i, 0])
                         y = int(bbox[i, 1])
@@ -407,6 +446,10 @@ def main(args=None):
                         ## bbox 안에 들어가는 라이다 포인트들의 대표값(예:평균)을 뽑는다
                         ostate = [distance_aveg]
 
+                        detect_ratio = cx / params_cam['WIDTH'] * 180
+                        deg = 90 - detect_ratio if detect_ratio < 90 else 450 - detect_ratio
+                        deg_list.append(deg)
+
                         ## 대표값이 존재하면 
                         if not np.isnan(ostate[0]):
                             ostate_list.append(ostate)
@@ -415,7 +458,7 @@ def main(args=None):
                     obj_img_sender(classes_pick, custom_obj, crops, image_process, interval=1.0)
 
                     # object & distance mapping
-                    object_distance_mapping(classes_pick, custom_obj, ostate_list)
+                    object_distance_mapping(classes_pick, custom_obj, ostate_list, deg_list)
                     
                     image_process = draw_pts_img(image_process, xy_i[:, 0].astype(np.int32), xy_i[:, 1].astype(np.int32))
 
@@ -423,15 +466,28 @@ def main(args=None):
 
                     
                     for k, vlist in object_distance.items():
-                        obj_dist += str(k)
-                        for v in vlist:
-                            obj_dist += '-' + f'{v:.2f}'
-                        obj_dist += '/'
-                
+                        obj_dist = ''
+                        vlist.sort(key=lambda x: x[0])
+                        # obj_dist += f'{k}/{vlist[0][0]:.2f}/{round(vlist[0][1])}'
+                        deg_tmp = round(vlist[0][1])
+                        if len(laser_global_x) and len(laser_global_y):
+                            # obj_dist += f'{k}/{laser_global_x[deg_tmp]:.1f}/{laser_global_y[deg_tmp]:.1f}'
+                            obj_dist += f'{k}/{laser_global_x[0]:.1f}/{laser_global_y[0]:.1f}\n'
+                            obj_dist += f'{k}/{laser_global_x[359]:.1f}/{laser_global_y[359]:.1f}'
+                            # obj_dist += f'{deg_tmp}'
+
+                        msg.data = obj_dist
+                        print(obj_dist)
+                        publisher_object_distance.publish(msg)
+                        # for v in vlist:
+                        #     obj_dist += '-' + f'{v:.2f}'
+                        # obj_dist += '/'
+
                 visualize_images(image_process, infer_time) 
 
-        msg.data = obj_dist
-        publisher_object_distance.publish(msg)
+        # msg.data = obj_dist
+        # print(obj_dist)
+        # publisher_object_distance.publish(msg)
 
     g_node.destroy_node()
     rclpy.shutdown()

@@ -256,11 +256,9 @@ class iot_udp(Node):
         self.disconnect()
 
 
-           
     def __del__(self):
         self.sock.close()
         print('del')
-
 
 
 def main(args=None):

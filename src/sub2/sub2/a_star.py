@@ -109,6 +109,7 @@ class a_star(Node):
         
 
     def goal_callback(self, msg):
+        print(msg)
         if msg.header.frame_id == 'map':
             '''
             로직 6. goal_pose 메시지 수신하여 목표 위치 설정
@@ -139,12 +140,12 @@ class a_star(Node):
                 # 다익스트라 알고리즘을 완성하고 주석을 해제 시켜주세요. 
                 # 시작지, 목적지가 탐색가능한 영역이고, 시작지와 목적지가 같지 않으면 경로탐색을 합니다.
                 print(self.grid[start_grid_cell[0]][start_grid_cell[1]], self.grid[self.goal[0]][self.goal[1]])
-                if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal :
+                if self.grid[start_grid_cell[0]][start_grid_cell[1]] <= 50  and self.grid[self.goal[0]][self.goal[1]] <= 50  and start_grid_cell != self.goal:
                     print('dijkstra')
                     self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
                     self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
                     # self.dijkstra(start_grid_cell)
-                    self.A_star_dam(start_grid_cell)
+                    self.A_star_dong(start_grid_cell)
 
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
@@ -158,8 +159,8 @@ class a_star(Node):
                     tmp_pose.pose.orientation.w = 1.0
                     self.global_path_msg.poses.append(tmp_pose)
                 
-                if len(self.final_path) !=0 :
-                    self.a_star_pub.publish(self.global_path_msg)
+                self.a_star_pub.publish(self.global_path_msg)
+                
 
     def dijkstra(self, start):
         start_time = time.time()
@@ -323,6 +324,7 @@ class a_star(Node):
 
     # 동윤
     def A_star_dong(self, start):
+        print('에이스타 시작')
         start_time = time.time()
         cost_so_far = { (start[0], start[1]): 0, }
         openlist = []
@@ -351,6 +353,7 @@ class a_star(Node):
                         self.path[nx][ny] = [current[1], current[2]]
                         heappush(openlist, [new_f, nx, ny])
 
+        print('에이스타 found')
         node = [self.goal[0], self.goal[1]]
         while found:
             self.final_path.append([node[0], node[1]])
@@ -359,7 +362,6 @@ class a_star(Node):
             if node[0] == start[0] and node[1] == start[1]:
                 break
         
-        self.final_path = self.final_path[::-1] + self.final_path
         print("time :", time.time() - start_time)
         print('finalpath', self.final_path)
         print("time :", time.time() - start_time) 

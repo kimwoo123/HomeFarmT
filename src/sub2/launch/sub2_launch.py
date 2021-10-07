@@ -41,12 +41,12 @@ def generate_launch_description():
         #     node_executable='patrol_client',
         #     node_name='patrol_client'
         # ),
-        Node(
-            package='sub2',
-            node_executable='a_star',
-            node_name='a_star',
-            output='screen',
-        ),
+        # Node(
+        #     package='sub2',
+        #     node_executable='a_star',
+        #     node_name='a_star',
+        #     output='screen',
+        # ),
         Node(
             package='sub2',
             node_executable='local_map_pub',

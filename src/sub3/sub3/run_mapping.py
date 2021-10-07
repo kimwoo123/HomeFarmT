@@ -224,7 +224,6 @@ class Mapper(Node):
         self.map_size=int(params_map["MAP_SIZE"][0]\
             /params_map["MAP_RESOLUTION"]*params_map["MAP_SIZE"][1]/params_map["MAP_RESOLUTION"])
         
-
         m = MapMetaData()
         m.resolution = params_map["MAP_RESOLUTION"]
         m.width = int(params_map["MAP_SIZE"][0]/params_map["MAP_RESOLUTION"])

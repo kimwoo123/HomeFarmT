@@ -3,6 +3,7 @@
     <canvas class="map-canvas-path" id="map-path" @click="clickMap" width="350" height="350"></canvas>
     <canvas class="map-canvas-pos" id="map-pos" width="350" height="350"></canvas>
     <canvas class="map-canvas-grid" id="map-grid" width="350" height="350"></canvas>
+    <canvas class="map-canvas-application" width="350" height="350"></canvas>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -31,18 +32,31 @@ export default {
       pastX: null,
       pastY: null,
       mapData: null,
+      appPos: {
+        tv: [155, 129],
+        airCon: [232, 97] 
+      }
     }
   },
   mounted() {
     const canvasTag = document.querySelector('#map-grid')
     const posCanvasTag = document.querySelector('#map-pos')
+    const appCanvasTag = document.querySelector('.map-canvas-application')
     const context = canvasTag.getContext('2d')
     const posContext = posCanvasTag.getContext('2d')
+    const appContext = appCanvasTag.getContext('2d')
     const imageData = context.createImageData(350, 350)
     const posImageData = posContext.createImageData(350, 350)
     const w = 350
     const h = 350
     
+    for (let app in this.appPos) {
+      const [x, y] = this.appPos[app]
+      appContext.font = '40px serif bold'
+      appContext.fillStyle = 'black'
+      appContext.fillText(app, x, y)
+    }
+
     this.$socket.on('turtleBotPos', message => {
       if (!this.isMapUpdated) return
       const data = JSON.parse(message)

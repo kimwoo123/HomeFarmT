@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.map-canvas-pos, .map-canvas-grid, .map-canvas-path{
+.map-canvas-pos, .map-canvas-grid, .map-canvas-path, .map-canvas-application{
   width: 100%;
   height: 100%;
   cursor: pointer;
@@ -10,6 +10,10 @@
 }
 
 .map-canvas-path {
+  z-index: 4;
+}
+
+.map-canvas-application {
   z-index: 3;
 }
 

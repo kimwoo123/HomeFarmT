@@ -50,6 +50,7 @@ class DataCenter(Node):
         def send_iot_control(data):
             iot_control_msg = String() 
             iot_control_msg.data = data
+            print(data)
             self.iot_control_pub.publish(iot_control_msg) # 제어 메시지
 
         @sio.on('requestPathToRos')
@@ -65,7 +66,6 @@ class DataCenter(Node):
             if found:
                 sio.emit('responsePath', json.dumps(self.final_path))
                 self.path = [[0 for _ in range(self.GRIDSIZE)] for _ in range(self.GRIDSIZE)]
-                print(self.cur_pos)
                 local_found = self.a_star(self.cur_pos, start, 'start')
                 self.global_path_msg = Path()
                 self.global_path_msg.header.frame_id = 'map'
