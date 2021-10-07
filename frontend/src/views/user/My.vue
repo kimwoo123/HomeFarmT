@@ -94,6 +94,7 @@ export default {
     logout() {
       sessionStorage.removeItem('token')
       sessionStorage.removeItem('email')
+      sessionStorage.removeItem('region')
       this.$router.push({ name: 'Home' })
     },
     updateUserInfo() {
