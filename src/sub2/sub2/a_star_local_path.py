@@ -48,7 +48,7 @@ class astarLocalpath(Node):
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period = 0.05
         self.timer = self.create_timer(time_period, self.timer_callback)
-        self.local_path_size = 25
+        self.local_path_size = 15
         self.map_resolution = 0.05
         self.map_offset_x = -50 - 8.75
         self.map_offset_y = -50 - 8.75
@@ -88,11 +88,13 @@ class astarLocalpath(Node):
             next_y = self.global_path_msg.poses[num].pose.position.y
             pose_to_grid = self.pose_to_grid_cell(next_x, next_y)
             cost = self.grid[pose_to_grid[0]][pose_to_grid[1]]
-            if cost < 50 :
+            if cost < 100 :
                 if cost < min_cost :
                     min_cost = cost
                     self.goal_cost = pose_to_grid
                     is_goal_cost = True
+
+                        
             # if cost <  100:
             #     x = self.odom_msg.pose.pose.position.x
             #     y = self.odom_msg.pose.pose.position.y
@@ -111,8 +113,8 @@ class astarLocalpath(Node):
             self.goal = self.goal_cost
         # elif is_goal_dis == True :
         #     self.goal = self.goal_dis
-        else :
-            self.goal = self.pose_to_grid_cell(self.global_path_msg.poses[lenth - 1].pose.position.x, self.global_path_msg.poses[lenth - 1].pose.position.y)
+        # else :
+        #     self.goal = self.pose_to_grid_cell(self.global_path_msg.poses[lenth - 1].pose.position.x, self.global_path_msg.poses[lenth - 1].pose.position.y)
 
 
 
@@ -182,6 +184,7 @@ class astarLocalpath(Node):
         self.collision_pub.publish(self.collision_msg)
         self.local_path_pub.publish(local_path_msg)
 
+
     def timer_callback(self):
         if self.is_odom and self.is_path == True :
             local_path_msg = Path()
@@ -191,7 +194,6 @@ class astarLocalpath(Node):
             y=self.odom_msg.pose.pose.position.y
 
             current_waypoint = -1
-            print('self.last_current_point = num : ', self.last_current_point)
             min_dis= float('inf')
             for i, waypoint in enumerate(self.global_path_msg.poses):
                 if not (self.last_current_point <= i <= self.last_current_point + 30): continue
@@ -199,11 +201,12 @@ class astarLocalpath(Node):
                 if distance < min_dis :
                     min_dis = distance
                     current_waypoint = i
-            self.last_current_point = current_waypoint
+            
             '''
             로직 5. local_path 예외 처리
             '''
             if current_waypoint != -1:
+                self.last_current_point = current_waypoint
                 if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):
                     for num in range(current_waypoint, current_waypoint + self.local_path_size):
                         tmp_pose = PoseStamped()
@@ -212,7 +215,7 @@ class astarLocalpath(Node):
                         tmp_pose.pose.orientation.w = 1.0
                         temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
                         
-                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 50 :
                             self.findLocalPath(current_waypoint, num)
                             return
                         local_path_msg.poses.append(tmp_pose)
@@ -224,7 +227,7 @@ class astarLocalpath(Node):
                         tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
                         tmp_pose.pose.orientation.w = 1.0
                         temp_pose_to_grid = self.pose_to_grid_cell(tmp_pose.pose.position.x, tmp_pose.pose.position.y)
-                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 100 :
+                        if self.grid[temp_pose_to_grid[0]][temp_pose_to_grid[1]] >= 50 :
                             self.findLocalPath(current_waypoint, num)
                             return
                         local_path_msg.poses.append(tmp_pose)    
