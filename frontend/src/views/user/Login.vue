@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <Navbar :title="'로그인'" :left_icon="false" :right_text="''" style="color: white;"/>
+    <Navbar :title="'로그인'" :left_icon="true" :right_text="''" style="color: white;"/>
     <div class="login-container">
       <div class="input-container">
         <div class="item">
