@@ -58,12 +58,13 @@ export default {
     const baseURL = `https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${APIkey}`
     axios.get(baseURL)
     .then(res => {
+      const storeRegion = sessionStorage.getItem('region')
       const today = new Date(res.data.dt * 1000)
       this.todayDate = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일 '
       this.temp = parseInt(res.data.main.temp - 273.15)
       this.humidity = res.data.main.humidity
       this.windSpeed = res.data.wind.speed
-      this.region = sessionStorage.getItem('region') || '대전'
+      this.region = (storeRegion && storeRegion !== 'null') ? sessionStorage.getItem('region') : '대전'
       const weatherDesc = res.data.weather[0].id
       this.weather = weatherTranslate[weatherDesc]
       this.iconURL = `http://openweathermap.org/img/wn/${res.data.weather[0].icon}@2x.png`

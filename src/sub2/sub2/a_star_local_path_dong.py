@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped, Pose
+from geometry_msgs.msg import PoseStamped, Pose, Twist
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry,Path
 from math import pi,cos,sin,sqrt
@@ -27,9 +27,14 @@ class astarLocalpathDong(Node):
         super().__init__('a_star_local_path_dong')
         # 로직 1. publisher, subscriber 만들기
         self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
+        self.right_object_sub = self.create_subscription(String, '/object_distance/front', self.front_object_callback, 5)
         self.right_object_sub = self.create_subscription(String, '/object_distance/right', self.right_object_callback, 5)
+        self.right_object_sub = self.create_subscription(String, '/object_distance/left', self.left_object_callback, 5)
+        self.cmd_pub = self.create_publisher(Twist, 'cmd_vel', 10)
+
         self.subscription = self.create_subscription(Path,'global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
+        
         # self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
         # self.temp_map_pub = self.create_publisher(OccupancyGrid, '/temp_map', 1)
 
@@ -39,13 +44,13 @@ class astarLocalpathDong(Node):
 
         self.map_offset_x = -50 - 8.75 #-8 - 8.75
         self.map_offset_y = -50 - 8.75 # -4 - 8.75
-
+        self.cmd_msg = Twist()
         self.odom_msg = Odometry()
         self.is_odom = False
         self.is_path = False
         self.loadLocalMap = False
         self.global_path_msg = Path()
-
+        self.remove_weed = False
         # 로직 3. 주기마다 실행되는 타이머함수 생성, local_path_size 설정
         time_period = 0.50
         self.timer = self.create_timer(time_period, self.timer_callback)
@@ -58,39 +63,96 @@ class astarLocalpathDong(Node):
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
 
+    #     self.timer_detector = self.create_timer(time_period, self.detector_callback)
+    #     thread = threading.Thread(target=self.detector_callback)
+    #     thread.daemon = True 
+    #     thread.start()
 
-        thread = threading.Thread(target=self.timer_callback)
-        thread.daemon = True 
-        thread.start()
+    # def detector_callback(self) :
+        
 
-    # def thread_callback(self) :
-    #     if self.loadLocalMap == False : return
-    #     for y in range(350):
-    #         for x in range(350):
-    #             if self.grid[x][y] == 100 :
-    #                 for dx in range(-5, 6):
-    #                     for dy in range(-5, 6):
-    #                         nx = x + dx
-    #                         ny = y + dy 
-    #                         if 0 <= nx < 350 and 0 <= ny < 350 and self.grid[nx][ny] < 80:
-    #                             self.grid[nx][ny] = 110
-
-        # np_map_data = self.grid.reshape(1, 350 * 350) 
-        # list_map_data = np_map_data.tolist()
-        # self.data = list_map_data[0]
-        # self.msg.header.stamp = rclpy.clock.Clock().now().to_msg()
-        # self.temp_map_pub.publish(self.msg)
-
-    # def local_map_callback(self, msg) :
-    #     m = np.array(msg.data)
-    #     self.grid = m.reshape(350, 350, order = 'F')
-    #     self.msg = msg        
-    #     self.loadLocalMap = True
+    # # def local_map_callback(self, msg) :
+    # #     m = np.array(msg.data)
+    # #     self.grid = m.reshape(350, 350, order = 'F')
+    # #     self.msg = msg        
+    # #     self.loadLocalMap = True
     
     
     def right_object_callback(self, msg):
+        if self.remove_weed == True : return
         object_list = msg.data.split('/')
-        object_list.pop()
+        if object_list[0] == 'weed' :
+            self.remove_weed = True
+            self.cmd_msg.linear.x = 0.0
+            self.cmd_msg.angular.z = 0.0
+            self.cmd_pub.publish(self.cmd_msg)
+            x = self.odom_msg.pose.pose.position.x
+            y = self.odom_msg.pose.pose.position.y
+
+            # 출발위치가 현재 터블봇위치 오돔
+            # 도착위치는 전달바등ㅁ
+            start = self.pose_to_grid_cell(x, y)
+            self.goal = self.pose_to_grid_cell(x, y)
+            local_path_msg = Path()
+            local_path_msg.header.frame_id='/map'
+            self.path = [[0 for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)]
+            self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+
+            self.final_path=[]
+
+            
+            Q = deque()
+            print('start : ', start)
+            print('goal : ', self.goal)
+            Q.append(start)
+            self.cost[start[0]][start[1]] = 1
+            found = False
+            cnt = 0
+            visited = dict()
+            visited[(start[0], start[1])] = True
+
+            while Q : # while Q:
+                current = Q.popleft()
+                cnt += 1
+                if found :
+                    break
+                for i in range(8) :
+                    next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                    if visited.get((next[0], next[1]), False) : 
+                        continue
+                    if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+                            if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                                Q.append(next)
+                                self.path[next[0]][next[1]] = current
+                                self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                                visited[(next[0], next[1])] = True
+                                if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                    found = True
+                
+            print(found)
+            if(found == False) :
+                return
+            node = self.goal
+            while node != start :
+                nextNode = node
+                self.final_path.append(nextNode)
+                node = self.path[nextNode[0]][nextNode[1]]
+            print('다익스트라 cnt : ', cnt)
+            
+            cnt = 0
+            local_path_msg = Path()
+            local_path_msg.header.frame_id = '/map'
+            for grid_cell in reversed(self.final_path) :
+                waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
+                tmp_pose = PoseStamped()
+                tmp_pose.pose.position.x = waypoint_x
+                tmp_pose.pose.position.y = waypoint_y
+                tmp_pose.pose.orientation.w = 1.0
+                local_path_msg.poses.append(tmp_pose)
+            self.local_path_pub.publish(local_path_msg)
+        elif object_list[0] == 'corn' :
+            print(object_list)
+
         if object_list:
             detection = []
             for obj in object_list:
@@ -208,7 +270,7 @@ class astarLocalpathDong(Node):
     #     self.local_path_pub.publish(local_path_msg)
 
     def timer_callback(self):
-        if self.is_odom and self.is_path == True :
+        if self.is_odom and self.is_path == True and self.remove_weed == False:
             local_path_msg = Path()
             local_path_msg.header.frame_id = '/map'
             
