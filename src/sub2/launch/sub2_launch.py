@@ -26,21 +26,21 @@ def generate_launch_description():
             node_name='path_tracking',
             output='screen',
         ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='lidar_trans',
-        #     node_name='lidar_trans',
-        # ),
+        Node(
+            package='sub2',
+            node_executable='lidar_trans',
+            node_name='lidar_trans',
+        ),
         Node(
             package='sub2',
             node_executable='path_pub',
             node_name='path_pub',
         ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='patrol_client',
-        #     node_name='patrol_client'
-        # ),
+        Node(
+            package='sub2',
+            node_executable='patrol_client',
+            node_name='patrol_client'
+        ),
         Node(
             package='sub2',
             node_executable='a_star',
@@ -52,12 +52,14 @@ def generate_launch_description():
             node_executable='local_map_pub',
             node_name='local_map_pub',
         ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='make_path',
-        #     node_name='make_path'
-        # ),
+        Node(
+            package='sub2',
+            node_executable='make_path',
+            node_name='make_path'
+        ),
+        Node(
+            package='sub2',
+            node_executable='handcontrol',
+            node_name='handcontrol'
+        ),
     ])
-
-
-

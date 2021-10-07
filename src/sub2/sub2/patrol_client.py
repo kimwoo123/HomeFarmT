@@ -1,12 +1,13 @@
 import numpy as np
 import rclpy
-import socketio
+import socketio 
+from geometry_msgs.msg import PoseStamped
 
 from rclpy.node import Node
 from geometry_msgs.msg import Twist, Point
 from squaternion import Quaternion
 from nav_msgs.msg import Odometry, Path
-from math import pi, cos, sin, sqrt, atan2
+from math import pi, cos, sin, sqrt, atan2, pow
 
 sio = socketio.Client()
 
@@ -44,12 +45,12 @@ def go_back(data):
 @sio.on('patrolOn')
 def patrol_on(data):
     global auto_switch
-    auto_switch = data
+    auto_switch = 1
 
 @sio.on('patrolOff')
 def patrol_off(data):
     global auto_switch
-    auto_switch = data
+    auto_switch = 0
 
 @sio.on('isMapOpen')
 def is_map_open(data):
@@ -69,6 +70,7 @@ class PatrolCtrlFromServer(Node):
         super().__init__('Patrol_client')
 
         self.cmd_publisher = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.local_path_pub = self.create_publisher(Path, 'local_path', 10)
         self.subscription = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
         self.path_sub = self.create_subscription(Path, '/global_path', self.path_callback, 10)
 
@@ -87,6 +89,10 @@ class PatrolCtrlFromServer(Node):
         self.idx_wp = 0
         self.len_wp = None
         self.check_1_wp = False
+        self.is_path = False
+
+        self.local_path_size = 20 
+        self.count = 0
 
     def odom_callback(self, msg):
         self.is_odom = True
@@ -96,7 +102,11 @@ class PatrolCtrlFromServer(Node):
 
     def path_callback(self, msg):
         self.is_path = True
-        self.path_msg = msg
+        self.global_path_msg = msg
+
+    def listener_callback(self, msg):
+        self.is_odom = True
+        self.odom_msg = msg
 
     # 이동제어
     def turtlebot_go(self):
@@ -178,42 +188,47 @@ class PatrolCtrlFromServer(Node):
 
         # auto patrol mode on
         else:
-            sio.emit('PatrolStatus', 'On')
             if self.is_odom == True and self.is_path == True:
-                if not self.check_1_wp: 
-                    self.search_start_point()
-                rotated_point = Point()
+                sio.emit('PatrolStatus', 'On')
+                # if not self.check_1_wp: 
+                #     self.search_start_point()
+                
+                local_path_msg = Path()
+                local_path_msg.header.frame_id = '/map'
+                
+                x = self.odom_msg.pose.pose.position.x
+                y = self.odom_msg.pose.pose.position.y
+                current_waypoint = -1
 
-                robot_pose_x = self.odom_msg.pose.pose.position.x
-                robot_pose_y = self.odom_msg.pose.pose.position.y
+                # 로직 5. global_path 중 로봇과 가장 가까운 포인트 계산
 
-                waypoint = self.path_msg.poses[self.idx_wp]
-                self.current_point = waypoint.pose.position
+                min_dis = float('inf')
+                for i, waypoint in enumerate(self.global_path_msg.poses) :
+                    global_x = waypoint.pose.position.x
+                    global_y = waypoint.pose.position.y
+                    distance = sqrt(pow(x - global_x, 2) + pow(y - global_y, 2))
+                    if distance < min_dis :
+                        min_dis = distance
+                        current_waypoint = i
+                
+                # 로직 6. local_path 예외 처리 20개 이하가 남았을 때
+                if current_waypoint != -1 :
+                    if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):                 
+                        for num in range(current_waypoint, current_waypoint + self.local_path_size):
+                            tmp_pose = PoseStamped()
+                            tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
+                            tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
+                            tmp_pose.pose.orientation.w = 1.0
+                            local_path_msg.poses.append(tmp_pose)
+                    else:
+                        for num in range(current_waypoint, len(self.global_path_msg.poses)):
+                            tmp_pose = PoseStamped()
+                            tmp_pose.pose.position.x = self.global_path_msg.poses[num].pose.position.x
+                            tmp_pose.pose.position.y = self.global_path_msg.poses[num].pose.position.y
+                            tmp_pose.pose.orientation.w = 1.0
+                            local_path_msg.poses.append(tmp_pose)
 
-                dx = self.current_point.x - robot_pose_x
-                dy = self.current_point.y - robot_pose_y
-
-                rotated_point.x = cos(self.robot_yaw)*dx + sin(self.robot_yaw)*dy
-                rotated_point.y = -sin(self.robot_yaw)*dx + cos(self.robot_yaw)*dy
-                theta = atan2(rotated_point.y, rotated_point.x)
-
-                dis = sqrt(pow(rotated_point.x, 2) + pow(rotated_point.y, 2))
-                # self.cmd_msg.linear.x = 0.5
-                # self.cmd_msg.angular.z = theta 
-                if abs(theta) < pi/10:
-                    self.cmd_msg.linear.x = 0.5
-                    self.cmd_msg.angular.z = -theta*0.3
-                else:
-                    self.cmd_msg.linear.x = 0.0
-                    self.cmd_msg.angular.z = -theta*0.3
-                    
-                if dis <= self.lfd and  self.idx_wp < self.len_wp-1:
-                    self.idx_wp += 1
-                elif dis <= self.lfd and  self.idx_wp == self.len_wp-1:
-                    self.idx_wp = 0
-            else:
-                self.turtlebot_stop()
-            self.cmd_publisher.publish(self.cmd_msg)
+                self.local_path_pub.publish(local_path_msg)
 
 
 
