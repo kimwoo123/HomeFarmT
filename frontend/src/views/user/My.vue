@@ -105,7 +105,10 @@ export default {
             turtlebot
             patrol
           }
-        }`,
+        }`, error() {
+          alert('로그인이 필요한 페이지입니다')
+          this.$router.push({ name: 'Login' })
+        },
         update(data) {
           this.email = sessionStorage.getItem('email')
           this.turtlebotName = data.findUser.turtlebot

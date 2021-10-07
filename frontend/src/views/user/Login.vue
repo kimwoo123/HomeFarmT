@@ -63,13 +63,13 @@ export default {
         }
         })
         .then((res) => {
-          console.log(res.data)
-          localStorage.setItem('token', res.data.login.token)
+          sessionStorage.setItem('token', res.data.login.token)
           sessionStorage.setItem('email', this.email)
           sessionStorage.setItem('region', res.data.login.region)
+          this.$router.go(-1)
         })
         .catch((err) => {
-          console.log(err, 'no')
+          alert(err.message.split(':')[1])
         })
       },
     },

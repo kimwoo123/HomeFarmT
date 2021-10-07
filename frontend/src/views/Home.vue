@@ -13,6 +13,7 @@
       <div class="stt-container">
         <img src="@/assets/icons/mic.svg" alt="mic">
         <span class="font-400 listening">터틀봇이 이야기를 감지중입니다.</span>
+        <button @click="test()">실험</button>
       </div>
     </div>
 
@@ -31,6 +32,11 @@ export default {
     HomeSchedule,
     HomeToday
   },
+  methods: {
+    test() {
+      console.log(localStorage.getItem('token'))
+    }
+  }
 }
 </script>
 
