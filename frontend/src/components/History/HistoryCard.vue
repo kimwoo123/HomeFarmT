@@ -1,7 +1,7 @@
 <template>
   <div class="history-card-container">
     <div>
-      <span class="font-400 time">{{ history.event_time }}</span>
+      <span class="font-400 time">{{ history.event_time.split('T')[1] }}</span>
     </div>
 
     <div class="circle"></div>
@@ -13,7 +13,7 @@
           <p class="title">{{ history.event_title }}</p>
           <p class="description">{{ history.event_desc }}</p>   
         </div>
-        <img :src="`${ pic }`" alt="" class="small-pic">
+        <img :src="`${ history.event_img }`" alt="" class="small-pic">
       </div>
       
       <div v-else-if="pic && picBig" @click="picBig=false" class="big-card">
@@ -21,7 +21,7 @@
           <p class="title">{{ history.event_title }}</p>
           <p class="description">{{ history.event_desc }}</p>  
         </div>
-        <img :src="`${ pic }`" alt="" class="big-pic">
+        <img :src="`${ history.event_img }`" alt="" class="big-pic">
       </div>
 
       <div v-else class="small-card">
@@ -41,11 +41,9 @@ export default {
   props: ['history'],
   data() {
     return {
-      pic: require('@/assets/images/cam.png'),
       picBig: false,
     }
   }
-
 }
 </script>
 

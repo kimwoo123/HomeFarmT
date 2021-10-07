@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="date-bar font-400">{{ date }}</div>
+    <div class="date-bar font-400">{{ dateArr[0] + '년 ' + dateArr[1] + '월 ' + dateArr[2] + '일 ' }}</div>
     <div class="card-container" v-for="(history, index) in dailyHistory" :key="index">
       <HistoryCard :history="history"/>
     </div>
@@ -18,7 +18,8 @@ export default {
   },
   data() {
     return {
-      dailyHistory:[],
+      dailyHistory: [],
+      dateArr: this.date.split('T')[0].split('-')
     }
   },
   created() {
