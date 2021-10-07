@@ -25,6 +25,7 @@ setup(
             'tf_detector = sub3.tf_detector:main',
             'tf_detector_right = sub3.tf_detector_right:main',
             'tf_detector_left = sub3.tf_detector_left:main',
+            'tf_detector_test = sub3.tf_detector_test:main',
             'run_mapping = sub3.run_mapping:main',
             'load_map = sub3.load_map:main',
             'run_localization = sub3.run_localization:main',

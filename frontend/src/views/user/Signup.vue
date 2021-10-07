@@ -14,7 +14,7 @@
         <div class="item">
           <span class="font-400">비밀번호 재입력</span>
           <input type="password" id="passwordConfirmation" v-model="passwordConfirmation" placeholder="비밀번호 재입력">
-          <span>{{ errorMessage }}</span>
+          <span v-if="passwordConfirmation" class="err-text">{{ errorMessage }}</span>
         </div>
       </div>
       <button class="user-btn" v-if="!error" @click="requestSignup()">회원가입</button>

@@ -1,8 +1,7 @@
 <template>
   <div>
-    <Navbar :title="'마이 페이지'" :left_icon="true" :right_text="''" :left_push="'Home'" :right_push="''"/>
+    <Navbar :title="'마이 페이지'" :left_icon="true" :right_text="'로그아웃'" :left_push="'Home'" :right_push="''"/>
     <div class="my-container">
-      <button @click="logout()"><div>로그아웃</div></button>
       <div class="input-container">
         <div class="item">
           <span>이메일</span>
@@ -91,12 +90,6 @@ export default {
     }
   },
   methods: {
-    logout() {
-      sessionStorage.removeItem('token')
-      sessionStorage.removeItem('email')
-      sessionStorage.removeItem('region')
-      this.$router.push({ name: 'Home' })
-    },
     updateUserInfo() {
       this.$apollo.mutate({
         mutation: gql`mutation ($password: String!, $turtlebot: String, $region: String) {

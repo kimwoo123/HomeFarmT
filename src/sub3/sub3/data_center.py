@@ -32,6 +32,7 @@ class DataCenter(Node):
         self.final_path = None
         self.start_path = None
         self.cur_pos = None
+        self.patrol = None
         self.GRIDSIZE = 350
         self.map_size_x = 350
         self.map_size_y = 350
@@ -55,20 +56,26 @@ class DataCenter(Node):
         @sio.on('requestPathToRos')
         def send_path(data):
             print(data)
-            start = data['data']['start']
-            end = data['data']['end']
+            start = data['start']
+            end = data['end']
+            self.patrol = data['patrol']
             self.final_path = []
             self.start_path = []
             self.path = [[0 for _ in range(self.GRIDSIZE)] for _ in range(self.GRIDSIZE)]
             
-            found = self.a_star(start, end, 'patrol')
-            if found:
+            if self.patrol:
+                found = self.a_star(start, end, 'patrol')
+            else:
+                found = self.a_star(self.cur_pos, end, 'patrol')
+
+            self.global_path_msg = Path()
+            self.global_path_msg.header.frame_id = 'map'
+
+            if found and self.patrol:
                 sio.emit('responsePath', json.dumps(self.final_path))
                 self.path = [[0 for _ in range(self.GRIDSIZE)] for _ in range(self.GRIDSIZE)]
-                print(self.cur_pos)
+
                 local_found = self.a_star(self.cur_pos, start, 'start')
-                self.global_path_msg = Path()
-                self.global_path_msg.header.frame_id = 'map'
                 if local_found:
                     for grid_cell in reversed(self.start_path):
                         tmp_pose = PoseStamped()
@@ -85,8 +92,20 @@ class DataCenter(Node):
                         tmp_pose.pose.position.y = waypoint_y
                         tmp_pose.pose.orientation.w = 1.0
                         self.global_path_msg.poses.append(tmp_pose)
-                    
+
                     self.a_star_pub.publish(self.global_path_msg)
+                    
+            elif found and not self.patrol:
+                sio.emit('responsePath', json.dumps(self.final_path))
+                for grid_cell in reversed(self.final_path):
+                    tmp_pose = PoseStamped()
+                    waypoint_x, waypoint_y = self.grid_cell_to_pose(grid_cell)
+                    tmp_pose.pose.position.x = waypoint_x
+                    tmp_pose.pose.position.y = waypoint_y
+                    tmp_pose.pose.orientation.w = 1.0
+                    self.global_path_msg.poses.append(tmp_pose)
+
+                self.a_star_pub.publish(self.global_path_msg)
 
 
         # 로직 2. 데이터 수신 콜백함수
@@ -174,7 +193,9 @@ class DataCenter(Node):
                 node = self.path[node[0]][node[1]]
                 if node[0] == start[0] and node[1] == start[1]:
                     break
-            self.final_path = self.final_path[::-1] + self.final_path
+            
+            if self.patrol:
+                self.final_path = self.final_path[::-1] + self.final_path
         
         if path_type == 'start':
             while found:

@@ -64,10 +64,11 @@ class HumanDetectorToServer(Node):
 
         self.subscription = self.create_subscription(
             CompressedImage,
-            '/image_jpeg/compressed',
+            '/image_jpeg/compressed/front',
             self.img_callback,
             10)
 
+        self.cnt = 0
         self.byte_data = None
         self.img_bgr = None
         self.timer_period = 0.03
@@ -101,15 +102,19 @@ class HumanDetectorToServer(Node):
 
         
     def timer_callback(self):
-
+        print(self.cnt)
         if self.img_bgr is not None:
-            print("subscribed")
             self.detect_human()
             b64data = base64.b64encode(self.byte_data)
             if self.human_detected:
                 self.byte_data = cv2.imencode('.jpg', self.img_bgr)[1].tobytes()
-
-            sio.emit('streaming', b64data.decode( 'utf-8' ) )
+                if self.cnt == 0: sio.emit('streaming', b64data.decode( 'utf-8' ) )
+                self.cnt += 5
+                self.human_detected = False
+            else:
+                self.cnt -= 1
+                if self.cnt < 0:
+                    self.cnt = 0
 
             if self.human_detected:
                 str_to_web = "house intruder detected"
