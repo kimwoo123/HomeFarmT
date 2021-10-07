@@ -56,7 +56,7 @@ params_lidar = {
     "Block_SIZE": int(1206),
     "X": 0, # meter
     "Y": 0,
-    "Z": 0.2+0.1,
+    "Z": 0.5 + 0.1,
     "YAW": 0, # deg
     "PITCH": 0,
     "ROLL": 0
@@ -72,7 +72,7 @@ params_cam = {
     "Block_SIZE": int(65000),
     "X": 0, # meter
     "Y": 0,
-    "Z": 0.23,
+    "Z": 0.5,
     "YAW": 0, # deg
     "PITCH": 0,
     "ROLL": 0
@@ -158,7 +158,7 @@ class detection_net_class():
                 min_score_thresh=0.5,
                 line_thickness=2) # box 테두리 두께 조절 (작을수록 얇음)
                 
-        infer_time = time.time()-t_start
+        infer_time = time.time() - t_start
 
         return image_process, infer_time, boxes_detect, scores, classes_pick
 
@@ -225,9 +225,6 @@ def object_distance_mapping(classes_pick, custom_obj, ostate_list):
             object_distance[custom_obj[int(obj)-1]].append(ostate_list[idx][0])
         else:
             object_distance[custom_obj[int(obj)-1]] = [ostate_list[idx][0]]
-
-    
-    # print(object_distance)
 
     return object_distance
 
