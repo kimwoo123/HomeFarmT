@@ -41,6 +41,15 @@
       </div>
     </div>
     <div v-else>
+      <div class="minimap" @click="modalOpen()">
+        <SimulationMap :clickEnable="false" :size="'150'" v-if="!isModalViewed"/>
+      </div>
+      <ModalView @close-modal="modalOff()" v-if="isModalViewed">
+        <div class="my-modal-content">
+          <span class="map-text">맵을 터치해 해당 위치로 이동하세요.</span>
+          <SimulationMap :clickEnable="true" :size="'300'" :isPatrol="true"/>
+        </div>
+      </ModalView>
       <ControlCam style="margin-bottom: 30px;"/>
       <button class="my-btn" @click="btn_new_path_off()">경로 재설정 완료</button>
       <Controller style="margin-top: -230px;" />
@@ -53,6 +62,8 @@ import Navbar from '@/components/common/Navbar.vue'
 import PatrolCam from '@/components/Patrol/PatrolCam.vue'
 import Controller from '@/components/common/Controller.vue'
 import ControlCam from '@/components/Control/ControlCam.vue'
+import SimulationMap from '@/components/common/SimulationMap.vue'
+import ModalView from '@/components/common/ModalView.vue'
 
 export default {
   name: 'PatrolSetting',
@@ -60,11 +71,15 @@ export default {
     Navbar,
     PatrolCam,
     Controller,
-    ControlCam
+    ControlCam,
+    SimulationMap,
+    ModalView,
   },
   data() {
     return {
       isPathDrawing: false,
+      isModalViewed: false,
+      isClickedMap: false,
       currentPath: localStorage.getItem('currentPath') || '1',
       path1: localStorage.getItem('path1') || '1번 경로',
       path2: localStorage.getItem('path2') || '2번 경로',
