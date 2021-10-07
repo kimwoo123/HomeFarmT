@@ -26,11 +26,11 @@ def generate_launch_description():
             node_name='path_tracking',
             output='screen',
         ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='lidar_trans',
-        #     node_name='lidar_trans',
-        # ),
+        Node(
+            package='sub2',
+            node_executable='lidar_trans',
+            node_name='lidar_trans',
+        ),
         Node(
             package='sub2',
             node_executable='path_pub',
@@ -52,11 +52,11 @@ def generate_launch_description():
             node_executable='local_map_pub',
             node_name='local_map_pub',
         ),
-        # Node(
-        #     package='sub2',
-        #     node_executable='make_path',
-        #     node_name='make_path'
-        # ),
+        Node(
+            package='sub2',
+            node_executable='make_path',
+            node_name='make_path'
+        ),
     ])
 
 
