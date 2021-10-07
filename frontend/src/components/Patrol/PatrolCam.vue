@@ -5,7 +5,7 @@
     </div>
     <ModalView @close-modal="modalOff()" v-if="isModalViewed">
       <div class="my-modal-content">
-        <span class="map-text">맵을 터치해 해당 위치로 이동하세요.</span>
+        <span class="map-text">맵을 터치해 해당 경로를 감시하세요.</span>
         <SimulationMap :clickEnable="true" :size="'300'" :isPatrol="true"/>
       </div>
     </ModalView>

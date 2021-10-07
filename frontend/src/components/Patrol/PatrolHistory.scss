@@ -11,7 +11,7 @@
   height: 100px;
   margin: auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
 
@@ -46,7 +46,8 @@
 }
 
 .history-img {
-  width: 90px;
+  background-size: 100% auto;
+  width: 120px;
   height: 90px;
   margin-right: 20px;
   border-radius: 12px;
