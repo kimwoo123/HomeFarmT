@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :key="componentKey">
     <Navbar :title="nowMonth + '월 스케줄'" :left_icon="true" :right_text="''" :left_push="'Schedule'" :right_push="''" />
     <div class="ScheduleNew-container">
       <p class="title">예약 일자</p>
@@ -18,7 +18,7 @@
         <div class="path shadows">
           <font-awesome-icon @click="routeIndex -= 1" icon="chevron-left"/>
           <span id="selectRoute">{{ route[routeIndex % 3] }}</span>
-          <font-awesome-icon @click="routeIndex +=1" icon="chevron-right"/>
+          <font-awesome-icon @click="routeIndex += 1, routeClick()" icon="chevron-right"/>
         </div>
       </div>
 
@@ -39,7 +39,8 @@
 
       <div v-if="!title" class="box"></div>
 
-      <button class="my-btn" @click="setSchedule()">스케줄 추가</button>
+      <button class="my-btn" v-if="error" @click="setSchedule()">스케줄 추가</button>
+      <button class="my-btn-err" v-else>스케줄 추가</button>
     </div>
   </div>
 </template>
@@ -56,6 +57,7 @@ export default {
   },
   data() {
     return {
+      componentKey: 0,
       nowMonth: new Date().getMonth() + 1,
       dateTime: '',
       title: '',
@@ -63,10 +65,14 @@ export default {
       status: true,
       route: ['1번 경로', '2번 경로', '3번 경로'],
       routeIndex: 99,
-      selectRoute: ''
+      selectRoute: '1번 경로',
+      error: false,
     }
   },
   methods: {
+    routeClick() {
+      this.selectRoute = this.route[this.routeIndex % 3]
+    },
     setSchedule() {
     this.$apollo.mutate({
       mutation: gql`mutation ($createScheduleScheduleTime: String!, $createScheduleScheduleTitle: String, $createScheduleScheduleDesc: String, $createScheduleScheduleStatus: String) {
@@ -91,19 +97,26 @@ export default {
         createScheduleScheduleStatus: "ON"
       }
       })
-      .then((res) => {
-        console.log(res, 'done')
-        // window.location.reload()
+      .then(() => {
+        alert('일정이 추가되었습니다')
+        window.location.reload()
       })
       .catch((err) => {
         console.log(err, 'no')
       })
     }
   },
-  watch: {
-    routeIndex() {
-      return this.selectRoute = this.route[this.routeIndex % 3]
+  computed: {
+    errorCheck() {
+      return this.dateTime && (this.title && this.selectRoute)
     }
+  },
+  watch: {
+    errorCheck(check) {
+      if (check) {
+        this.error = true
+      }
+    },
   }
 }
 </script>
