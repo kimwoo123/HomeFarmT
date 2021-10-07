@@ -46,7 +46,7 @@ export default {
         update(data) {
           this.allHistory = data.getHistory
           data.getHistory.forEach(element => {
-              this.allDate.add(element.event_time)
+              this.allDate.add(element.event_time.substring(0, 10))
           });
           this.componentKey += 1
         },

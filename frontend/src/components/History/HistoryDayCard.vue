@@ -24,7 +24,7 @@ export default {
   },
   created() {
     this.history.forEach(element => {
-      if (element.event_time === this.date) {
+      if (element.event_time.substring(0, 10) === this.date) {
         this.dailyHistory.push(element)
       }
     });
