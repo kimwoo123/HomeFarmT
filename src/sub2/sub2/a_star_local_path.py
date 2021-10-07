@@ -232,7 +232,9 @@ class astarLocalpath(Node):
                         heuristic = int(sqrt(pow(self.goal[0] - nx, 2) + pow(self.goal[1] - ny, 2))) * 2
                         self.path[nx][ny] = [current[1], current[2]]
                         heappush(openlist, [new_f, nx, ny])
-
+        if found == False : 
+            print('못찾겠다')
+            return
         node = [self.goal[0], self.goal[1]]
         while node != start :
             nextNode = node
