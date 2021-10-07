@@ -1,3 +1,18 @@
+.schedule-content {
+  width: 160px;
+  .desc {
+    font-size: 12px;
+    color: $darkgray;
+  }
+  .time {
+    font-size: 12px;
+    color: $gray;
+  }
+  p {
+    margin: 0;
+  }
+}
+
 .home-schedule {
   border-radius: 8px;
   background-color: white;

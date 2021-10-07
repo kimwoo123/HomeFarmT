@@ -32,8 +32,11 @@ export default {
     idx: Number
   },
   methods: {
-    changeStatus() {
+    changeStatus(isChecked) {
       // graphql update 로직 넣어야함
+      // 체크되었으면 true 아니면 false 반환 => db에 ON OFF로 넣어주면 됨
+      isChecked
+
     }
   }
 }
