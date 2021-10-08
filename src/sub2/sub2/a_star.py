@@ -199,84 +199,84 @@ class a_star(Node):
     # 담영
     def A_star_dam(self, start):
 
-        # # ######################################### 다익스트라 ################################################
-        # start_time = time.time()
-        # Q = deque()
-        # Q.append(start)
-        # self.cost[start[0]][start[1]] = 1
-        # found = False
-        # cnt = 0
-        # visited = dict()
-        # visited[(start[0], start[1])] = True
-        # while Q : # while Q:
-        #     current = Q.popleft()
-        #     cnt += 1
-        #     if found :
-        #         break
-        #     for i in range(8) :
-        #         next = [current[0] + self.dx[i], current[1] + self.dy[i]]
-        #         if visited.get((next[0], next[1]), False) : 
-        #             continue
-        #         if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
-        #             if self.grid[next[0]][next[1]] <= 50 :
-        #                 if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
-        #                         Q.append(next)
-        #                         self.path[next[0]][next[1]] = current
-        #                         self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
-        #                         visited[(next[0], next[1])] = True
-        #                         if next[0] == self.goal[0] and next[1] == self.goal[1]:
-        #                             found = True
-        
-        # print(found)
-        # if(found == False) :
-        #     return
-        # node = self.goal
-        # while node != start :
-        #     nextNode = node
-        #     self.final_path.append(nextNode)
-        #     node = self.path[nextNode[0]][nextNode[1]]
-        # print('다익스트라 cnt : ', cnt)
-        # print("time :", time.time() - start_time)
-
-        ####################################################       A*         ################################################
-        def heuristic_dam(x, y) :
-            return int(sqrt(pow(self.goal[0] - x, 2) + pow(self.goal[1] - y, 2)))
-        
-        self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        # ######################################### 다익스트라 ################################################
         start_time = time.time()
-        Q = []
-        cnt = 0
-        self.cost[start[0]][start[1]] = 0
-        heapq.heappush(Q, [heuristic_dam(start[0], start[1]), start[0], start[1]])
+        Q = deque()
+        Q.append(start)
+        self.cost[start[0]][start[1]] = 1
         found = False
-
+        cnt = 0
+        visited = dict()
+        visited[(start[0], start[1])] = True
         while Q : # while Q:
-            current = heapq.heappop(Q)
+            current = Q.popleft()
             cnt += 1
             if found :
                 break
             for i in range(8) :
-                next = [current[1] + self.dx[i], current[2] + self.dy[i]]
+                next = [current[0] + self.dx[i], current[1] + self.dy[i]]
+                if visited.get((next[0], next[1]), False) : 
+                    continue
                 if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
                     if self.grid[next[0]][next[1]] <= 50 :
-                        h = heuristic_dam(next[0], next[1])
-                        if self.cost[next[0]][next[1]] > self.cost[current[1]][current[2]] + self.dCost[i] :
-                            heapq.heappush(Q, [self.cost[current[1]][current[2]] + self.dCost[i] + h, next[0], next[1]])
-                            self.path[next[0]][next[1]] = [current[1], current[2]]
-                            self.cost[next[0]][next[1]] = self.cost[current[1]][current[2]] + self.dCost[i]
-                            if next[0] == self.goal[0] and next[1] == self.goal[1]:
-                                found = True
+                        if self.cost[next[0]][next[1]] > self.cost[current[0]][current[1]] + self.dCost[i]:
+                                Q.append(next)
+                                self.path[next[0]][next[1]] = current
+                                self.cost[next[0]][next[1]] = self.cost[current[0]][current[1]] + self.dCost[i]
+                                visited[(next[0], next[1])] = True
+                                if next[0] == self.goal[0] and next[1] == self.goal[1]:
+                                    found = True
+        
         print(found)
         if(found == False) :
             return
         node = self.goal
-
         while node != start :
             nextNode = node
             self.final_path.append(nextNode)
             node = self.path[nextNode[0]][nextNode[1]]
-        print('A* : ', cnt)
+        print('다익스트라 cnt : ', cnt)
         print("time :", time.time() - start_time)
+
+        ####################################################       A*         ################################################
+        # def heuristic_dam(x, y) :
+        #     return int(sqrt(pow(self.goal[0] - x, 2) + pow(self.goal[1] - y, 2)))
+        
+        # self.cost = np.array([[self.GRIDSIZE * self.GRIDSIZE for col in range(self.GRIDSIZE)] for row in range(self.GRIDSIZE)])
+        # start_time = time.time()
+        # Q = []
+        # cnt = 0
+        # self.cost[start[0]][start[1]] = 0
+        # heapq.heappush(Q, [heuristic_dam(start[0], start[1]), start[0], start[1]])
+        # found = False
+
+        # while Q : # while Q:
+        #     current = heapq.heappop(Q)
+        #     cnt += 1
+        #     if found :
+        #         break
+        #     for i in range(8) :
+        #         next = [current[1] + self.dx[i], current[2] + self.dy[i]]
+        #         if next[0] >= 0 and next[1] >= 0 and next[0] < self.GRIDSIZE and next[1] < self.GRIDSIZE :
+        #             if self.grid[next[0]][next[1]] <= 50 :
+        #                 h = heuristic_dam(next[0], next[1])
+        #                 if self.cost[next[0]][next[1]] > self.cost[current[1]][current[2]] + self.dCost[i] :
+        #                     heapq.heappush(Q, [self.cost[current[1]][current[2]] + self.dCost[i] + h, next[0], next[1]])
+        #                     self.path[next[0]][next[1]] = [current[1], current[2]]
+        #                     self.cost[next[0]][next[1]] = self.cost[current[1]][current[2]] + self.dCost[i]
+        #                     if next[0] == self.goal[0] and next[1] == self.goal[1]:
+        #                         found = True
+        # print(found)
+        # if(found == False) :
+        #     return
+        # node = self.goal
+
+        # while node != start :
+        #     nextNode = node
+        #     self.final_path.append(nextNode)
+        #     node = self.path[nextNode[0]][nextNode[1]]
+        # print('A* : ', cnt)
+        # print("time :", time.time() - start_time)
 
     # 다은
     def A_star_daeun(self, start):
