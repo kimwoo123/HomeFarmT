@@ -10,6 +10,8 @@ import numpy as np
 from collections import deque
 import threading
 from heapq import heappop, heappush
+from ssafy_msgs.msg import TurtlebotStatus, HandControl
+
 # a_star_local_path 노드는 a_star 노드에서 나오는 전역경로(/global_path)를 받아서, 로봇이 실제 주행하는 지역경로(/local_path)를 publish 하는 노드입니다.
 # path_pub 노드와 하는 역할은 비슷하나, path_pub은 텍스트를 읽어서 global_path를 지역경로를 생성하는 반면, a_star_local_path는 global_path를 다른 노드(a_star)에서 받아서 지역경로를 생성합니다.
 
@@ -31,7 +33,9 @@ class astarLocalpath(Node):
         self.subscription = self.create_subscription(Path,'global_path',self.path_callback,10)
         self.subscription = self.create_subscription(Odometry,'odom',self.listener_callback,10)
         self.subscription = self.create_subscription(OccupancyGrid,'local_map',self.local_map_callback,10)
-        self.collision_pub = self.create_publisher(Bool, 'collision', 10)
+        self.weed_pub = self.create_publisher(Bool, 'weed', 10)
+        self.hand_control_pub = self.create_publisher(HandControl, '/hand_control', 10)                
+        self.turtlebot_status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.turtlebot_status_callback,10)
 
         self.subscription = self.create_subscription(String,'object_distance', self.weed_callback, 10)
 
@@ -41,7 +45,7 @@ class astarLocalpath(Node):
 
         self.map_offset_x = -50 - 8.75 #-8 - 8.75
         self.map_offset_y = -50 - 8.75 # -4 - 8.75
-        self.collision_msg = Bool()
+        self.weed_msg = Bool()
         self.odom_msg=Odometry()
         self.is_odom=False
         self.is_path=False
@@ -59,7 +63,20 @@ class astarLocalpath(Node):
         self.dx = [-1, 0, 0, 1, -1, -1, 1, 1]
         self.dy = [0, 1, -1, 0, -1, 1, -1, 1]
         self.dCost = [1, 1, 1, 1, 1.414, 1.414, 1.414, 1.414]
+        self.weed = False
+
+        self.hand_control_msg = HandControl()        
+        self.turtlebot_status_msg = TurtlebotStatus()
+        self.is_turtlebot_status = False
+        self.hand_control_msg.put_distance = 0.0
+        self.hand_control_msg.put_height = 1.5
+
+
     def weed_callback (self, msg) :
+        if self.weed == True :
+            self.weed_msg.data = True
+            self.weed_pub.publish(self.weed_msg)
+            return
         object_list = msg.data.split('/')
         if object_list:
             detection = []
@@ -68,9 +85,52 @@ class astarLocalpath(Node):
                 if info[0] == 'weed':
                     for dist in info[1:]:
                         detection.append([float(dist), info[0]])
-
+    
             detection.sort()
+
             print(detection)
+            if detection :
+                print(detection[0])
+                if detection[0][0] <= 0.2 :
+                    self.weed_msg.data = True
+                    self.weed_pub.publish(self.weed_msg)
+                    self.weed = True
+                    self.hand_control_pick_up()
+                    # self.hand_control_put_down()
+                    self.weed = False
+                    self.weed_msg.data = False
+                    self.weed_pub.publish(self.weed_msg)
+
+    def hand_control_preview(self):
+        while self.turtlebot_status_msg.can_lift == False and self.turtlebot_status_msg.can_put == False and self.turtlebot_status_msg.can_use_hand == True:
+            self.hand_control_msg.control_mode = 1
+            self.hand_control_pub.publish(self.hand_control_msg)
+
+    def hand_control_pick_up(self):
+
+        for i in range(100) :
+            self.hand_control_msg.control_mode = 2
+            self.hand_control_pub.publish(self.hand_control_msg)
+            print(self.turtlebot_status_msg.can_put)
+            print('up while')
+        print("pick_up 완료")
+        # self.hand_control_preview()
+        
+    def hand_control_put_down(self):        
+        while self.turtlebot_status_msg.can_put == True:
+            self.hand_control_msg.control_mode = 3
+            self.hand_control_pub.publish(self.hand_control_msg)
+            
+            print('up while')
+        print("pick_down 완료")
+
+    def turtlebot_status_callback(self,msg):
+        self.is_turtlebot_status = True
+        if self.weed == True :
+            print('터틀봇 : ', self.turtlebot_status_msg.can_put)
+            
+        self.turtlebot_status_msg = msg
+
 
     def local_map_callback(self, msg) :
         m = np.array(msg.data)
@@ -90,8 +150,8 @@ class astarLocalpath(Node):
         self.last_current_point = 0
 
     def findLocalPath(self, current_waypoint, collision_point) :
-        self.collision_msg.data = True
-        self.collision_pub.publish(self.collision_msg)
+        # self.collision_msg.data = True
+        # self.collision_pub.publish(self.collision_msg)
         is_dis_num = 0
         is_cost_num = 0
         min_dis = float('inf')
@@ -233,7 +293,7 @@ class astarLocalpath(Node):
                         self.path[nx][ny] = [current[1], current[2]]
                         heappush(openlist, [new_f, nx, ny])
         if found == False : 
-            print('못찾겠다')
+            # print('못찾겠다')
             return
         node = [self.goal[0], self.goal[1]]
         while node != start :
@@ -253,10 +313,13 @@ class astarLocalpath(Node):
             tmp_pose.pose.orientation.w = 1.0
             local_path_msg.poses.append(tmp_pose)
 
-        self.collision_msg.data = False
-        self.collision_pub.publish(self.collision_msg)
+        # self.collision_msg.data = False
+        # self.collision_pub.publish(self.collision_msg)
         self.local_path_pub.publish(local_path_msg)
     def timer_callback(self):
+        if self.weed == True :
+            print('잡초제거중')
+            return
         if self.loadLocalMap == False: 
             print('더이상 갈 곳이 없다')
             return
