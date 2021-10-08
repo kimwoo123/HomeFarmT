@@ -23,6 +23,14 @@ const routes = [
     component: Signup,
     meta: {
       title: '홈팜티 | 회원가입'
+    },
+    beforeEnter: (to, from, next) => {
+      if (sessionStorage.getItem('token')) {
+        alert('이미 로그인 된 유저입니다')
+        next("/home")
+      } else {
+        next()
+      }
     }
   },
   {

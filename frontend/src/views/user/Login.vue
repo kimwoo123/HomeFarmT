@@ -66,6 +66,8 @@ export default {
           sessionStorage.setItem('token', res.data.login.token)
           sessionStorage.setItem('email', this.email)
           sessionStorage.setItem('region', res.data.login.region)
+        })
+        .then(() => {
           this.$router.push({ name: 'Home'})
         })
         .catch((err) => {
