@@ -32,7 +32,7 @@
       </div>
 
       <button class="my-btn" v-if="check" style="margin-top: 30px" @click="updateUserInfo()">확인</button>
-      <button class="my-btn" v-else style="margin-top: 30px">불가</button>
+      <button class="my-btn-err" v-else style="margin-top: 30px">불가</button>
 
     </div>
   </div>
@@ -94,7 +94,6 @@ export default {
       this.$apollo.mutate({
         mutation: gql`mutation ($password: String!, $turtlebot: String, $region: String) {
           updateUser(password: $password, turtlebot: $turtlebot, region: $region) {
-            email
             region
             turtlebot
           }
@@ -105,8 +104,9 @@ export default {
           region: this.region
         }
         })
-        .then((res) => {
-          console.log(res.data)
+        .then(() => {
+          alert('회원 정보가 갱신되었습니다')
+          this.$router.push({ name: 'Home' })
         })
         .catch((err) => {
           console.log(err, 'no')

@@ -69,6 +69,7 @@ export default {
         })
         .then(() => {
           this.$router.push({ name: 'Home'})
+          window.location.reload()
         })
         .catch((err) => {
           alert(err.message.split(':')[1])
