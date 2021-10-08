@@ -152,21 +152,21 @@ class PatrolCtrlFromServer(Node):
         if auto_switch == 0:
             sio.emit('PatrolStatus', 'Off')
             # turn left
-            if ctrl_cmd == 1:
-                self.turtlebot_cww_rot()
-            # go straight
-            elif ctrl_cmd == 2:
-                self.turtlebot_go()
-            # turn right
-            elif ctrl_cmd == 3:
-                self.turtlebot_cw_rot()
-            # go back
-            elif ctrl_cmd == 4:
-                self.turtlebot_back()
-            # stop
-            else:
-                self.turtlebot_stop()
-            self.cmd_publisher.publish(self.cmd_msg)
+            # if ctrl_cmd == 1:
+            #     self.turtlebot_cww_rot()
+            # # go straight
+            # elif ctrl_cmd == 2:
+            #     self.turtlebot_go()
+            # # turn right
+            # elif ctrl_cmd == 3:
+            #     self.turtlebot_cw_rot()
+            # # go back
+            # elif ctrl_cmd == 4:
+            #     self.turtlebot_back()
+            # # stop
+            # else:
+            #     self.turtlebot_stop()
+            # self.cmd_publisher.publish(self.cmd_msg)
 
             if ctrl_cmd != 0: 
                 self.m_control_iter += 1

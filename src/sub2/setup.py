@@ -35,6 +35,7 @@ setup(
             'patrol_client = sub2.patrol_client:main',
             'local_map_pub = sub2.local_map_pub:main',
             'handcontrol = sub2.handcontrol:main',
+            'intruder_detector_client = sub2.intruder_detector_client:main',
         ],
     },
 )

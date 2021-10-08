@@ -31,11 +31,11 @@ def generate_launch_description():
             node_executable='lidar_trans',
             node_name='lidar_trans',
         ),
-        Node(
-            package='sub2',
-            node_executable='path_pub',
-            node_name='path_pub',
-        ),
+        # Node(
+        #     package='sub2',
+        #     node_executable='path_pub',
+        #     node_name='path_pub',
+        # ),
         Node(
             package='sub2',
             node_executable='patrol_client',
@@ -61,6 +61,11 @@ def generate_launch_description():
             package='sub2',
             node_executable='handcontrol',
             node_name='handcontrol'
+        ),
+        Node(
+            package='sub2',
+            node_executable='intruder_detector_client',
+            node_name='intruder_detector_client'
         ),
     ])
 
