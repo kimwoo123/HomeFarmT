@@ -33,7 +33,7 @@ class followTheCarrot(Node):
         self.subscription = self.create_subscription(Odometry,'/odom',self.odom_callback,10)
         self.status_sub = self.create_subscription(TurtlebotStatus,'/turtlebot_status',self.status_callback,10)
         self.path_sub = self.create_subscription(Path,'/local_path',self.path_callback,10)
-        self.collision_sub = self.create_subscription(Bool,'/collision', self.collision_callback,10)
+        self.weed_sub = self.create_subscription(Bool,'/weed', self.weed_callback,10)
 
         time_period = 0.05
         self.timer = self.create_timer(time_period, self.timer_callback)
@@ -47,6 +47,7 @@ class followTheCarrot(Node):
         self.path_msg = Path()
         self.cmd_msg = Twist()
         self.robot_yaw=0.0
+        self.weed = False
 
         # 로직 2. 파라미터 설정 
         self.lfd=0.1
@@ -55,14 +56,19 @@ class followTheCarrot(Node):
         # thread = threading.Thread(target=self.timer_callback)
         # thread.daemon = True 
         # thread.start()
-    def collision_callback (self, msg) : 
-        self.collision = msg.data
+    def weed_callback (self, msg) : 
+        self.weed = msg.data
 
     def timer_callback(self):
-        
+        if self.weed == True :
+            self.cmd_msg.linear.x = 0.0
+            self.cmd_msg.angular.z = 0.0
+
+            self.cmd_pub.publish(self.cmd_msg)
+            return
 
         if self.is_status and self.is_odom == True and self.is_path == True:
-
+            
             
             if len(self.path_msg.poses)> 1:
                 self.cnt = 0

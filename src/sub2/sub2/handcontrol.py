@@ -84,9 +84,11 @@ class Handcontrol(Node):
     #     print(self.turtlebot_status_msg, 'turtlebot status')
 
     def hand_control_preview(self):
+        print('프리뷰 시작')
         while self.turtlebot_status_msg.can_lift == False and self.turtlebot_status_msg.can_put == False and self.turtlebot_status_msg.can_use_hand == True:
             self.hand_control_msg.control_mode = 1
             self.hand_control_pub.publish(self.hand_control_msg)
+        print('프리뷰 완료')
 
     def hand_control_pick_up(self):
         while self.turtlebot_status_msg.can_lift == True:
