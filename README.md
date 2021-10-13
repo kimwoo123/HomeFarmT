@@ -23,7 +23,7 @@
 | 이다은 | 팀원 | 자율주행, Frontend, UI/UX |        |
 | 이두호 | 팀원 |      물체인식, MLOps      |        |
 
-
+<br/>
 
 # 주요 기능
  - 기기 제어
@@ -47,35 +47,58 @@
     - 이동하다가 잡초를 발견하면 제거하여 작물 재배에 도움
     - STT 기능 (미구현)
 
+<br/>
+
 # 구현
 
-- 맵 생성
+## 기기 제어
 
-![침입자 감시](https://alluring-mall-81e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F9b00edd8-2a9d-4edf-b7a3-350fdeff0939%2F%EB%A7%B5_%EC%83%9D%EC%84%B1.gif?table=block&id=62457345-3e62-479e-a1c6-f9065158b5b9&spaceId=51eb7c59-8acd-44f0-8b14-3f8fe7b8b19c&userId=&cache=v2)
+### 1. IoT 기기 제어
 
-- 물체 회피
+![기기 제어](https://i.imgur.com/8ER9d5y.gif)
 
-![IoT 기기 제어](https://alluring-mall-81e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fcfaed099-d454-42a4-bc55-e772650c6158%2F%EB%AC%BC%EC%B2%B4_%ED%9A%8C%ED%94%BC.gif?table=block&id=4bb2776c-ce66-4655-84bf-cac81bf26e49&spaceId=51eb7c59-8acd-44f0-8b14-3f8fe7b8b19c&userId=&cache=v2)
+## 감시
 
-- 침입자 감시
+### 1. 미니맵 감지
+### 2. 침입자 발견
 
-![터틀봇 조작](https://alluring-mall-81e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Faafcb8e6-e2cb-4148-871a-85fd153bb268%2F%EC%B9%A8%EC%9E%85%EC%9E%90_%EB%B0%9C%EA%B2%AC.gif?table=block&id=a8532547-8ecf-4c2b-b40c-b8be9636c3ae&spaceId=51eb7c59-8acd-44f0-8b14-3f8fe7b8b19c&userId=&cache=v2)
+![침입자 발견](https://i.imgur.com/TpNE2VJ.gif)
 
-- 스케줄 관리
+### 3. 경로 기록 및 감시
 
-![스케줄 관리](https://alluring-mall-81e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F4d49948e-f182-4532-9e0c-de1c2e7bd18d%2FIoT_%EC%A0%9C%EC%96%B4.gif?table=block&id=cab36c62-23a3-4b25-b483-f268392a44a1&spaceId=51eb7c59-8acd-44f0-8b14-3f8fe7b8b19c&userId=&cache=v2)
+## 일정
 
-- 작물 재배 도움
+### 1. 오늘의 일정 출력
 
-![작물 재배 도움](https://alluring-mall-81e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fba912b6a-3dc0-463b-846c-056e12ba9c2d%2F%EC%9E%91%EB%AC%BC_%EC%9E%AC%EB%B0%B0.gif?table=block&id=319af1ad-1b6f-4192-90a7-259b3dfae2da&spaceId=51eb7c59-8acd-44f0-8b14-3f8fe7b8b19c&userId=&cache=v2)
+## 터틀봇 조작
+
+### 1. 미니맵 조작
+### 2. 화살표 버튼으로 터틀봇 제어
+### 3. 물건 들기/놓기
+
+## 기타
+
+### 1. 맵 생성
+
+![맵 생성](https://i.imgur.com/xYrQPoJ.gif)
+
+### 2. 사용자 지역의 날씨, 온도, 습도, 풍속 출력
+### 3. 작물 재배 도움
+
+![작물 재배 도움](https://i.imgur.com/CMA4hgB.gif)
+
+### 4. 물체 회피
+
+![물체 회피](https://i.imgur.com/O8TwkPS.gif)
 
 
-
-
+<br/>
 
 # 기술 스택
 
  - 
  - 
+
+<br/>
 
 # 산출물
