@@ -1,10 +1,3 @@
-## IoT제어 프로젝트
-
-* 시뮬레이터 및 프로젝트 관련 파일 다운로드
-  - https://drive.google.com/drive/folders/1rp54qL31ZIoHet7A9BlvpoDCCdGVsvLK?usp=sharing
-
-(위 경로에 위치한 프로그램 및 문서는 SSAFY 과정 내에서만 사용할 수 있으며 무단 복제 및 반출, 배포를 금합니다.)
-
 # 🏕 홈팜티 (HomeFarmT)
 
 > 농업인을 위한 작은 스마트팜
@@ -114,17 +107,28 @@
 
 <br/>
 
-# 기술 스택
+# 🧱기술 스택
 
- - 
- - 
+ - Backend : Node.js, Express, JavaScript
+ - Frontend : Vue.js, HTML/CSS, JavaScript
+ - IoT 제어 : ROS2, Python, Socket.io
+ - AI : TensorFlow, OpenCV (모델 SSD Mobile Net v1)
+ - DB : MySQL
+ - API 통신 : GraphQL 
+ - Devops : Docker, Jenkins, Nginx, Grafana
+ - Server : AWS EC2
 
 <br/>
 
-# 🎨 산출물
+# 📝 산출물
 
 ## 🎭 ERD
 
 <img src="README.assets/image-20211013164755370.png" alt="image-20211013164755370" style="zoom:67%;" />
 
 ## 🖼 와이어프레임
+
+![image-20211013173730244](README.assets/image-20211013173730244.png)
+
+![image-20211013173801249](README.assets/image-20211013173801249.png)
+
