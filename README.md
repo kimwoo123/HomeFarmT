@@ -109,6 +109,8 @@
 
 # 🧱기술 스택
 
+![structure](/uploads/7934ad723c3511f4da0d16dc3c487983/structure.PNG)
+
  - Backend : Node.js, Express, JavaScript
  - Frontend : Vue.js, HTML/CSS, JavaScript
  - IoT 제어 : ROS2, Python, Socket.io
