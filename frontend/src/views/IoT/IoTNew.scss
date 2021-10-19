@@ -1,0 +1,50 @@
+.move_device {
+  width: 360px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+  img {
+    margin-bottom: 5px;
+  }
+}
+
+.box {
+  width: 10px;
+}
+
+.chevron-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 328px;
+  height: 58px;
+  background-color: $primary;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  color: white;
+  margin: 0px auto;
+  padding: 0px 20px;
+}
+
+
+
+.find-device {
+  width: 360px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.IoTNewcard-container {
+  width: 360px;
+  height: 520px;
+  padding: 5px 16px;
+  overflow: auto;
+}

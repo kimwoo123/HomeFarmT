@@ -1,0 +1,53 @@
+.map-text {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.my-modal-content {
+  width: 290px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.minimap {
+  position: absolute;
+  right: 0px;
+}
+
+.control-container {
+  position: relative;
+}
+
+.my-small-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 156px;
+  height: 58px;
+  background-color: white;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  border: 0px;
+  cursor: pointer;
+
+  &:hover {
+    transition: 0.3s;
+    background-color: $primary;
+    color: white;
+    transition: 0.3s;
+  }
+
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+  
+}
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 16px;
+}

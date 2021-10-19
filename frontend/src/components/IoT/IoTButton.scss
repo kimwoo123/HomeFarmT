@@ -1,0 +1,51 @@
+.iot-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 16px;
+  column-gap: 16px;
+}
+
+.iot-item { 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 156px;
+  height: 130px;
+  border-radius: 15px;
+  background-color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+    
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+}
+
+.iot-active {
+  background-color: $primary;
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.name {
+  font-size: 14px;
+}
+
+.position {
+  font-size: 11px;
+  color: $darkgray;
+  margin-top: -3px;
+}
+
+.position-active {
+  color: white
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+}

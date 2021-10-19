@@ -1,0 +1,204 @@
+var app = require('../app');
+var debug = require('debug')('second-backend:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+const io = require('socket.io')(server)
+const roomName = 'team';
+
+const path = require('path');
+const fs = require('fs');
+// frontend로 이동
+const picPath = path.join(__dirname, "/../../frontend");
+
+io.on('connection', socket => {
+    socket.join(roomName);
+
+    // 로직 3. 사용자의 메시지 수신시 WebClient로 메시지 전달
+    socket.on('safety_status', (message) => {
+        socket.to(roomName).emit('sendSafetyStatus', message);
+    });
+    
+    socket.on('PatrolStatus', (message) => {
+      socket.to(roomName).emit('sendPatrolStatus', message);
+    });
+    
+    socket.on('disconnect', () => {
+      console.log('disconnected from server');
+    });
+
+    // iot 제어
+    socket.on('iot-control', (message) => {
+      socket.to(roomName).emit('iot-control', message);
+    });
+
+    // 캠 
+    socket.on('cam', (message) => {
+      socket.to(roomName).emit('cam-streaming', message)
+    })
+    
+    // 이동 제어
+    socket.on('turnleftToServer', (data) => {
+        socket.to(roomName).emit('turnleft', data);
+    });
+
+    socket.on('gostraightToServer', (data) => {
+        socket.to(roomName).emit('gostraight', data);
+    });
+
+    socket.on('turnrightToServer', (data) => {
+        socket.to(roomName).emit('turnright', data);
+    });
+
+    socket.on('gobackToServer', (data) => {
+      socket.to(roomName).emit('goback', data);
+    });
+
+    socket.on('ismapopenToServer', (data) => {
+      socket.to(roomName).emit('isMapOpen', data);
+    });
+
+    // 물건 들기 놓기
+    socket.on('pickupToServer', (data) => {
+      socket.to(roomName).emit('pickup', data);
+    });
+
+    socket.on('putdownToServer', (data) => {
+      socket.to(roomName).emit('putdown', data);
+    });
+
+    // patrol 주행
+    socket.on('PatrolOnToServer', (data) => {
+      socket.to(roomName).emit('patrolOn', data);
+      console.log('Patrol On!');
+    });
+
+    socket.on('PatrolOffToServer', (data) => {
+      socket.to(roomName).emit('patrolOff', data);
+    });
+
+    // patrol 경로 생성
+    socket.on('newPathOnToServer', (data) => {
+      socket.to(roomName).emit('newPathOn', data);
+    });
+
+    socket.on('newPathOffToServer', () => {
+      socket.to(roomName).emit('newPathOff');
+    });
+
+    // patrol 경로 변경
+    socket.on('changePathToServer', (data) => {
+      socket.to(roomName).emit('changePath', data);
+    });
+
+    // 맵 정보를 ROS로부터 받아서, client으로 전송.
+    socket.on('mapFromRos', (data) => {
+      socket.to(roomName).emit('map', data);
+    });
+
+    socket.on('turtle_pos_response', (data) => {
+      socket.to(roomName).emit('turtleBotPos', data)
+    })
+    
+    socket.on('requestPath', (data) => {
+      socket.to(roomName).emit('requestPathToRos', data)
+    })
+    
+    // 이상 감지 => 이미지 저장
+    socket.on('streaming', (message) => {
+      // socket.to(roomName).emit('sendStreaming', message);
+      buffer = Buffer.from(message, "base64");
+      fs.writeFileSync(path.join(picPath, "/src/assets/anormal/anormal.jpg"), buffer);
+    });
+
+    socket.on('responsePath', (data) => {
+      socket.to(roomName).emit('responsePathFromRos', data)
+    })
+
+    // // vue-client에서 나온 emit 요청, data => (start, end)
+    // socket.on('requestPath', (data) => {
+    //   // ros2로 emit
+    //   socket.to(roomName).emit('requestPathToRos', data)
+    // })
+})
+
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}

@@ -1,0 +1,101 @@
+.ScheduleNew-container {
+  padding: 10px 16px;
+}
+
+.schedule {
+  display: flex;
+  justify-content: center;
+  column-gap: 16px;
+  margin-bottom: 30px;
+  .item {
+    width: 155px;
+    height: 43px;
+    border-radius: 10px;
+    background-color: white;
+    border: 0px;
+  }
+  .item-active {
+    background-color: $primary;
+    color: white;
+  }
+}
+
+.control {
+  width: 328px;
+  height: 85px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0px 30px;
+  .text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+    .name {
+      font-size: 14px;
+    }
+    .position {
+      font-size: 11px;
+      color: $darkgray;
+      margin-top: -3px;
+    }
+  }
+  .switch {
+    margin-left: auto;
+  }
+}
+
+.box {
+  height: 320px;
+}
+
+.title {
+  margin: 0px 0px 5px 8px;
+}
+
+.path {
+  width: 328px;
+  height: 43px;
+  background: #FFFFFF;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+  margin-bottom: 30px;
+}
+
+.date-time {
+  margin-bottom: 30px;
+}
+
+.form-control {
+  border: 0px;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  height: 43px;
+  padding: 0px 16px;
+}
+
+.my-btn-err {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 328px;
+  height: 58px;
+  background-color: $gray;
+  box-shadow: 1px 2px 7px 2px rgba(206, 206, 206, 0.35);
+  border-radius: 10px;
+  color: white;
+  margin: 0px auto;
+  border: 0px;
+  cursor: pointer;
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+  
+}

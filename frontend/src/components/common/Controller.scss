@@ -1,0 +1,27 @@
+.controller-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.item {
+  width: 50px;
+  height: 50px;
+  padding: 17px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 8px 15px;
+  transition: 0.2s;
+  &:hover {
+    background-color: $primary;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+}

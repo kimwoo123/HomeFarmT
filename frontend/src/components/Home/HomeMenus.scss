@@ -1,0 +1,34 @@
+.menus {
+  width: 328px;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 16px;
+  column-gap: 16px;
+}
+
+.menu {
+  width: 156px;
+  height: 61px;
+  background-color: white;
+  border-radius: 8px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  &:hover {
+    background-color: $primary;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  &:active {
+    transition: box-shadow 0.3s;
+    box-shadow: none;
+  }
+}
+
+img {
+  margin-right: 7px;
+}

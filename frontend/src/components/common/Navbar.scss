@@ -1,0 +1,31 @@
+.navbar-container {
+  height: 60px;
+  width: 360px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 20px;
+}
+
+.title {
+  text-align: center;
+  margin: -43px 0px 18px 0px;
+  font-size: 18px;
+}
+
+.right-text {
+  font-size: 16px;
+  color: $darkgray;
+  cursor: pointer;
+}
+
+.icon {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  padding: 11px 0px;
+  &:active {
+    color: $primary;
+  }
+}
