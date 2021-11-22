@@ -48,41 +48,57 @@
 
 ### 1. IoT 기기 제어
 
-<img src="https://i.imgur.com/8ER9d5y.gif" alt="기기 제어"  />
+![기기제어](README.assets/기기제어.gif)
+
+
 
 ## 📽 감시
 
 ### 1. 미니맵 경로로 감시
 
-![침입자 발견](https://i.imgur.com/lp79Tyd.gif)
+![미니맵감시](README.assets/미니맵감시.gif)
+
+
 
 ### 2. 침입자 발견
 
-![침입자 발견](https://i.imgur.com/TpNE2VJ.gif)
+![침입자발견](README.assets/침입자발견.gif)
+
+
 
 ### 3. 경로 편집
 
-![감시 실행](https://i.imgur.com/pU65gv2.gif)
+![경로편집](README.assets/경로편집.gif)
+
+
 
 ### 4. 감시 실행
 
-![감시 실행](https://i.imgur.com/kuwPeoU.gif)
+![감시실행](README.assets/감시실행.gif)
+
+
 
 ## 📅 일정
 
 ### 1. 일정 관리 및 오늘의 일정
 
-<img src="https://i.imgur.com/TznGODr.gif" alt="오늘의 일정" style="zoom:67%;" />
+<img src="README.assets/오늘의일정.gif" alt="오늘의일정" style="zoom:67%;" />
+
+
 
 ## 🕹 터틀봇 조작
 
 ### 1. 미니맵 좌표로 조작
 
-![터틀봇 제어](https://i.imgur.com/v9HImXP.gif)
+![미니맵조작](README.assets/미니맵조작.gif)
+
+
 
 ### 2. 화살표 버튼으로 터틀봇 제어
 
-![터틀봇 제어](https://i.imgur.com/2F8MAfw.gif)
+![버튼이동제어](README.assets/버튼이동제어.gif)
+
+
 
 
 
@@ -90,7 +106,9 @@
 
 ### 1. 맵 생성
 
-![맵 생성](https://i.imgur.com/xYrQPoJ.gif)
+![맵생성](README.assets/맵생성.gif)
+
+
 
 ### 2. 사용자 지역의 날씨, 온도, 습도, 풍속 출력
 
@@ -98,18 +116,22 @@
 
 ### 3. 작물 재배 도움
 
-![작물 재배 도움](https://i.imgur.com/CMA4hgB.gif)
+![작물재배](README.assets/작물재배.gif)
+
+
 
 ### 4. 물체 회피
 
-![물체 회피](https://i.imgur.com/O8TwkPS.gif)
+![물체회피](README.assets/물체회피.gif)
+
+
 
 
 <br/>
 
 # 🧱기술 스택
 
-![structure](/uploads/7934ad723c3511f4da0d16dc3c487983/structure.PNG)
+![structure](README.assets/structure.PNG)
 
  - Backend : Node.js, Express, JavaScript
  - Frontend : Vue.js, HTML/CSS, JavaScript
@@ -139,3 +161,4 @@
 # 🏆수상
 
 ### 🏅 삼성 청년 SW 아카데미(SSAFY) 공통 프로젝트 대전 반 3등
+
